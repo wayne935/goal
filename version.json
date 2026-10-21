@@ -1,5 +1,5 @@
 {
-  "build": 3,
+  "build": 4,
   "minNative": 2,
   "files": [
     "index.html",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "資安強化：輸入資料檢查、圖示跳脫、內容安全政策"
+  "notes": "升級動畫、徽章動畫強化、打卡回饋、震動"
 }
