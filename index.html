@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Goal 成就板</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://cpfokqjomhznacezjpcx.supabase.co; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#24473d">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
@@ -377,13 +379,15 @@ code.k{font-family:ui-monospace,Consolas,monospace;font-size:13.5px;background:r
 
 <script>
 'use strict';
+// 不允許被其他網站用 iframe 嵌入（防點擊劫持）
+if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw new Error('Goal 不能在框架內開啟'); }
 /* =========================================================
    Goal 成就板 — phase 1
    所有數字（XP、代幣、徽章進度）都由 state.events 推算。
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 2;
+const APP_BUILD = 3;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 const $ = (s, r = document) => r.querySelector(s);
@@ -751,6 +755,66 @@ function eventIcon(e) {
   if (e.type === 'redeem') return e.reward?.icon || '🎁';
   return e.icon || '⭐';
 }
+/* ---------- 資料檢查 ----------
+   外部來源（inbox、貼上、雲端、備份檔）進來的資料一律先檢查型別與長度；
+   畫面上的文字一律經過 esc()，這裡是第二道防線，也避免格式錯誤的資料讓頁面當掉。 */
+const BAD_KEYS = new Set(['__proto__', 'prototype', 'constructor']);
+const str = (v, max = 200) => (typeof v === 'string' ? v : v == null ? '' : String(v)).slice(0, max);
+const num = (v, lo, hi, d = 0) => { const n = Number(v); return Number.isFinite(n) ? clamp(n, lo, hi) : d; };
+const cleanIcon = v => { const t = str(v, 32).trim(); return t && !/[<>&"'`\\]/.test(t) ? [...t].slice(0, 4).join('') : ''; };
+const safeKey = v => { const t = str(v, 160); return t && !BAD_KEYS.has(t) ? t : ''; };
+const isoOk = v => typeof v === 'string' && Number.isFinite(Date.parse(v));
+function validEvent(e) {
+  if (!e || typeof e !== 'object' || Array.isArray(e) || !safeKey(e.id) || !isoOk(e.ts)) return null;
+  switch (e.type) {
+    case 'leetcode': {
+      const p = e.problem;
+      return p && typeof p === 'object' && DIFF[p.difficulty] && (p.tags == null || Array.isArray(p.tags)) ? e : null;
+    }
+    case 'habit': return safeKey(e.habit) ? e : null;
+    case 'custom': return { ...e, title: str(e.title, 120), icon: cleanIcon(e.icon) || '⭐', cat: CATS[e.cat] ? e.cat : 'life',
+      xp: num(e.xp, 0, CUSTOM_CAP.xp), coins: num(e.coins, 0, CUSTOM_CAP.coins) };
+    case 'redeem': return e.reward && typeof e.reward === 'object'
+      ? { ...e, reward: { ...e.reward, name: str(e.reward.name, 80), icon: cleanIcon(e.reward.icon) || '🎁', cost: num(e.reward.cost, 0, 1e6) } } : null;
+  }
+  return null;
+}
+function validHabits(arr) {
+  if (!Array.isArray(arr)) return null;
+  const out = arr.filter(h => h && typeof h === 'object' && safeKey(h.id)).map(h => ({ ...h, id: safeKey(h.id), name: str(h.name, 60),
+    icon: cleanIcon(h.icon) || '•', cat: CATS[h.cat] ? h.cat : 'life', xp: num(h.xp, 0, 1000), coins: num(h.coins, 0, 1000), dailyMax: num(h.dailyMax, 1, 100, 1) }));
+  return out.length ? out : null;
+}
+function validRewards(arr) {
+  if (!Array.isArray(arr)) return null;
+  return arr.filter(r => r && typeof r === 'object' && safeKey(r.id)).map(r => ({ ...r, id: safeKey(r.id), name: str(r.name, 80),
+    icon: cleanIcon(r.icon) || '🎁', cost: num(r.cost, 1, 1e6, 1) }));
+}
+function validProblems(obj) {
+  const out = {};
+  if (!obj || typeof obj !== 'object') return out;
+  for (const [k, p] of Object.entries(obj)) {
+    if (!safeKey(k) || !p || typeof p !== 'object') continue;
+    out[k] = { ...p, id: Number(p.id) || null, slug: str(p.slug || k, 160), title: str(p.title, 200), difficulty: DIFF[p.difficulty] ? p.difficulty : '',
+      tags: normTags(p.tags), note: str(p.note, 20000), starred: !!p.starred, doing: !!p.doing, removed: !!p.removed };
+  }
+  return out;
+}
+function validUnlocked(obj) {
+  const out = {};
+  if (obj && typeof obj === 'object') for (const [k, v] of Object.entries(obj)) if (ACH_BY_ID[k] && isoOk(v)) out[k] = v;
+  return out;
+}
+function validSettings(o) {
+  const out = {};
+  if (!o || typeof o !== 'object') return out;
+  if (o.dayStartHour != null) out.dayStartHour = Math.round(num(o.dayStartHour, 0, 6, 4));
+  if (typeof o.sound === 'boolean') out.sound = o.sound;
+  if (typeof o.hideLinkTip === 'boolean') out.hideLinkTip = o.hideLinkTip;
+  if (Array.isArray(o.widgetHabits)) out.widgetHabits = o.widgetHabits.map(x => safeKey(x)).filter(Boolean).slice(0, 3);
+  return out;
+}
+
 function normTags(t) {
   const arr = Array.isArray(t) ? t : typeof t === 'string' ? t.split(/[,，]/) : [];
   return [...new Set(arr.map(x => slugify(x)).filter(Boolean))].slice(0, 8);
@@ -768,7 +832,7 @@ function normalize(raw, source) {
     const slug = String(p.slug || '').trim() || slugify(title) || (pid ? 'lc-' + pid : '');
     if (!slug) throw new Error('缺少 problem.title 或 problem.slug');
     const verdict = String(raw.verdict || 'accepted').toLowerCase() === 'accepted' ? 'accepted' : 'rejected';
-    return { id: String(raw.id || `lc-${compactTs(ts)}-${slug}`), type: 'leetcode', ts,
+    return { id: safeKey(raw.id) || `lc-${compactTs(ts)}-${slug}`, type: 'leetcode', ts,
       problem: { id: pid, slug, title: title || slug, difficulty, tags: normTags(p.tags || raw.tags) }, verdict,
       evidence: raw.evidence || null, complexity: raw.complexity || null, language: raw.language || '',
       reviewer: raw.reviewer || 'ai', leetcode_submitted: !!raw.leetcode_submitted,
@@ -778,12 +842,12 @@ function normalize(raw, source) {
     const key = String(raw.habit || '');
     const h = state.habits.find(x => x.id === key || x.name === key);
     if (!h) throw new Error(`找不到習慣「${key}」，請用設定裡的習慣 id`);
-    return { id: String(raw.id || `h-${compactTs(ts)}-${h.id}`), type: 'habit', habit: h.id, ts, note: raw.note || '', source };
+    return { id: safeKey(raw.id) || `h-${compactTs(ts)}-${h.id}`, type: 'habit', habit: h.id, ts, note: str(raw.note, 300), source };
   }
   if (type === 'custom') {
     if (!raw.title) throw new Error('custom 事件需要 title');
-    return { id: String(raw.id || `c-${compactTs(ts)}-${slugify(raw.title)}`), type: 'custom', ts, title: String(raw.title),
-      icon: raw.icon || '⭐', cat: CATS[raw.cat] ? raw.cat : 'life',
+    return { id: safeKey(raw.id) || `c-${compactTs(ts)}-${slugify(raw.title)}`, type: 'custom', ts, title: str(raw.title, 120),
+      icon: cleanIcon(raw.icon) || '⭐', cat: CATS[raw.cat] ? raw.cat : 'life',
       xp: clamp(Number(raw.xp) || 5, 0, CUSTOM_CAP.xp), coins: clamp(Number(raw.coins) || 3, 0, CUSTOM_CAP.coins), note: raw.note || '', source };
   }
   throw new Error(`不支援的 type「${type || '（空白）'}」`);
@@ -792,17 +856,17 @@ function normalize(raw, source) {
 function ingestProblemList(data) {
   let added = 0, updated = 0;
   for (const p of data.problems || []) {
-    const slug = String(p.slug || slugify(p.title) || '').trim(); if (!slug) continue;
+    const slug = safeKey(String(p.slug || slugify(p.title) || '').trim()); if (!slug) continue;
     const difficulty = DIFF[String(p.difficulty || '').toLowerCase()] ? String(p.difficulty).toLowerCase() : '';
     const cur = state.problems[slug];
     if (!cur) {
-      state.problems[slug] = { id: Number(p.id) || null, slug, title: String(p.title || slug), difficulty, tags: normTags(p.tags),
-        starred: !!p.starred, doing: !!p.doing, note: String(p.note || ''), addedAt: nowISO(), updatedAt: nowISO() };
+      state.problems[slug] = { id: Number(p.id) || null, slug, title: str(p.title || slug, 200), difficulty, tags: normTags(p.tags),
+        starred: !!p.starred, doing: !!p.doing, note: str(p.note, 20000), addedAt: nowISO(), updatedAt: nowISO() };
       added++;
     } else {
       let ch = false;
       if (!cur.difficulty && difficulty) { cur.difficulty = difficulty; ch = true; }
-      if (!cur.note && p.note) { cur.note = String(p.note); ch = true; }
+      if (!cur.note && p.note) { cur.note = str(p.note, 20000); ch = true; }
       if (!(cur.tags || []).length && p.tags) { cur.tags = normTags(p.tags); ch = true; }
       if (ch) { cur.updatedAt = nowISO(); updated++; }
     }
@@ -948,7 +1012,7 @@ function logItem(e, S, withDay) {
   const r = S.per[e.id] || { xp: 0, coins: 0, tag: '' };
   let sub = '';
   if (e.type === 'leetcode') {
-    const d = DIFF[e.problem.difficulty];
+    const d = DIFF[e.problem.difficulty] || DIFF.easy;
     const ev = e.evidence && e.evidence.tests_total ? `${e.evidence.tests_passed}/${e.evidence.tests_total} 測資` : '';
     const by = e.reviewer && e.reviewer !== 'manual' ? `${e.reviewer} 判定` : '手動';
     const tg = (e.problem.tags || []).slice(0, 3).map(t => (COMMON_TAGS.find(c => c[0] === t)?.[1] || TAG_EXTRA[t] || t)).join('、');
@@ -958,7 +1022,7 @@ function logItem(e, S, withDay) {
   } else sub = esc([e.note, r.tag].filter(Boolean).join('，'));
   const rw = e.type === 'redeem' ? `<span class="rw neg">${fmt(r.coins)} <i class="coin sm"></i></span>`
           : r.xp || r.coins ? `<span class="rw">+${r.xp} XP</span>` : `<span class="rw dim">—</span>`;
-  return `<li><span class="t">${withDay ? '' : ''}${hhmm(e.ts)}</span><span class="i" aria-hidden="true">${eventIcon(e)}</span>
+  return `<li><span class="t">${withDay ? '' : ''}${hhmm(e.ts)}</span><span class="i" aria-hidden="true">${esc(eventIcon(e))}</span>
     <span class="ttl">${esc(eventTitle(e))}${sub ? `<span class="sub">${sub}</span>` : ''}</span>${rw}
     <button class="btn-x" data-act="del" data-id="${esc(e.id)}" aria-label="刪除這筆紀錄" title="刪除">×</button></li>`;
 }
@@ -1058,7 +1122,7 @@ function nextProblem(S) {
 function questPanel(S, tk) {
   const d = S.days[tk] || emptyDay(), qs = questsFor(tk), oks = qs.map(q => q.ok(d)), n = oks.filter(Boolean).length;
   const np = nextProblem(S);
-  const items = qs.map((q, i) => `<li class="${oks[i] ? 'done' : ''}"><span class="qc" aria-hidden="true">${oks[i] ? '✓' : ''}</span><span>${esc(q.text)}${q.id === 'q_lc1' && np && !oks[i] ? `<span class="sub">下一題：<a href="https://leetcode.com/problems/${esc(np.slug)}/" target="_blank" rel="noopener">${np.id ? np.id + '. ' : ''}${esc(np.title)}</a></span>` : ''}</span></li>`).join('');
+  const items = qs.map((q, i) => `<li class="${oks[i] ? 'done' : ''}"><span class="qc" aria-hidden="true">${oks[i] ? '✓' : ''}</span><span>${esc(q.text)}${q.id === 'q_lc1' && np && !oks[i] ? `<span class="sub">下一題：<a href="https://leetcode.com/problems/${esc(np.slug)}/" target="_blank" rel="noopener">${np.id ? esc(np.id) + '. ' : ''}${esc(np.title)}</a></span>` : ''}</span></li>`).join('');
   const wk = weekStart(tk), w = S.weeks[wk] || { lc: 0, habits: {}, done: false };
   const goals = weekGoals().map(g => { const v = Math.min(g.v(w), g.goal); return `<div class="wg"><span>${esc(g.text)}</span><span class="num">${v} / ${g.goal}</span><div class="bar"><i style="width:${v / g.goal * 100}%"></i></div></div>`; }).join('');
   return `<section class="panel quests"><h2>今日任務</h2>
@@ -1090,7 +1154,7 @@ function problemRows(S) {
     const sv = isSolved(p, S), d = DIFF[p.difficulty];
     return `<li class="prob${sv ? ' solved' : ''}">
       <span class="pst" title="${sv ? '已解' : p.doing ? '進行中' : '未開始'}">${sv ? '✓' : p.doing ? '◐' : '○'}</span>
-      <div class="pmain"><a href="https://leetcode.com/problems/${esc(p.slug)}/" target="_blank" rel="noopener">${p.id ? p.id + '. ' : ''}${esc(p.title)}</a>
+      <div class="pmain"><a href="https://leetcode.com/problems/${esc(p.slug)}/" target="_blank" rel="noopener">${p.id ? esc(p.id) + '. ' : ''}${esc(p.title)}</a>
         <div class="ptags">${d ? `<span class="tagd" style="background:${d.color}">${d.name}</span>` : ''}${(p.tags || []).slice(0, 4).map(t => `<span class="ptag">${esc(tagLabel(t))}</span>`).join('')}</div>
         <details${p.note ? '' : ' class="nonote"'}><summary>${p.note ? '筆記' : '寫筆記'}</summary><textarea class="in pnote" data-slug="${esc(p.slug)}" placeholder="解法、陷阱、複雜度">${esc(p.note || '')}</textarea></details></div>
       <div class="pact"><button class="pbtn${p.doing ? ' on' : ''}" data-act="pdoing" data-slug="${esc(p.slug)}" aria-pressed="${!!p.doing}">進行中</button>
@@ -1107,7 +1171,7 @@ function viewProblems(S) {
   const np = nextProblem(S);
   const views = [['doing', '進行中', c.doing], ['starred', '收藏未解', c.starred], ['solved', '已解', c.solved], ['all', '全部', c.all]];
   return `<section class="panel"><h2>題單</h2>
-    <p class="hint">${np ? `下一題：<a href="https://leetcode.com/problems/${esc(np.slug)}/" target="_blank" rel="noopener">${np.id ? np.id + '. ' : ''}${esc(np.title)}</a>。寫完用 <code class="k">/judge</code> 判題，通過後會自動移到「已解」。` : '用 /judge 判題通過的題目會自動標成已解。'}</p>
+    <p class="hint">${np ? `下一題：<a href="https://leetcode.com/problems/${esc(np.slug)}/" target="_blank" rel="noopener">${np.id ? esc(np.id) + '. ' : ''}${esc(np.title)}</a>。寫完用 <code class="k">/judge</code> 判題，通過後會自動移到「已解」。` : '用 /judge 判題通過的題目會自動標成已解。'}</p>
     <div class="pfilters">
       <div class="pseg" role="group" aria-label="篩選">${views.map(([k, n, cnt]) => `<button class="segb${pf.view === k ? ' on' : ''}" data-act="pview" data-v="${k}" aria-pressed="${pf.view === k}">${n} <span class="num">${cnt}</span></button>`).join('')}</div>
       <select class="in" id="pdiff" aria-label="難度"><option value="">所有難度</option>${Object.entries(DIFF).map(([k, d]) => `<option value="${k}" ${pf.diff === k ? 'selected' : ''}>${d.name}</option>`).join('')}</select>
@@ -1343,16 +1407,18 @@ function handleFsFailure(e, msg) {
 }
 function mergeProblems(a, b) {
   const out = { ...a };
-  for (const [k, v] of Object.entries(b)) if (!out[k] || tms(v.updatedAt) > tms(out[k].updatedAt)) out[k] = v;
+  for (const [k, v] of Object.entries(validProblems(b))) if (!out[k] || tms(v.updatedAt) > tms(out[k].updatedAt)) out[k] = v;
   return out;
 }
 function mergeState(remote) {
   if (!remote || !Array.isArray(remote.events)) return false;
   const del = new Set([...(state.deleted || []), ...(remote.deleted || [])]);
   const map = new Map();
-  for (const e of [...remote.events, ...state.events]) if (e && e.id && !del.has(e.id)) map.set(e.id, e);
-  const newer = tms(remote.updatedAt) > tms(state.updatedAt) ? remote : state;
-  const unlocked = { ...(remote.unlocked || {}) };
+  for (const e of remote.events.map(validEvent).filter(Boolean)) if (!del.has(e.id)) map.set(e.id, e);
+  for (const e of state.events) if (e && e.id && !del.has(e.id)) map.set(e.id, e);
+  const remoteNewer = tms(remote.updatedAt) > tms(state.updatedAt);
+  const newer = remoteNewer ? { ...remote, habits: validHabits(remote.habits), rewards: validRewards(remote.rewards), settings: validSettings(remote.settings) } : state;
+  const unlocked = validUnlocked(remote.unlocked);
   for (const [k, v] of Object.entries(state.unlocked)) if (!unlocked[k] || tms(v) < tms(unlocked[k])) unlocked[k] = v;
   state = { ...state, events: [...map.values()], deleted: [...del], unlocked,
     habits: Array.isArray(newer.habits) && newer.habits.length ? newer.habits : state.habits,
@@ -1448,10 +1514,11 @@ async function syncNow() {
         const local = evMap.get(row.id);
         if (row.deleted) { evMap.delete(row.id); del.add(row.id); sy.known[row.id] = 'D'; continue; }
         if (del.has(row.id)) continue;                       // 本機已刪除，稍後推墓碑
-        const rh = h32(row.data);
-        if (!local) { evMap.set(row.id, row.data); sy.known[row.id] = rh; }
+        const rh = h32(row.data), data = validEvent(row.data);
+        if (!data || data.id !== row.id) { sy.known[row.id] = rh; continue; }   // 格式不對的資料不載入
+        if (!local) { evMap.set(row.id, data); sy.known[row.id] = rh; }
         else if (h32(local) === rh) sy.known[row.id] = rh;
-        else if (sy.known[row.id] === undefined || sy.known[row.id] === h32(local)) { evMap.set(row.id, row.data); sy.known[row.id] = rh; }
+        else if (sy.known[row.id] === undefined || sy.known[row.id] === h32(local)) { evMap.set(row.id, data); sy.known[row.id] = rh; }
         // 否則兩邊都改過：保留本機版本，下面會推上去
       }
       if (rows.length < 1000) break;
@@ -1463,14 +1530,16 @@ async function syncNow() {
     const remote = mrows && mrows[0] && mrows[0].data;
     if (remote) {
       state.problems = mergeProblems(state.problems || {}, remote.problems || {});
-      const un = { ...(remote.unlocked || {}) };
+      const un = validUnlocked(remote.unlocked);
       for (const [k, v] of Object.entries(state.unlocked)) if (!un[k] || tms(v) < tms(un[k])) un[k] = v;
       state.unlocked = un;
-      state.importedLists = [...new Set([...(state.importedLists || []), ...(remote.importedLists || [])])];
+      const lists = Array.isArray(remote.importedLists) ? remote.importedLists.map(x => str(x, 120)) : [];
+      state.importedLists = [...new Set([...(state.importedLists || []), ...lists])];
       if (tms(remote.metaAt) > tms(state.metaAt)) {
-        if (Array.isArray(remote.habits) && remote.habits.length) state.habits = remote.habits;
-        if (Array.isArray(remote.rewards)) state.rewards = remote.rewards;
-        state.settings = { ...state.settings, ...(remote.settings || {}), hideLinkTip: state.settings.hideLinkTip };
+        const hb = validHabits(remote.habits), rw = validRewards(remote.rewards);
+        if (hb) state.habits = hb;
+        if (rw) state.rewards = rw;
+        state.settings = { ...state.settings, ...validSettings(remote.settings), hideLinkTip: state.settings.hideLinkTip };
         state.metaAt = remote.metaAt;
       }
     }
@@ -1588,7 +1657,7 @@ async function drainWidgetQueue() {
 document.addEventListener('click', e => {
   if (!IS_NATIVE) return;
   const a = e.target.closest('a[target="_blank"]');
-  if (a) { e.preventDefault(); nat('openUrl', { url: a.href }).catch(() => {}); }
+  if (a) { e.preventDefault(); if (/^https:\/\//.test(a.href)) nat('openUrl', { url: a.href }).catch(() => {}); }
 }, true);
 
 /* ---------- events ---------- */

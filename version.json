@@ -1,6 +1,14 @@
 {
-  "build": 2,
+  "build": 3,
   "minNative": 2,
-  "files": ["index.html", "manifest.json", "version.json", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png", "icons/apple-touch-icon.png"],
-  "notes": "App 自動更新、登入 Email 改為記住上次輸入"
+  "files": [
+    "index.html",
+    "manifest.json",
+    "version.json",
+    "icons/icon-192.png",
+    "icons/icon-512.png",
+    "icons/icon-maskable-512.png",
+    "icons/apple-touch-icon.png"
+  ],
+  "notes": "資安強化：輸入資料檢查、圖示跳脫、內容安全政策"
 }
