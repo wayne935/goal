@@ -1,0 +1,16 @@
+{
+  "name": "Goal 成就板",
+  "short_name": "Goal",
+  "description": "解題、運動、讀論文都算數的個人成就板",
+  "lang": "zh-Hant",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#24473d",
+  "theme_color": "#24473d",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
