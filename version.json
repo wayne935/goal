@@ -1,5 +1,5 @@
 {
-  "build": 4,
+  "build": 5,
   "minNative": 2,
   "files": [
     "index.html",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "升級動畫、徽章動畫強化、打卡回饋、震動"
+  "notes": "惡習 Boss：克制壞習慣、暴擊、存錢罐、打倒動畫與 6 個新徽章"
 }

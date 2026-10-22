@@ -230,6 +230,39 @@ textarea.in{min-height:140px;resize:vertical;font-family:ui-monospace,Consolas,m
 .wg .num{color:var(--chalk-dim)}
 .wg .bar{grid-column:1/-1;height:6px;border-radius:6px;background:rgba(0,0,0,.28);overflow:hidden;margin-top:4px}
 .wg .bar i{display:block;height:100%;background:var(--brass);border-radius:6px}
+/* ---------- 惡習 Boss ---------- */
+.bosses{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.boss{background:var(--felt-hi);border-radius:14px;padding:16px 16px 14px;box-shadow:0 3px 0 var(--felt-deep),inset 0 1px 0 rgba(255,255,255,.06)}
+.bhead{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center}
+.bico{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-size:30px;line-height:1;
+  background:radial-gradient(circle at 38% 32%,#7a3a30,#3a1712);box-shadow:inset 0 2px 5px rgba(0,0,0,.5),0 0 0 3px rgba(224,88,63,.35)}
+.bname b{display:block;font-size:18px;line-height:1.3;overflow-wrap:anywhere}
+.bname .dim{font-size:13.5px;margin-left:8px}
+.blv{display:inline-block;font-size:14px;padding:0 7px;border-radius:6px;background:var(--code);color:#2a0d07}
+.hp{height:16px;border-radius:99px;background:var(--felt-deep);box-shadow:inset 0 2px 3px rgba(0,0,0,.45);margin-top:14px;overflow:hidden}
+.hp i{display:block;height:100%;border-radius:99px;background:linear-gradient(#f19a88,var(--code) 65%,#a83a26);transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.hpline{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:14.5px;color:var(--chalk-dim);margin-top:5px}
+.hpline b{font-size:18px;color:var(--chalk)}
+.bnext{margin:6px 0 0;font-size:14px;color:var(--chalk-dim)}
+.bnext b{color:var(--brass-hi);font-size:17px}
+.boss.hurt .bnext:first-of-type{color:#f3b4a5}
+.bact{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bact .in{flex:1 1 100%;padding:8px 10px}
+.bact .btn-brass{flex:1;white-space:nowrap}
+.bact small{font-size:14px;opacity:.65;margin-left:8px}
+.boss.hit .bico{animation:bhit .5s cubic-bezier(.36,.07,.19,.97)}
+@keyframes bhit{15%{transform:translateX(-7px) rotate(-10deg) scale(.92);filter:brightness(2.2)}45%{transform:translateX(6px) rotate(6deg)}75%{transform:translateX(-2px)}}
+.boss.hit .hp{animation:hpflash .5s}
+@keyframes hpflash{20%{box-shadow:inset 0 2px 3px rgba(0,0,0,.45),0 0 0 2px #f6dc93}}
+.boss.heal .hp i{animation:bheal 1s}
+@keyframes bheal{30%{filter:hue-rotate(140deg) brightness(1.3)}}
+.float.dmg{color:#ff8f78;font-size:28px}
+.bpresets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.piggy .num{font-size:40px;line-height:1.1;color:var(--brass-hi)}
+.bsaved{list-style:none;margin:10px 0 0;padding:0;font-size:15px}
+.bsaved li{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--chalk-faint)}
+.bsaved li:last-child{border-bottom:0}
+.bsaved .num{font-size:17px}
 /* ---------- problems ---------- */
 .pfilters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
 .pfilters .in{width:auto;padding:7px 10px;font-size:15px}
@@ -335,7 +368,7 @@ code.k{font-family:ui-monospace,Consolas,monospace;font-size:13.5px;background:r
   .counters{width:100%;justify-content:flex-start;gap:24px}
   .counter .num{font-size:28px}
   .tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;margin:0;border:0;background:var(--felt-deep);justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(0,0,0,.35)}
-  .tab{flex-direction:column;gap:0;font-size:12.5px;padding:4px 6px}
+  .tab{flex-direction:column;gap:0;font-size:12.5px;padding:4px 3px;min-width:0}
   .tab .ti{font-size:21px}
   .tab[aria-current="page"]::after{bottom:-6px;left:30%;right:30%}
   main{padding-bottom:110px}
@@ -382,6 +415,21 @@ code.k{font-family:ui-monospace,Consolas,monospace;font-size:13.5px;background:r
 @keyframes pinflip{0%{transform:translateY(-55vh) rotateY(900deg) scale(.55);opacity:0}60%{opacity:1}82%{transform:translateY(0) rotateY(-12deg) scale(1.08,.92)}100%{transform:none}}
 .cel-badge.rare .pin{box-shadow:0 0 0 6px rgba(246,220,147,.18),0 0 60px 10px rgba(246,220,147,.35),0 9px 16px rgba(0,0,0,.3)}
 .cel .tier{display:inline-block;margin-top:10px;padding:2px 12px;border-radius:99px;font-size:14px;background:rgba(246,220,147,.14);color:var(--brass-hi);border:1px solid rgba(246,220,147,.35)}
+.cel-badge.legend .pin{box-shadow:0 0 0 6px rgba(224,88,63,.25),0 0 80px 18px rgba(246,220,147,.45),0 9px 16px rgba(0,0,0,.3)}
+.cel-badge.legend .tier{background:rgba(224,88,63,.18);border-color:rgba(241,154,136,.55);color:#ffd2c6}
+/* boss defeated */
+.boss-xl{--s:176px;width:var(--s);height:var(--s);border-radius:50%;display:grid;place-items:center;position:relative;
+  background:radial-gradient(circle at 38% 32%,#7a3a30,#3a1712);box-shadow:0 0 0 6px rgba(224,88,63,.3),0 18px 40px rgba(0,0,0,.5);transition:background .3s}
+.boss-xl span{grid-area:1/1;font-size:88px;line-height:1}
+.boss-xl .crown{opacity:0;transform:scale(.3)}
+.cel-boss .boss-xl{animation:bossin .9s cubic-bezier(.36,.07,.19,.97) both}
+@keyframes bossin{0%{transform:scale(.6);opacity:0}25%{transform:scale(1);opacity:1}35%,55%,75%{transform:translateX(-9px) rotate(-6deg)}45%,65%,85%{transform:translateX(9px) rotate(6deg)}100%{transform:none}}
+.cel-boss.impact .boss-xl{background:radial-gradient(circle at 34% 28%,var(--brass-hi),var(--brass) 48%,var(--brass-lo));box-shadow:0 0 0 8px rgba(246,220,147,.18),0 0 70px 14px rgba(246,220,147,.4)}
+.cel-boss.impact .bx{animation:bdie .55s ease-in forwards}
+@keyframes bdie{to{transform:scale(1.9) rotate(25deg);opacity:0;filter:brightness(3) blur(3px)}}
+.cel-boss.impact .crown{animation:crown .6s .3s cubic-bezier(.3,1.6,.5,1) forwards}
+@keyframes crown{to{opacity:1;transform:none}}
+.cel .bonus .sub{font-family:var(--ff-zh);font-size:17px;font-weight:400}
 /* level */
 .medal-xl{--s:210px;width:var(--s);height:var(--s);border-radius:50%;display:grid;place-items:center;position:relative;will-change:transform;
   background:radial-gradient(circle at 34% 28%,var(--brass-hi),var(--brass) 48%,var(--brass-lo));
@@ -453,7 +501,7 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 4;
+const APP_BUILD = 5;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 const $ = (s, r = document) => r.querySelector(s);
@@ -526,6 +574,18 @@ const WEEK_GOALS = [
   { id: 'w_bass',  text: '練貝斯 3 次',  goal: 3, need: 'bass',     v: w => w.habits.bass || 0 },
 ];
 const WEEK_BONUS = { xp: 50, coins: 80 };
+/* ---------- 惡習 Boss ----------
+   每撐過一天沒犯 = 一次攻擊；按「忍住了」= 暴擊（每天有上限）；犯了不歸零，Boss 只回一部分血。
+   血量 = 難度天數 × 每日傷害，Lv2 起每級多 50%。打倒後下一級立刻出現。 */
+const BOSS = { dayDmg: 10, crit: 8, critMax: 2, heal: 0.2, reward: { xp: 5, coins: 8 }, kill: { xp: 50, coins: 100 } };
+const BOSS_DAYS = [[7, '輕：一週'], [14, '中：兩週'], [30, '重：一個月']];
+const BOSS_PRESETS = [
+  { icon: '📱', name: '半夜滑手機', days: 14, money: false },
+  { icon: '🧋', name: '手搖飲',     days: 14, money: true },
+  { icon: '🛒', name: '衝動購物',   days: 30, money: true },
+  { icon: '💬', name: '一直打開社群', days: 14, money: false },
+];
+const bossMaxHp = (b, L) => Math.round(b.days * BOSS.dayDmg * (1 + 0.5 * (L - 1)));
 function hashStr(str) { let h = 2166136261; for (const ch of str) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
 const hasHabit = id => state.habits.some(h => h.id === id);
 function questsFor(key) {
@@ -536,11 +596,11 @@ function questsFor(key) {
 }
 const weekGoals = () => WEEK_GOALS.filter(g => !g.need || hasHabit(g.need));
 function weekStart(key) { const [y, m, d] = key.split('-').map(Number); const wd = (new Date(y, m - 1, d).getDay() + 6) % 7; return addDays(key, -wd); }
-const emptyDay = () => ({ xp: 0, coins: 0, lc: 0, newLc: 0, diffs: new Set(), cats: new Set(), catXp: {}, habits: {}, any: false });
+const emptyDay = () => ({ xp: 0, coins: 0, lc: 0, newLc: 0, diffs: new Set(), cats: new Set(), catXp: {}, habits: {}, crits: {}, any: false });
 const GRAPH_TAGS = ['graph-theory', 'graph', 'tree', 'binary-tree', 'breadth-first-search', 'depth-first-search', 'union-find', 'topological-sort', 'shortest-path', 'binary-search-tree'];
 const COMMON_TAGS = [['array','陣列'],['hash-table','雜湊'],['two-pointers','雙指針'],['sliding-window','滑動窗口'],['binary-search','二分搜尋'],['stack','堆疊'],['linked-list','鏈結串列'],['tree','樹'],['graph','圖'],['dynamic-programming','動態規劃'],['greedy','貪婪'],['backtracking','回溯'],['heap-priority-queue','堆積'],['string','字串']];
 
-/* ---------- achievements (56) ---------- */
+/* ---------- achievements ---------- */
 const ACH = [
   { id:'lc_first',   cat:'code', icon:'🌱', name:'第一題',     desc:'解出第一題 LeetCode',            goal:1,   coins:20,  v:s=>s.lcUnique },
   { id:'lc_10',      cat:'code', icon:'🔟', name:'十題入門',   desc:'累計解出 10 題',                 goal:10,  coins:50,  v:s=>s.lcUnique },
@@ -599,6 +659,13 @@ const ACH = [
   { id:'g_quest7',   cat:'life', icon:'📜', name:'任務達人',   desc:'完成 7 天的每日任務',            goal:7,   coins:80,  v:s=>s.questDays },
   { id:'g_week4',    cat:'life', icon:'🏆', name:'週週達標',   desc:'4 週達成每週目標',               goal:4,   coins:150, v:s=>s.weeksDone },
   { id:'g_coins1000',cat:'life', icon:'🪙', name:'存錢筒',     desc:'累計賺到 1,000 代幣',            goal:1000,coins:100, v:s=>s.coinsEarned },
+  // 惡習 Boss
+  { id:'b_first',    cat:'life', icon:'🗡️', name:'第一刀',     desc:'第一次對惡習 Boss 按「忍住了」',   goal:1,   coins:20,  v:s=>s.crits },
+  { id:'b_comeback', cat:'life', icon:'🩹', name:'跌倒再站起', desc:'犯了之後 2 天內又忍住一次',        goal:1,   coins:40,  v:s=>s.bossComebacks },
+  { id:'b_clean30',  cat:'life', icon:'🧊', name:'戒斷一個月', desc:'同一個惡習連續 30 天沒犯',         goal:30,  coins:250, v:s=>s.bestClean },
+  { id:'b_save1000', cat:'life', icon:'🐷', name:'真的省到錢', desc:'存錢罐累計省下 NT$1,000',          goal:1000,coins:100, v:s=>s.saved },
+  { id:'b_kill1',    cat:'life', icon:'🐉', name:'屠龍者',     desc:'打倒第一隻惡習 Boss',             goal:1,   coins:300, v:s=>s.bossKills, legend:true },
+  { id:'b_kill5',    cat:'life', icon:'👑', name:'惡習剋星',   desc:'累計打倒 5 次惡習 Boss（含 Lv2 以上）', goal:5, coins:400, v:s=>s.bossKills, legend:true },
 ];
 const ACH_BY_ID = Object.fromEntries(ACH.map(a => [a.id, a]));
 
@@ -630,7 +697,7 @@ const slugify = s => String(s || '').trim().replace(/^\d+\.\s*/, '').toLowerCase
 /* ---------- state ---------- */
 function freshState() {
   return { version: 1, seedVersion: SEED_VERSION, updatedAt: nowISO(), events: [], deleted: [], unlocked: {},
-           habits: structuredClone(DEFAULT_HABITS), rewards: structuredClone(DEFAULT_REWARDS), problems: {}, importedLists: [],
+           habits: structuredClone(DEFAULT_HABITS), rewards: structuredClone(DEFAULT_REWARDS), bosses: [], problems: {}, importedLists: [],
            settings: { dayStartHour: 4, sound: true, hideLinkTip: false }, metaAt: '' };
 }
 function loadState() {
@@ -645,7 +712,7 @@ function loadState() {
   return freshState();
 }
 function migrate(st) {
-  st.problems ||= {}; st.importedLists ||= [];
+  st.problems ||= {}; st.importedLists ||= []; st.bosses ||= [];
   const v = st.seedVersion || 1;
   if (v < SEED_VERSION) {
     for (const h of DEFAULT_HABITS) if (!st.habits.some(x => x.id === h.id)) st.habits.push(structuredClone(h));
@@ -689,6 +756,7 @@ function compute() {
   const diff = { easy: 0, medium: 0, hard: 0 }, habitCount = {};
   let xp = 0, earned = 0, spent = 0, reviews = 0, comebacks = 0, morning = 0, redeems = 0;
   const tagSolved = {}, checked = new Set(), submittedSet = new Set(), graphSet = new Set(), solvedIds = new Set();
+  const bossIds = new Set(state.bosses.map(b => b.id)), critIds = new Set(); let saved = 0;
   for (const e of evs) {
     const dk = dayKey(e.ts);
     const d = days[dk] ||= emptyDay();
@@ -719,6 +787,15 @@ function compute() {
       r = { xp: e.xp || 0, coins: e.coins || 0, tag: '' }; cat = e.cat || 'life'; d.cats.add(cat); d.any = true;
     } else if (e.type === 'redeem') {
       r = { xp: 0, coins: -(e.reward?.cost || 0), tag: '' }; spent += e.reward?.cost || 0; redeems++;
+    } else if (e.type === 'restraint') {
+      const c = d.crits[e.boss] = (d.crits[e.boss] || 0) + 1;
+      if (!bossIds.has(e.boss)) r.tag = 'Boss 已刪除';
+      else if (c > BOSS.critMax) r.tag = '今天的暴擊已用完，只記錄';
+      else { r = { xp: BOSS.reward.xp, coins: BOSS.reward.coins, tag: `暴擊 ${BOSS.crit}` }; cat = 'life'; d.cats.add('life'); critIds.add(e.id); }
+      if (e.amount > 0) { saved += e.amount; r.tag = [r.tag, `省下 NT$${fmt(e.amount)}`].join('，'); }
+      d.any = true;
+    } else if (e.type === 'relapse') {
+      if (!bossIds.has(e.boss)) r.tag = 'Boss 已刪除';
     }
     if (r.coins > 0) { earned += r.coins; d.coins += r.coins; }
     xp += r.xp; d.xp += r.xp; per[e.id] = r;
@@ -741,6 +818,16 @@ function compute() {
     if (!w.done && wg.length && wg.every(g => g.v(w) >= g.goal)) {
       w.done = true; w.doneDay = k; weeksDone++; d.weekDone = true;
       xp += WEEK_BONUS.xp; earned += WEEK_BONUS.coins; d.xp += WEEK_BONUS.xp; d.coins += WEEK_BONUS.coins;
+    }
+  }
+  // 惡習 Boss：一天一天模擬，打倒的獎勵記在倒下的那一天
+  const bosses = simulateBosses(evs, critIds, per);
+  let bossKills = 0, bestClean = 0, bossComebacks = 0;
+  for (const B of Object.values(bosses)) {
+    bossKills += B.kills.length; bestClean = Math.max(bestClean, B.bestClean); bossComebacks += B.comebacks;
+    for (const k of B.kills) {
+      const d = days[k.day] ||= emptyDay(), kx = BOSS.kill.xp * k.level, kc = BOSS.kill.coins * k.level;
+      xp += kx; earned += kc; d.xp += kx; d.coins += kc;
     }
   }
   const bonus = Object.keys(state.unlocked).reduce((s, id) => s + (ACH_BY_ID[id]?.coins || 0), 0);
@@ -768,9 +855,41 @@ function compute() {
     bestTriple: Math.max(0, ...vals.map(d => Object.values(d.catXp).filter(x => x >= 20).length)),
     bestQuartet: Math.max(0, ...vals.map(d => (d.lc > 0) + !!d.habits.exercise + !!d.habits.paper + !!d.habits.bass)),
     bestWeekCats, questDays, weeksDone, weeks, solvedKeys: solved, solvedIds,
+    bosses, bossKills, bestClean, bossComebacks, crits: critIds.size, saved,
     habit: id => habitCount[id] || 0,
     habitStreak: id => longestRun(keysWhere(d => (d.habits[id] || 0) > 0)),
   };
+}
+function simulateBosses(evs, critIds, per) {
+  const out = {}, tk = todayKey();
+  for (const b of state.bosses) {
+    const byDay = {};
+    for (const e of evs) if ((e.type === 'restraint' || e.type === 'relapse') && e.boss === b.id) (byDay[dayKey(e.ts)] ||= []).push(e);
+    const first = Object.keys(byDay).sort()[0], made = dayKey(b.createdAt);
+    let k = first && first < made ? first : made;
+    let L = 1, max = bossMaxHp(b, L), hp = max, clean = 0, bestClean = 0, lastRelapse = null, comebacks = 0, saved = 0, relapsedToday = false;
+    const kills = [];
+    const hit = (dmg, day) => { hp -= dmg; if (hp <= 0) { kills.push({ day, level: L }); L++; max = bossMaxHp(b, L); hp = max; } };
+    for (; k <= tk; k = addDays(k, 1)) {
+      let relapsed = false;
+      for (const e of byDay[k] || []) {
+        if (e.type === 'relapse') {
+          const heal = Math.min(max - hp, Math.round(max * BOSS.heal));
+          hp += heal; relapsed = true; clean = 0; lastRelapse = k;
+          if (per[e.id]) per[e.id].tag = heal ? `Boss 回血 ${heal}` : 'Boss 血量已滿';
+        } else {
+          if (e.amount > 0) saved += e.amount;
+          if (!critIds.has(e.id)) continue;
+          if (lastRelapse && k <= addDays(lastRelapse, 2)) { comebacks++; lastRelapse = null; }
+          hit(BOSS.crit, k);
+        }
+      }
+      if (k === tk) relapsedToday = relapsed;
+      else if (!relapsed) { clean++; bestClean = Math.max(bestClean, clean); hit(BOSS.dayDmg, k); }
+    }
+    out[b.id] = { level: L, hp, max, kills, clean, bestClean, comebacks, saved, relapsedToday };
+  }
+  return out;
 }
 
 /* ---------- unlocks ---------- */
@@ -819,12 +938,15 @@ function eventTitle(e) {
   if (e.type === 'leetcode') return e.problem.id ? `${e.problem.id}. ${e.problem.title}` : e.problem.title;
   if (e.type === 'habit') return state.habits.find(h => h.id === e.habit)?.name || e.habit;
   if (e.type === 'redeem') return `兌換：${e.reward?.name || ''}`;
+  if (e.type === 'restraint' || e.type === 'relapse') return `${e.type === 'restraint' ? '忍住了' : '犯了'}：${state.bosses.find(b => b.id === e.boss)?.name || '已刪除的 Boss'}`;
   return e.title || '紀錄';
 }
 function eventIcon(e) {
   if (e.type === 'leetcode') return '🧩';
   if (e.type === 'habit') return state.habits.find(h => h.id === e.habit)?.icon || '•';
   if (e.type === 'redeem') return e.reward?.icon || '🎁';
+  if (e.type === 'restraint') return '⚔️';
+  if (e.type === 'relapse') return '🩹';
   return e.icon || '⭐';
 }
 /* ---------- 資料檢查 ----------
@@ -848,8 +970,15 @@ function validEvent(e) {
       xp: num(e.xp, 0, CUSTOM_CAP.xp), coins: num(e.coins, 0, CUSTOM_CAP.coins) };
     case 'redeem': return e.reward && typeof e.reward === 'object'
       ? { ...e, reward: { ...e.reward, name: str(e.reward.name, 80), icon: cleanIcon(e.reward.icon) || '🎁', cost: num(e.reward.cost, 0, 1e6) } } : null;
+    case 'restraint': case 'relapse':   // 只整理已經有的欄位，同步時內容才不會變動
+      return safeKey(e.boss) ? { ...e, ...(e.amount != null ? { amount: Math.round(num(e.amount, 0, 1e6)) } : {}), ...(e.note != null ? { note: str(e.note, 300) } : {}) } : null;
   }
   return null;
+}
+function validBosses(arr) {
+  if (!Array.isArray(arr)) return null;
+  return arr.filter(b => b && typeof b === 'object' && safeKey(b.id)).map(b => ({ id: safeKey(b.id), name: str(b.name, 60) || 'Boss',
+    icon: cleanIcon(b.icon) || '👹', days: BOSS_DAYS.some(([d]) => d === b.days) ? b.days : 14, money: !!b.money, createdAt: isoOk(b.createdAt) ? b.createdAt : nowISO() }));
 }
 function validHabits(arr) {
   if (!Array.isArray(arr)) return null;
@@ -922,6 +1051,14 @@ function normalize(raw, source) {
     return { id: safeKey(raw.id) || `c-${compactTs(ts)}-${slugify(raw.title)}`, type: 'custom', ts, title: str(raw.title, 120),
       icon: cleanIcon(raw.icon) || '⭐', cat: CATS[raw.cat] ? raw.cat : 'life',
       xp: clamp(Number(raw.xp) || 5, 0, CUSTOM_CAP.xp), coins: clamp(Number(raw.coins) || 3, 0, CUSTOM_CAP.coins), note: raw.note || '', source };
+  }
+  if (type === 'restraint' || type === 'relapse') {
+    const key = String(raw.boss || '');
+    const b = state.bosses.find(x => x.id === key || x.name === key);
+    if (!b) throw new Error(`找不到惡習 Boss「${key}」，請用惡習分頁裡的名稱`);
+    const amount = type === 'restraint' ? Math.round(num(raw.amount, 0, 1e6)) : 0;
+    return { id: safeKey(raw.id) || `${type === 'restraint' ? 'rs' : 'rl'}-${compactTs(ts)}-${b.id}`, type, boss: b.id, ts,
+      ...(amount ? { amount } : {}), ...(raw.note ? { note: str(raw.note, 300) } : {}), source };
   }
   throw new Error(`不支援的 type「${type || '（空白）'}」`);
 }
@@ -1021,6 +1158,10 @@ function chime(kind) {
       [880, 1318.5, 1760].forEach((f, i) => tone(f, 0.64 + i * 0.07, 1.1, 0.1, 'sine'));
     } else if (kind === 'quest') {
       tone(1046.5, 0, 0.3, 0.09); tone(1567.98, 0.12, 0.5, 0.09);
+    } else if (kind === 'hit') {              // 暴擊：低音撞擊加金屬聲
+      thump(0); tone(1318.5, 0.02, 0.22, 0.07, 'square'); tone(1975.5, 0.06, 0.3, 0.05);
+    } else if (kind === 'heal') {             // Boss 回血：往下滑的柔和音
+      tone(659.25, 0, 0.35, 0.06, 'sine'); tone(523.25, 0.16, 0.45, 0.05, 'sine');
     } else {
       tone(1046.5, 0, 0.18, 0.06); tone(1568, 0.05, 0.25, 0.06);
     }
@@ -1036,10 +1177,10 @@ function toast(html, action, kind) {
   setTimeout(() => el.remove(), action ? 7000 : 5000);
   while ($('#toasts').children.length > 4) $('#toasts').firstChild.remove();
 }
-function floatText(anchor, text) {
+function floatText(anchor, text, cls) {
   if (!anchor) return;
   const r = anchor.getBoundingClientRect(), el = document.createElement('div');
-  el.className = 'float'; el.textContent = text;
+  el.className = 'float' + (cls ? ' ' + cls : ''); el.textContent = text;
   el.style.left = (r.left + r.width / 2) + 'px'; el.style.top = (r.top + 6) + 'px';
   document.body.append(el); setTimeout(() => el.remove(), 950);
 }
@@ -1057,6 +1198,7 @@ const progressOf = (a, S) => Math.min(a.v(S), a.goal);
 /* ---------- render ---------- */
 const TABS = [
   { id: 'today',    name: '今天',   icon: '☀️' },
+  { id: 'boss',     name: '惡習',   icon: '⚔️' },
   { id: 'problems', name: '題單',   icon: '📋' },
   { id: 'badges',   name: '徽章牆', icon: '🏅' },
   { id: 'shop',     name: '商店',   icon: '🎟️' },
@@ -1074,7 +1216,7 @@ function render() {
   const v = $('#view');
   try {
   v.innerHTML = tab === 'today' ? viewToday(S) : tab === 'badges' ? viewBadges(S) : tab === 'shop' ? viewShop(S)
-              : tab === 'history' ? viewHistory(S) : tab === 'problems' ? viewProblems(S) : viewSettings(S);
+              : tab === 'history' ? viewHistory(S) : tab === 'problems' ? viewProblems(S) : tab === 'boss' ? viewBoss(S) : viewSettings(S);
   } catch (err) {
     console.error(err);
     v.innerHTML = `<section class="panel"><h2>這一頁顯示不出來</h2><p class="hint">發生錯誤：${esc(err.message)}。其他分頁和資料不受影響，請把這段訊息告訴 Claude。</p></section>`;
@@ -1208,6 +1350,76 @@ function viewShop(S) {
         <button class="btn btn-brass" type="submit">新增獎勵</button></div></form></section></div>
     <div><section class="panel"><h2>兌換紀錄</h2>${history.length ? `<ul class="log">${history.map(e => logItem(e, S)).join('')}</ul>` : '<p class="empty">還沒有兌換過。</p>'}</section></div></div>`;
 }
+/* ---------- 惡習 Boss ---------- */
+function bossCard(b, S, tk) {
+  const B = S.bosses[b.id]; if (!B) return '';
+  const crits = S.days[tk]?.crits?.[b.id] || 0, h = state.settings.dayStartHour || 0;
+  const night = h ? `凌晨 ${h} 點` : '午夜 12 點';
+  const next = B.relapsedToday ? `今天犯了，Boss 回了血。過了${night}重新開始攻擊。`
+    : B.hp <= BOSS.dayDmg ? `撐過今晚（${night}），就能打倒它！`
+    : `撐過今晚（${night}），Boss 再受 ${BOSS.dayDmg} 點傷害；照這樣 ${Math.ceil(B.hp / BOSS.dayDmg)} 天後打倒。`;
+  return `<article class="boss${B.relapsedToday ? ' hurt' : ''}" data-boss="${esc(b.id)}">
+    <div class="bhead"><span class="bico" aria-hidden="true">${esc(b.icon)}</span>
+      <div class="bname"><b>${esc(b.name)}</b><span class="blv num">Lv${B.level}</span>${B.kills.length ? `<span class="dim">已打倒 ${B.kills.length} 次</span>` : ''}</div>
+      <button class="btn-x" data-act="delboss" data-id="${esc(b.id)}" aria-label="移除這個 Boss" title="移除">×</button></div>
+    <div class="hp" role="progressbar" aria-label="Boss 血量" aria-valuenow="${B.hp}" aria-valuemin="0" aria-valuemax="${B.max}"><i style="width:${B.hp / B.max * 100}%"></i></div>
+    <div class="hpline"><span class="num">HP ${fmt(B.hp)} / ${fmt(B.max)}</span><span>連續 <b class="num">${B.clean}</b> 天沒犯</span></div>
+    <p class="bnext">${next}</p>
+    ${b.money ? `<p class="bnext">已省下 <b class="num">NT$${fmt(B.saved)}</b></p>` : ''}
+    <div class="bact">${b.money ? `<input class="in num" data-amt="${esc(b.id)}" type="number" min="0" inputmode="numeric" placeholder="省下 NT$" aria-label="這次省下多少錢">` : ''}
+      <button class="btn btn-brass" data-act="restrain" data-id="${esc(b.id)}">忍住了 ⚔️<small class="num">${Math.min(crits, BOSS.critMax)} / ${BOSS.critMax}</small></button>
+      <button class="btn btn-ghost" data-act="relapse" data-id="${esc(b.id)}">犯了</button></div></article>`;
+}
+function viewBoss(S) {
+  const tk = todayKey();
+  const presets = BOSS_PRESETS.map((p, i) => [p, i]).filter(([p]) => !state.bosses.some(b => b.name === p.name));
+  const log = state.events.filter(e => e.type === 'restraint' || e.type === 'relapse').sort((a, b) => tms(b.ts) - tms(a.ts)).slice(0, 15);
+  const moneyBosses = state.bosses.filter(b => b.money || S.bosses[b.id]?.saved);
+  return `<section class="panel"><h2>惡習 Boss</h2>
+      <p class="hint">每撐過一天沒犯，Boss 受 ${BOSS.dayDmg} 點傷害。想做又忍住時按「忍住了」，是一次暴擊（${BOSS.crit} 點，+${BOSS.reward.xp} XP、+${BOSS.reward.coins} 代幣，每天 ${BOSS.critMax} 次）。犯了不會歸零，Boss 只回 ${BOSS.heal * 100}% 血。</p>
+      ${state.bosses.length ? `<div class="bosses">${state.bosses.map(b => bossCard(b, S, tk)).join('')}</div>` : '<p class="empty">還沒有 Boss。在下面挑一個想克制的事開始。</p>'}</section>
+    <div class="grid2"><div><section class="panel"><h2>召喚新的 Boss</h2><p class="hint">血量 = 難度天數 × ${BOSS.dayDmg}。打倒後會出現更難的下一級（每級血量多 50%），獎勵也跟著變多。</p>
+      ${presets.length ? `<div class="bpresets">${presets.map(([p, i]) => `<button class="pbtn" data-act="bosspreset" data-i="${i}">${p.icon} ${esc(p.name)}</button>`).join('')}</div>` : ''}
+      <form id="bossform" autocomplete="off"><div class="row">
+        <label class="field" style="width:70px">圖示<input class="in" name="icon" value="👹" maxlength="4"></label>
+        <label class="field grow">要克制的事<input class="in" name="name" placeholder="睡前看 YouTube" required></label>
+        <label class="field" style="width:150px">難度<select class="in" name="days">${BOSS_DAYS.map(([d, n]) => `<option value="${d}" ${d === 14 ? 'selected' : ''}>${n}</option>`).join('')}</select></label></div>
+        <div class="row" style="margin-top:12px;justify-content:space-between"><label class="chk"><input type="checkbox" name="money"> 會花錢（忍住時記下省了多少）</label>
+          <button class="btn btn-brass" type="submit">召喚 Boss</button></div></form></section>
+      <section class="panel"><h2>存錢罐</h2><p class="hint">忍住一筆消費時記下的金額。這是真的錢，不是代幣。</p>
+        <div class="piggy"><span class="num">NT$${fmt(S.saved)}</span></div>
+        ${moneyBosses.length ? `<ul class="bsaved">${moneyBosses.map(b => `<li><span>${esc(b.icon)} ${esc(b.name)}</span><span class="num">NT$${fmt(S.bosses[b.id]?.saved || 0)}</span></li>`).join('')}</ul>` : ''}</section></div>
+    <div><section class="panel"><h2>戰鬥紀錄</h2>${log.length ? `<ul class="log">${log.map(e => logItem(e, S)).join('')}</ul>` : '<p class="empty">還沒有紀錄。</p>'}</section></div></div>`;
+}
+function addBoss(p) {
+  state.bosses.push({ id: uid('b'), name: p.name, icon: p.icon || '👹', days: p.days, money: !!p.money, createdAt: nowISO() });
+  touchMeta(); save(); render(); chime('quest'); toast(`「${esc(p.name)}」出現了。撐過今晚就是第一次攻擊。`);
+}
+function bossHit(id, btn) {
+  const b = state.bosses.find(x => x.id === id); if (!b) return;
+  const inp = document.querySelector(`[data-amt="${CSS.escape(id)}"]`);
+  const amount = Math.round(num(inp && inp.value, 0, 1e6));
+  const rect = btn.getBoundingClientRect();
+  const ev = { id: uid('rs'), type: 'restraint', boss: id, ts: nowISO(), ...(amount ? { amount } : {}), source: 'manual' };
+  addEvent(ev); commit();
+  const counted = compute().per[ev.id]?.xp > 0;
+  const card = document.querySelector(`.boss[data-boss="${CSS.escape(id)}"]`);
+  if (counted) {
+    chime('hit'); haptic('success');
+    if (card && !reducedMotion()) { card.classList.add('hit'); floatText(card.querySelector('.bico'), `-${BOSS.crit}`, 'dmg'); }
+    flyXp(rect, `+${BOSS.reward.xp} XP`);
+  } else toast(`今天對「${esc(b.name)}」的暴擊已用完，這次只記錄${amount ? '，省下的錢有算進存錢罐' : ''}。`);
+}
+function bossRelapse(id) {
+  const b = state.bosses.find(x => x.id === id); if (!b) return;
+  const ev = { id: uid('rl'), type: 'relapse', boss: id, ts: nowISO(), source: 'manual' };
+  addEvent(ev); commit(); chime('heal'); haptic('tap');
+  const card = document.querySelector(`.boss[data-boss="${CSS.escape(id)}"]`);
+  if (card && !reducedMotion()) card.classList.add('heal');
+  const tag = compute().per[ev.id]?.tag || '';
+  toast(`記下了。${esc(tag)}。不歸零，明天繼續打。`, { label: '按錯了', fn: () => removeEvent(ev.id) });
+}
+
 /* ---------- 今日任務 ---------- */
 function nextProblem(S) {
   const byId = (a, b) => (a.id || 1e9) - (b.id || 1e9);
@@ -1382,7 +1594,7 @@ function viewSettings(S) {
 /* ---------- 慶祝效果：升級、徽章、每日任務、每次打卡 ----------
    celebrations 依序播放：同一次變動先播徽章，最後播升級。 */
 const celebrations = [];
-const LV_SEEN = 'goal.levelSeen', QUEST_SEEN = 'goal.questSeen', WEEK_SEEN = 'goal.weekSeen';
+const LV_SEEN = 'goal.levelSeen', QUEST_SEEN = 'goal.questSeen', WEEK_SEEN = 'goal.weekSeen', BOSS_SEEN = 'goal.bossSeen';
 let levelReady = false;          // 開機載入（資料夾、雲端）完成前不判斷升級，避免把舊紀錄當成剛升級
 let pendingStamp = false;
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1391,6 +1603,19 @@ const lsSet = (k, v) => { try { localStorage.setItem(k, String(v)); } catch (e) 
 function markLevelSeen() { lsSet(LV_SEEN, compute().level); levelReady = true; }
 function checkMilestones(S) {
   if (!levelReady) return;
+  // 打倒 Boss：這台裝置第一次看到的 Boss 只記下目前次數，之後增加才播動畫；排在徽章前面
+  let bseen = {}; try { bseen = JSON.parse(lsGet(BOSS_SEEN)) || {}; } catch (e) { /* ignore */ }
+  let bchanged = false;
+  for (const b of state.bosses) {
+    const B = S.bosses[b.id], n = B ? B.kills.length : 0;
+    if (bseen[b.id] === undefined || n < bseen[b.id]) { bseen[b.id] = n; bchanged = true; }
+    else if (n > bseen[b.id]) {
+      const k = B.kills[n - 1], c = { type: 'boss', b, level: k.level, coins: BOSS.kill.coins * k.level, xp: BOSS.kill.xp * k.level, nextHp: B.max };
+      if ($('#overlay').hidden) celebrations.unshift(c); else celebrations.push(c);
+      bseen[b.id] = n; bchanged = true;
+    }
+  }
+  if (bchanged) lsSet(BOSS_SEEN, JSON.stringify(bseen));
   const seen = Number(lsGet(LV_SEEN)) || 0;
   if (!seen) lsSet(LV_SEEN, S.level);
   else if (S.level > seen) { celebrations.push({ type: 'level', from: seen, to: S.level, need: S.need - S.into }); lsSet(LV_SEEN, S.level); }
@@ -1462,12 +1687,21 @@ function showNextCelebration() {
   }
   const rest = celebrations.length - 1;
   const next = rest ? `繼續（還有 ${rest} 個）` : '收下';
-  if (c.type === 'badge') {
-    const a = c.a, rare = a.coins >= 150;
-    box.innerHTML = `<div class="cel cel-badge${rare ? ' rare' : ''}"><div class="rays"></div>
+  if (c.type === 'boss') {
+    box.innerHTML = `<div class="cel cel-boss"><div class="rays"></div>
+      <div class="stage"><div class="shock"></div><div class="shock s2"></div>
+        <div class="boss-xl" aria-hidden="true"><span class="bx">${esc(c.b.icon)}</span><span class="crown">🏆</span></div></div>
+      <h2 id="ul-name" class="reveal d1">打倒了「${esc(c.b.name)}」</h2>
+      <p class="reveal d1">Lv${c.level} 倒下了。Lv${c.level + 1} 已經出現，血量 <span class="num">${fmt(c.nextHp)}</span>。</p>
+      <span class="tier reveal d2">惡習 Boss</span>
+      <div class="bonus reveal d2"><i class="coin"></i>+<span class="num" id="cel-coins">0</span><span class="sub">　+${c.xp} XP</span></div>
+      <div class="btns reveal d3"><button class="btn btn-brass" id="ul-ok">${next}</button></div></div>`;
+  } else if (c.type === 'badge') {
+    const a = c.a, rare = a.coins >= 150 || a.legend;
+    box.innerHTML = `<div class="cel cel-badge${rare ? ' rare' : ''}${a.legend ? ' legend' : ''}"><div class="rays"></div>
       <div class="stage"><div class="shock"></div><div class="shock s2"></div>${pinHTML(a, true, null)}</div>
       <h2 id="ul-name" class="reveal d1">${esc(a.name)}</h2><p class="reveal d1">${esc(a.desc)}</p>
-      <span class="tier reveal d2">${rare ? '稀有' : ''}${CATS[a.cat].name}徽章</span>
+      <span class="tier reveal d2">${a.legend ? '傳說級' : rare ? '稀有' : ''}${CATS[a.cat].name}徽章</span>
       <div class="bonus reveal d2"><i class="coin"></i>+<span class="num" id="cel-coins">0</span></div>
       <div class="btns reveal d3"><button class="btn btn-brass" id="ul-ok">${next}</button>${rest > 1 ? '<button class="btn btn-ghost" id="ul-all">全部收下</button>' : ''}</div></div>`;
   } else {
@@ -1488,7 +1722,18 @@ function showNextCelebration() {
   $('#ul-ok').focus();
   $('#ul-ok').onclick = () => { closeCelebration(false); };
   const all = $('#ul-all'); if (all) all.onclick = () => closeCelebration(true);
-  if (c.type === 'badge') playBadge(c.a, box); else playLevel(c, box);
+  if (c.type === 'badge') playBadge(c.a, box); else if (c.type === 'boss') playBoss(c, box); else playLevel(c, box);
+}
+function playBoss(c, box) {
+  const bx = $('.boss-xl', box);
+  chime('hit');
+  setTimeout(() => chime('badge'), reducedMotion() ? 0 : 260);
+  impactAt(box, 900, 'level', () => {
+    burst(bx, 'rare');
+    animateCount($('#cel-coins', box), 0, c.coins, 900);
+    if (reducedMotion()) $('#cel-coins', box).textContent = fmt(c.coins);
+  });
+  if (reducedMotion()) $('#cel-coins', box).textContent = fmt(c.coins);
 }
 function closeCelebration(all) {
   const c = celebrations.shift();
@@ -1708,6 +1953,7 @@ function mergeState(remote) {
   state = { ...state, events: [...map.values()], deleted: [...del], unlocked,
     habits: Array.isArray(newer.habits) && newer.habits.length ? newer.habits : state.habits,
     rewards: Array.isArray(newer.rewards) ? newer.rewards : state.rewards,
+    bosses: validBosses(newer.bosses) || state.bosses,
     problems: mergeProblems(state.problems || {}, remote.problems || {}),
     importedLists: [...new Set([...(state.importedLists || []), ...(remote.importedLists || [])])],
     settings: { ...state.settings, ...(newer.settings || {}) }, seedVersion: newer.seedVersion || 1 };
@@ -1772,7 +2018,7 @@ async function sbRest(path, opt = {}, retry = true) {
   if (!r.ok) { const t = await r.text().catch(() => ''); throw new Error(`雲端回應 ${r.status}：${t.slice(0, 140)}`); }
   const txt = await r.text(); return txt ? JSON.parse(txt) : null;
 }
-const metaPayload = () => ({ habits: state.habits, rewards: state.rewards, settings: state.settings, problems: state.problems,
+const metaPayload = () => ({ habits: state.habits, rewards: state.rewards, bosses: state.bosses, settings: state.settings, problems: state.problems,
   unlocked: state.unlocked, importedLists: state.importedLists, metaAt: state.metaAt || state.updatedAt });
 function touchMeta() { state.metaAt = nowISO(); }
 function scheduleCloudSync(delay = 2500) {
@@ -1821,9 +2067,10 @@ async function syncNow() {
       const lists = Array.isArray(remote.importedLists) ? remote.importedLists.map(x => str(x, 120)) : [];
       state.importedLists = [...new Set([...(state.importedLists || []), ...lists])];
       if (tms(remote.metaAt) > tms(state.metaAt)) {
-        const hb = validHabits(remote.habits), rw = validRewards(remote.rewards);
+        const hb = validHabits(remote.habits), rw = validRewards(remote.rewards), bs = validBosses(remote.bosses);
         if (hb) state.habits = hb;
         if (rw) state.rewards = rw;
+        if (bs) state.bosses = bs;          // 舊版 App 推上來的設定沒有 bosses，這時保留本機的
         state.settings = { ...state.settings, ...validSettings(remote.settings), hideLinkTip: state.settings.hideLinkTip };
         state.metaAt = remote.metaAt;
       }
@@ -1967,6 +2214,14 @@ document.addEventListener('click', e => {
     commit(); chime('tick'); toast(`已兌換「${esc(r.name)}」，去享受吧。`);
   }
   else if (act === 'delreward') { state.rewards = state.rewards.filter(x => x.id !== id); touchMeta(); save(); render(); }
+  else if (act === 'restrain') bossHit(id, t);
+  else if (act === 'relapse') bossRelapse(id);
+  else if (act === 'bosspreset') { const p = BOSS_PRESETS[Number(t.dataset.i)]; if (p) addBoss(p); }
+  else if (act === 'delboss') {
+    const i = state.bosses.findIndex(x => x.id === id); if (i < 0) return;
+    const [b] = state.bosses.splice(i, 1); touchMeta(); save(); render();
+    toast(`已移除「${esc(b.name)}」，它的紀錄不再計分`, { label: '復原', fn: () => { state.bosses.splice(i, 0, b); touchMeta(); save(); render(); } });
+  }
   else if (act === 'more') { historyDays += 30; render(); }
   else if (act === 'link') linkFolder();
   else if (act === 'regrant') regrant();
@@ -2012,6 +2267,9 @@ document.addEventListener('submit', e => {
     const name = String(fd.get('name') || '').trim(), cost = Math.max(1, Number(fd.get('cost')) || 0);
     if (!name) return;
     state.rewards.push({ id: uid('r'), name, icon: String(fd.get('icon') || '🎁').trim() || '🎁', cost }); touchMeta(); save(); render();
+  } else if (f.id === 'bossform') {
+    const name = String(fd.get('name') || '').trim(); if (!name) return;
+    addBoss({ name: str(name, 60), icon: cleanIcon(fd.get('icon')) || '👹', days: Number(fd.get('days')) || 14, money: !!fd.get('money') });
   } else if (f.id === 'cloudform') {
     cloudLogin(String(fd.get('email') || '').trim(), String(fd.get('password') || ''));
   }
