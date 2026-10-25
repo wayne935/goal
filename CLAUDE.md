@@ -18,7 +18,7 @@
 
 ## 架構（全部在單一 `index.html`）
 - **Event sourcing**：`state.events` 是唯一的真相，XP、代幣、徽章進度、Boss 血量全部由 `compute()` 推算；刪除事件後數字會自動回推。新功能也要這樣做，不要另外存計算結果。
-- 事件類型：`leetcode`、`habit`、`custom`、`redeem`、`restraint`（忍住）、`relapse`（犯了）。新增類型要同時改：`compute()`、`validEvent()`、`normalize()`（給 inbox / AI 用）、`eventTitle()` / `eventIcon()`。
+- 事件類型：`leetcode`、`habit`、`custom`、`redeem`、`restraint`（忍住）、`relapse`（犯了）、`contract_open`（承諾契約）、`freeze_buy`（保護卡）、`cheer`（加油：收到的有 `from`、送出的有 `to`）、`party_reward`（共同 Boss 獎勵）。新增類型要同時改：`compute()`、`validEvent()`、`normalize()`（給 inbox / AI 用）、`eventTitle()` / `eventIcon()`。`cheer`、`party_reward` 只由網頁自己產生，`normalize()` 故意不接受。
 - 設定類資料（`habits`、`rewards`、`bosses`、`settings`、`problems`、`unlocked`）放在 `goal_meta` 同步：新增欄位要加進 `metaPayload()`、`syncNow()` 的拉取合併、`mergeState()`（備份匯入）、`migrate()`，並寫一個 `validXxx()` 檢查函式。舊版 App 推上來的設定可能缺欄位，缺的時候保留本機的。
 - 一天從凌晨 `dayStartHour`（預設 4）點開始：日期一律用 `dayKey(ts)` / `todayKey()`，不要用原生 Date 的日期。
 - 慶祝動畫：`celebrations` 佇列 + `showNextCelebration()`（徽章 `badge`、升級 `level`、打倒 Boss `boss`）。每台裝置「看過了沒」記在 localStorage（`goal.levelSeen`、`goal.bossSeen`…），第一次看到的東西只記錄不播放。
@@ -26,6 +26,7 @@
 - 主要常數在檔案開頭：`DEFAULT_HABITS`、`DIFF`、`QUEST_POOL`、`WEEK_GOALS`、`BOSS`、`ACH`（徽章，`v: s => ...` 從 `compute()` 的結果取值，`legend: true` 是傳說級）。
 - Android 橋接：`IS_NATIVE`、`nat(method, opts)` 呼叫 `GoalWidgetPlugin.java`；小工具資料由 `pushWidget()` 送出，小工具的打卡由 `drainWidgetQueue()` 收回。
 - 雲端：Supabase（`SB` 常數，publishable key 本來就公開，靠 RLS 保護），資料表見 `sync/supabase-setup.sql`。
+- 隊友副本：資料表與政策在 `sync/party-setup.sql`（雲端 session 不能動資料庫，SQL 要使用者自己到 SQL Editor 執行）。網頁的所有隊伍 API 都包在 `partyApi`；隊伍資料（別人的資料）放在記憶體的 `party` 物件與 localStorage `goal.party`，**不進 `state`、也不進 `goal_meta`**。隊友只讀得到 `goal_party_days` 的每日摘要（`partyDayRows()` 在本機算好上傳），從雲端拉回來的一律經過 `validParty*()` / `validCheer()`，名字一律 `esc()`。共同 Boss 由 `partyBoss()` 在前端推算。
 
 ## 寫程式的慣例
 - 照現有風格：緊湊的單行函式、`$()`、模板字串產生 HTML、`data-act` 事件委派（click / submit / change 都在檔案最後）。
@@ -36,6 +37,7 @@
 
 ## 怎麼測試
 - `python serve.py` → http://localhost:8765/（只提供網頁檔案）。用瀏覽器開，不要登入雲端同步（那是使用者的真實資料）。
-- Console 裡有 `window.__goal`（`state`、`compute()`、`ingest()`、`render()`、`checkUnlocks()`、`celebrate()`）。
+- Console 裡有 `window.__goal`（`state`、`compute()`、`ingest()`、`render()`、`checkUnlocks()`、`celebrate()`、`partyApi`、`party`、`syncParty()`、`partyBoss()`）。測隊伍時把 `__goal.partyApi` 的方法換成回傳假資料的函式，再呼叫 `__goal.syncParty()`。
+- 改了 SQL 可以在本機測：雲端環境有 PostgreSQL 16，建一個假的 `auth` schema（`auth.users`、用 `request.jwt.claim.sub` 實作 `auth.uid()`）和 `anon` / `authenticated` 角色，再 `set role authenticated` 模擬不同使用者。
 - 測多天的邏輯：改 localStorage 的 `goal.v1`（例如把 Boss 的 `createdAt` 或事件的 `ts` 往前調）後重新整理。測完 `localStorage.clear()`。
 - 每個分頁都切一次，確認沒有出現「這一頁顯示不出來」，Console 沒有錯誤；舊資料（缺新欄位）要能正常載入。

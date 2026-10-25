@@ -36,6 +36,23 @@
 4. **方便時重新建置一次 App**（`build-android.bat` → ▶ Run），讓第 6 項的原生修正生效。不急，網頁端的修正已經自動送到手機。
 5. （選擇性）**自動更新加上數位簽章**：發佈時用一把只存在你電腦上的私鑰簽名，App 驗證通過才更新。這樣就算 GitHub 帳號被盜，也推不了惡意更新。代價是要再重新建置一次 App，而且發佈時需要能讀到那把私鑰。
 
+## 隊友副本（2026-10-25，build 7）
+新增 4 張表與 3 個函式（`sync/party-setup.sql`）。設計原則：**隊友讀不到彼此的 `goal_events` / `goal_meta`**，也沒有用 security definer 的 view 繞過 RLS；每個人的網頁自己算好每日摘要寫進 `goal_party_days`，隊友只讀得到這張表的 `active`、`cats`，以及本人選擇分享時的 `xp`、`streak`。
+
+| 表 | 誰能讀 | 誰能寫 |
+|---|---|---|
+| `goal_parties` | 自己隊伍的成員 | 沒有人能直接寫，只能透過 `goal_create_party()` |
+| `goal_party_members` | 同隊的成員 | 加入只能透過 `goal_join_party()`；只能刪除（退出）自己那一列、只能改自己的 `display_name`（欄位層級權限，不能換隊） |
+| `goal_party_days` | 自己，以及**目前**同隊的人（退出後立刻讀不到） | 只能寫自己的列；日期限制在最近 61 天內；`cats` 只能是 5 個分類、`xp` 0～5000 |
+| `goal_cheers` | 送出或收到的本人 | 只能用自己的名義、送給目前同隊的人、日期在今天前後一天；同一天同一人只能一次；不能改、不能刪 |
+
+- 函式都是 `security definer` + `set search_path = ''`，只 grant 給 `authenticated`；`anon` 對所有新表和函式都沒有權限（Supabase 預設會給 anon 全部權限，SQL 裡先全部 revoke 再只開需要的）。
+- 邀請碼 8 碼、32 個字元（約 1 兆種組合），由 `gen_random_uuid()` 的隨機位元產生。
+- 已在本機 PostgreSQL 16 模擬 Supabase（`anon` / `authenticated` 角色、`auth.uid()`、預設權限）實測 50 多項（`sync/test/run-party-test.sh` 可以重跑）：未登入什麼都讀不到也呼叫不了函式；不同隊的人讀不到彼此的隊伍、成員、摘要、加油；不能把自己塞進別隊、不能換隊、不能直接建立或修改隊伍；不能改或刪別人的摘要；不能替別人加油、不能加油給別隊或自己、不能補很久以前的日期；第 5 個人加入會被擋；最後一人退出時隊伍會刪除。
+- 網頁端：隊友的名字、隊名都是別人可以控制的內容，一律經過 `validPartyMember()` / `validPartyInfo()`（長度、型別）與 `esc()`；`cats` 只留 `CATS` 自己有的 key（用 `Object.hasOwn`，擋掉 `constructor` 之類）。已用 `<img src=x onerror=alert(1)>` 之類的名字實測不會執行。
+- 收到的加油與共同 Boss 獎勵是本機產生的事件（固定 id，不會重複入帳），`normalize()` 不接受這兩種類型，不能從 inbox 或貼上偽造。
+- 剩下的風險（可接受）：同隊的人看得到你設定的顯示名稱與每日摘要；你分享 XP 時，隊友看得到每天的 XP。隊友可以在自己的裝置上竄改自己的摘要（例如假裝每天都有紀錄）來多打共同 Boss，這只影響隊伍內的遊戲公平，不影響任何人的資料。
+
 ## 之後維護
 - 新增任何會顯示在畫面上的欄位，一律用 `esc()`；新增任何外部資料入口，先經過 `validEvent` / `validHabits` / `validProblems` 等檢查函式。
 - 不要把 Supabase 的 secret key 或 service_role key 放進程式碼；網頁只能用 publishable key。

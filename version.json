@@ -1,5 +1,5 @@
 {
-  "build": 6,
+  "build": 7,
   "minNative": 2,
   "files": [
     "index.html",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "承諾契約：拿代幣下注本週目標、開局畫面、連續天數保護卡、綁定獎勵與 4 個新徽章"
+  "notes": "隊友副本：和朋友組隊、每週共同 Boss、互相加油、改密碼與 5 個新徽章（需要先執行 sync/party-setup.sql）"
 }
