@@ -1,14 +1,17 @@
 # 接下來要實作的事
 
-> 更新：2026-10-25　｜　目前網頁 build 5，原生 NATIVE_VERSION 3（`version.json` 的 minNative 2）
+> 更新：2026-10-25　｜　目前網頁 build 6，原生 NATIVE_VERSION 3（`version.json` 的 minNative 2）
 > 先讀 `CLAUDE.md`（架構、發佈規則、測試方法）。設計理由與研究依據在 `PLAN.md` 第 8 節。
 
 ## 目前狀態
 - 階段 1～3 完成：打卡、LeetCode 判題、徽章、商店、題單、每日任務、每週回顧、PWA、Supabase 同步、Android App 與小工具。
 - **8.1 惡習 Boss 完成（build 5，2026-10-23）**：「惡習」分頁、`restraint` / `relapse` 事件、`simulateBosses()` 逐日推算血量、打倒動畫、存錢罐、6 個徽章。數值在 `BOSS` 常數。
   - 已知取捨：建立 Boss 的當天就算第一個攻擊日；手機底部分頁列已有 7 個分頁。
-- 使用者還沒做的事：重新建置一次 App（讓原生震動與資安修正生效）、正常使用一週後回報數值手感。
-- **使用者決定的順序（2026-10-25）：先做第 1 項隊友副本，承諾契約延後。**
+- **8.2 承諾契約完成（build 6，2026-10-25）**：`contract_open` 事件與 `settleContracts()`、「今天」頁開局畫面（週一 / 每月 1 號 / 生日）、連續天數保護卡（`freeze_buy` + `planFreezes()`）、綁定獎勵（`state.bundles`）、4 個徽章。數值在 `CONTRACT`、`FREEZE` 常數，細節見 PLAN 8.2。
+  - 使用者的決定：倍率依難度 1.5 / 2 倍（比最近 4 週平均難 = 2 倍）、簽約 1 小時內可取消、每週最多 2 份、保護卡 150 代幣最多 2 張、要做生日開局。
+  - 已知取捨：連續空白的天數比手上的保護卡多時整段不補（卡退回、不浪費）；凌晨 `dayStartHour` 前簽的約算前一天那週；契約達成只跳 toast，沒有全螢幕動畫。
+- 使用者還沒做的事：重新建置一次 App（讓原生震動與資安修正生效）、在設定填生日、正常使用一週後回報數值手感。
+- **使用者決定的順序（2026-10-25）：下一個做隊友副本（第 1 節），其他候選在第 2 節。**
 
 ## 1. 隊友副本：讓別人看得到你（PLAN 8.3）← 下一個要做
 目標：和 1～3 個朋友（實驗室同學、刷題夥伴）組隊，看得到彼此「今天有沒有動」，每週一起打一隻共同 Boss，可以互相加油。
@@ -21,6 +24,7 @@
 - **公開註冊是關閉的**，朋友要有帳號。🙋 建議做法：使用者在 Supabase 後台（Authentication → Users → Add user → Create new user，勾 Auto Confirm）幫朋友建帳號和臨時密碼；網頁「設定 → 雲端同步」新增「改密碼」（`PUT {SB.url}/auth/v1/user`，body `{ "password": "..." }`）。不要做 Supabase 邀請信流程（要處理網址 hash 裡的 token，比較複雜）。
 - 朋友用同一個網址 https://wayne935.github.io/goal/ 或 App，資料靠 RLS 各自隔離。朋友登入後會看到預設習慣（包含 Wayne 的貝斯、西洋棋），可以在設定自己改，這次不用處理。
 - 一個人同時只能在一個隊伍；每隊最多 4 人（含自己）。
+- build 6 已有承諾契約（`contract_open`、`freeze_buy`、`settleContracts()`、`planFreezes()`）。這次不做「隊友當契約見證人」，留到之後；但每日摘要的 `active` 要和保護卡補上的天數分開（補上的那天算 `active: false`），不要讓隊友誤以為有紀錄。
 
 ### 1.1 隱私原則：只分享摘要，在自己裝置上算好才上傳
 - 不開放別人讀 `goal_events`、`goal_meta`，**也不要用 security definer 的 view 繞過 RLS 去讀別人的事件**。
@@ -91,44 +95,13 @@
 - 真正的端對端測試由使用者做：跑 SQL → 建一個測試帳號 → 兩個瀏覽器（一般 + 無痕）各登入一個帳號 → 組隊、打卡、加油。把這個步驟寫進回覆。
 
 ### 1.9 完成時
-- `APP_BUILD` 與 `version.json` 改成 6（只改網頁，不用重新建置 App；小工具顯示隊伍是之後的事）。
+- `APP_BUILD` 與 `version.json` 改成 7（只改網頁，不用重新建置 App；小工具顯示隊伍是之後的事）。
 - 更新 `ROADMAP.md`（功能表與執行紀錄）、`PLAN.md` 8.3（標記完成與實際數值）、`README.md`（怎麼組隊、怎麼幫朋友開帳號）、`SECURITY.md`（新的資料表與政策）、`CLAUDE.md`（新的事件類型 `party_reward`、`cheer` 與 `partyApi`）。
 - 在分支上完成並推上去；**合併到 main 之前先讓使用者執行 SQL**。回覆裡列出改了哪些檔案、使用者要做的步驟（執行 SQL、幫朋友建帳號、端對端測試）。
 
-## 2. 承諾契約（PLAN 8.2）← 隊友副本之後
-拿代幣下注本週目標，每週一（月初、生日）跳出「開局」畫面。以下是建議做法，**標 🙋 的地方開始前先問使用者**。
-
-**資料（沿用 event sourcing）**
-- `contract_open` 事件：`{ id, type: 'contract_open', ts, week: '<該週週一的 dayKey>', goal: { kind, habit?, boss?, target }, stake }`
-  - `kind`：`habit`（某習慣本週做 N 次）、`lc`（本週解 N 題）、`clean`（某個惡習 Boss 本週犯 ≤ N 次）。
-  - 每週最多一份（或兩份）契約；押金上限是目前餘額。
-- 不需要 `contract_settle` 事件：在 `compute()` 裡推算。開約當下押金就從餘額扣掉（像 `redeem`）；達成的那一天把 `stake × 倍率` 記到當天的 coins（像每週目標的 bonus）；期限過了還沒達成就是沒收（不用做任何事）。
-- 緩衝日：期限 = 該週週日 + 1 天（下週一的 `dayStartHour` 前都還算）。
-- 🙋 倍率：PLAN 寫 1.5～2 倍。建議 1.5 倍，或依目標難度 1.5 / 2 倍。
-- 🙋 契約能不能刪：event sourcing 下刪掉 `contract_open` 等於退回押金，可以用來賴帳。建議開約 1 小時後就不顯示刪除鈕（`logItem` 裡判斷），或刪除時押金照樣沒收。
-
-**開局畫面（新開始效應）**
-- 「今天」分頁最上面一個面板：本週還沒有契約、而且今天是週一 / 每月 1 號 / 生日時顯示（其他天可以收合成一行「本週還沒開局」）。
-- 🙋 生日：`settings.birthday`（`MM-DD`），在設定頁的「偏好」新增欄位；記得加進 `validSettings()`。
-- 進行中的契約顯示進度條和倒數，例如「運動 2 / 3，還剩 3 天，達成拿回 150」。
-
-**連續天數保護卡**
-- 商店固定商品（不在 `state.rewards` 裡，避免被刪掉），🙋 價格建議 150 代幣，最多持有 2 張。
-- 購買是 `freeze_buy` 事件；使用不用另外記：`compute()` 算連續天數時，遇到空白的一天、而且當時手上有卡（那天之前買的、還沒用掉），就自動用掉一張補上。要改 `currentRun` / `longestRun` 的呼叫方式（目前只吃一個 Set）。
-- 被保護卡補上的那天在熱力圖上用不同樣式標示。
-
-**誘惑綁定（可以最後做或延後）**
-- `state.bundles`：`{ id, name, icon, habit }`，例如「這個 podcast 只在跑步時聽」。打卡那個習慣後，toast 提醒「現在可以聽 🎧 ○○○」。走 `goal_meta` 同步。
-
-**徽章（建議）**：第一份契約、連續 4 週達成契約、押注 500 以上並達成、第一次用到保護卡。
-
-**可以和隊伍結合**：契約指定一位隊友當見證人，隊友看得到契約進度（需要在 `goal_party_days` 或另一張表加欄位）。
-
-**完成時**：`APP_BUILD` 與 `version.json` 再 +1，更新 `ROADMAP.md`、`PLAN.md` 8.2、`README.md`。只改網頁，不用重新建置 App。
-
-## 3. 之後的候選（依建議順序）
-1. **提醒通知**（ROADMAP 階段 2 第 5 項）：先做網頁開著時的本機提醒（例如晚上 10 點還沒運動、Boss 今天還沒忍住、隊友都動了只剩你）。真正的手機推播要用 Android 原生（WorkManager + 通知），要 bump `NATIVE_VERSION` 並重新建置。
-2. **小工具加「忍住了」按鈕與隊伍狀態**：原生改動（`GoalWidgetProvider.java`、`goal_widget.xml`、`GoalStore` 佇列支援 `restraint` 事件），要 bump `NATIVE_VERSION`、`minNative`，請使用者重新建置。
+## 2. 之後的候選（依建議順序）
+1. **提醒通知**（ROADMAP 階段 2 第 5 項）：先做網頁開著時的本機提醒（例如晚上 10 點還沒運動、Boss 今天還沒忍住、契約週日還差幾次）。真正的手機推播要用 Android 原生（WorkManager + 通知），要 bump `NATIVE_VERSION` 並重新建置。
+2. **小工具加「忍住了」按鈕**：原生改動（`GoalWidgetProvider.java`、`goal_widget.xml`、`GoalStore` 佇列支援 `restraint` 事件），要 bump `NATIVE_VERSION`、`minNative`，請使用者重新建置。
 3. **自動判定半夜滑手機**：Android `UsageStatsManager`，需要使用者授權「使用情況存取權」，原生改動。
 4. **LeetCode Chrome 擴充功能**（階段 4，可選）：偵測 Accepted，送出 `leetcode_submitted: true` 的事件。
-5. **數值調整**：等使用者回報一週的使用手感，不要自己猜。
+5. **數值調整**：等使用者回報一週的使用手感，不要自己猜（契約倍率、保護卡價格也一樣）。
