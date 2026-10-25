@@ -194,7 +194,6 @@ textarea.in{min-height:140px;resize:vertical;font-family:ui-monospace,Consolas,m
 .heat i.l4{background:var(--brass-hi)}
 .heat i.fut{background:transparent}
 .heat i.today{box-shadow:0 0 0 1.5px var(--chalk)}
-.heat i.frz,.legend i.frz{background:rgba(140,200,235,.3);box-shadow:inset 0 0 0 1.5px rgba(170,220,245,.85)}
 .legend{display:flex;gap:4px;align-items:center;justify-content:flex-end;font-size:13px;color:var(--chalk-dim);margin-top:8px}
 .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
@@ -214,31 +213,6 @@ textarea.in{min-height:140px;resize:vertical;font-family:ui-monospace,Consolas,m
 .ticket .btn-x{color:#7b7559}
 .ticket .btn-x:hover{background:rgba(0,0,0,.08);color:#2b2a1c}
 .ticket .short{font-size:14px;color:#7b6a3e}
-.ticket.freeze{background:#d9ebf2}
-.ticket .fdesc{grid-column:1/-1;margin:4px 0 0;font-size:13.5px;line-height:1.45;color:#4f5a55}
-.bundles{margin-bottom:14px}
-.bundles li{grid-template-columns:30px minmax(0,1fr) 30px}
-/* ---------- 承諾契約 ---------- */
-.contracts{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-.contract{background:var(--felt-hi);border-radius:12px;padding:12px 14px;border-left:5px solid var(--brass);box-shadow:0 3px 0 var(--felt-deep)}
-.contract.done{border-left-color:var(--health)}
-.contract.failed{border-left-color:var(--pewter);opacity:.75}
-.chead{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center}
-.chead b{font-size:16.5px;line-height:1.35;overflow-wrap:anywhere}
-.cico{font-size:22px;line-height:1}
-.contract .bar{height:8px;border-radius:8px;background:rgba(0,0,0,.28);overflow:hidden;margin-top:10px}
-.contract .bar i{display:block;height:100%;background:var(--brass);border-radius:8px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
-.contract.done .bar i{background:var(--health)}
-.contract.failed .bar i{background:var(--pewter)}
-.cline{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14.5px;color:var(--chalk-dim);margin-top:5px}
-.cline b{color:var(--chalk);font-size:17px}
-.contract.done .cline>span:last-child{color:#8fe0cf;font-weight:700}
-.cstake{display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:14px;color:var(--chalk-dim);margin-top:4px}
-.cstake .num{color:var(--chalk);font-size:16px}
-.chard{font-size:12.5px;font-weight:700;padding:0 7px;border-radius:6px;background:var(--code);color:#2a0d07;margin-left:4px}
-.cprev{font-size:14.5px;color:var(--chalk-dim);margin:12px 0}
-.cprev b{color:var(--brass-hi);font-size:18px}
-.cprev .warn{color:#f3b4a5}
 
 /* ---------- history ---------- */
 /* ---------- quests ---------- */
@@ -527,7 +501,7 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 6;
+const APP_BUILD = 5;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 const $ = (s, r = document) => r.querySelector(s);
@@ -611,11 +585,6 @@ const BOSS_PRESETS = [
   { icon: '🛒', name: '衝動購物',   days: 30, money: true },
   { icon: '💬', name: '一直打開社群', days: 14, money: false },
 ];
-/* ---------- 承諾契約、保護卡 ----------
-   押代幣在本週目標上：開約時押金先扣，達成那天拿回 押金 × 倍率；目標比最近 4 週平均更難是「挑戰」2 倍，否則 1.5 倍。
-   習慣、解題的期限是週日再加 1 天緩衝；「不犯」的契約撐到週日結束就算達成。簽約之後的紀錄才算。 */
-const CONTRACT = { perWeek: 2, minStake: 10, mult: { normal: 1.5, hard: 2 }, undoMs: 3600e3 };
-const FREEZE = { cost: 150, max: 2 };
 const bossMaxHp = (b, L) => Math.round(b.days * BOSS.dayDmg * (1 + 0.5 * (L - 1)));
 function hashStr(str) { let h = 2166136261; for (const ch of str) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
 const hasHabit = id => state.habits.some(h => h.id === id);
@@ -697,11 +666,6 @@ const ACH = [
   { id:'b_save1000', cat:'life', icon:'🐷', name:'真的省到錢', desc:'存錢罐累計省下 NT$1,000',          goal:1000,coins:100, v:s=>s.saved },
   { id:'b_kill1',    cat:'life', icon:'🐉', name:'屠龍者',     desc:'打倒第一隻惡習 Boss',             goal:1,   coins:300, v:s=>s.bossKills, legend:true },
   { id:'b_kill5',    cat:'life', icon:'👑', name:'惡習剋星',   desc:'累計打倒 5 次惡習 Boss（含 Lv2 以上）', goal:5, coins:400, v:s=>s.bossKills, legend:true },
-  // 承諾契約、保護卡
-  { id:'c_first',    cat:'life', icon:'📜', name:'立約',       desc:'簽下第一份承諾契約',              goal:1,   coins:20,  v:s=>s.contractsOpened },
-  { id:'c_week4',    cat:'life', icon:'🤝', name:'言出必行',   desc:'連續 4 週的契約全部達成',          goal:4,   coins:200, v:s=>s.contractWeekRun },
-  { id:'c_big',      cat:'life', icon:'🎲', name:'梭哈',       desc:'押 500 代幣以上，而且達成',        goal:1,   coins:100, v:s=>s.bigWins },
-  { id:'f_first',    cat:'life', icon:'❄️', name:'保住了',     desc:'第一次用保護卡保住連續天數',       goal:1,   coins:20,  v:s=>s.freezesUsed },
 ];
 const ACH_BY_ID = Object.fromEntries(ACH.map(a => [a.id, a]));
 
@@ -733,7 +697,7 @@ const slugify = s => String(s || '').trim().replace(/^\d+\.\s*/, '').toLowerCase
 /* ---------- state ---------- */
 function freshState() {
   return { version: 1, seedVersion: SEED_VERSION, updatedAt: nowISO(), events: [], deleted: [], unlocked: {},
-           habits: structuredClone(DEFAULT_HABITS), rewards: structuredClone(DEFAULT_REWARDS), bosses: [], bundles: [], problems: {}, importedLists: [],
+           habits: structuredClone(DEFAULT_HABITS), rewards: structuredClone(DEFAULT_REWARDS), bosses: [], problems: {}, importedLists: [],
            settings: { dayStartHour: 4, sound: true, hideLinkTip: false }, metaAt: '' };
 }
 function loadState() {
@@ -748,7 +712,7 @@ function loadState() {
   return freshState();
 }
 function migrate(st) {
-  st.problems ||= {}; st.importedLists ||= []; st.bosses ||= []; st.bundles ||= [];
+  st.problems ||= {}; st.importedLists ||= []; st.bosses ||= [];
   const v = st.seedVersion || 1;
   if (v < SEED_VERSION) {
     for (const h of DEFAULT_HABITS) if (!st.habits.some(x => x.id === h.id)) st.habits.push(structuredClone(h));
@@ -774,30 +738,15 @@ function levelFromXp(xp) {
   while (rem >= 80 + 40 * L) { rem -= 80 + 40 * L; L++; }
   return { level: L, into: rem, need: 80 + 40 * L };
 }
-// frozen：保護卡補上的日子，讓連續天數接得起來，但不算進天數
-function longestRun(keys, frozen = new Set()) {
-  const arr = [...keys, ...frozen].sort(); let best = 0, cur = 0, prev = null;
-  for (const k of arr) { const n = keys.has(k) ? 1 : 0; cur = (prev && addDays(prev, 1) === k) ? cur + n : n; best = Math.max(best, cur); prev = k; }
+function longestRun(keys) {
+  const arr = [...keys].sort(); let best = 0, cur = 0, prev = null;
+  for (const k of arr) { cur = (prev && addDays(prev, 1) === k) ? cur + 1 : 1; best = Math.max(best, cur); prev = k; }
   return best;
 }
-function currentRun(keys, frozen = new Set()) {
+function currentRun(keys) {
   const t = todayKey(); let k = keys.has(t) ? t : addDays(t, -1), n = 0;
-  while (keys.has(k) || frozen.has(k)) { if (keys.has(k)) n++; k = addDays(k, -1); }
+  while (keys.has(k)) { n++; k = addDays(k, -1); }
   return n;
-}
-/* 保護卡：從第一天有紀錄開始往後看，遇到空白（到昨天為止）就用手上的卡補上。
-   卡要在那天結束前就買好；一段空白比手上的卡還長就整段不補，卡留著。 */
-function planFreezes(keys, buyDays, tk) {
-  const buys = [...buyDays].sort(), frozen = new Set(), end = addDays(tk, -1);
-  let bi = 0, avail = 0, k = [...keys].sort()[0];
-  while (k && k <= end) {
-    if (keys.has(k)) { while (bi < buys.length && buys[bi] <= k) { avail++; bi++; } k = addDays(k, 1); continue; }
-    const gap = []; while (k <= end && !keys.has(k)) { gap.push(k); k = addDays(k, 1); }
-    let b = bi, a = avail, ok = true;
-    for (const g of gap) { while (b < buys.length && buys[b] <= g) { a++; b++; } if (!a) { ok = false; break; } a--; }
-    if (ok) { bi = b; avail = a; gap.forEach(g => frozen.add(g)); }
-  }
-  return { frozen, used: frozen.size, held: buys.filter(b => b <= tk).length - frozen.size };
 }
 function compute() {
   const habitsById = Object.fromEntries(state.habits.map(h => [h.id, h]));
@@ -808,9 +757,8 @@ function compute() {
   let xp = 0, earned = 0, spent = 0, reviews = 0, comebacks = 0, morning = 0, redeems = 0;
   const tagSolved = {}, checked = new Set(), submittedSet = new Set(), graphSet = new Set(), solvedIds = new Set();
   const bossIds = new Set(state.bosses.map(b => b.id)), critIds = new Set(); let saved = 0;
-  const hits = { lc: [], habit: {}, relapse: {} }, freezeBuys = [];   // 契約要數的紀錄：{ ms, day }
   for (const e of evs) {
-    const dk = dayKey(e.ts), hit = { ms: tms(e.ts), day: dk };
+    const dk = dayKey(e.ts);
     const d = days[dk] ||= emptyDay();
     let cat = null;
     let r = { xp: 0, coins: 0, tag: '' };
@@ -824,7 +772,7 @@ function compute() {
         for (const t of e.problem.tags || []) { (tagSolved[t] ||= new Set()).add(k); if (GRAPH_TAGS.includes(t)) graphSet.add(k); }
         if (e.evidence && e.evidence.brute_force_crosscheck) checked.add(k);
         if (e.leetcode_submitted) submittedSet.add(k);
-        d.lc++; d.diffs.add(e.problem.difficulty); d.cats.add('code'); cat = 'code'; hits.lc.push(hit);
+        d.lc++; d.diffs.add(e.problem.difficulty); d.cats.add('code'); cat = 'code';
         const hr = new Date(tms(e.ts)).getHours(); if (hr >= 4 && hr < 9) morning++;
       } else { rejected.add(k); r.tag = '未通過'; }
       d.any = true;
@@ -833,7 +781,7 @@ function compute() {
       const c = d.habits[e.habit] = (d.habits[e.habit] || 0) + 1;
       if (!h) r.tag = '習慣已刪除';
       else if (c > h.dailyMax) r.tag = '超過每日上限';
-      else { r = { xp: h.xp, coins: h.coins, tag: '' }; d.cats.add(h.cat); cat = h.cat; habitCount[e.habit] = (habitCount[e.habit] || 0) + 1; (hits.habit[e.habit] ||= []).push(hit); }
+      else { r = { xp: h.xp, coins: h.coins, tag: '' }; d.cats.add(h.cat); cat = h.cat; habitCount[e.habit] = (habitCount[e.habit] || 0) + 1; }
       d.any = true;
     } else if (e.type === 'custom') {
       r = { xp: e.xp || 0, coins: e.coins || 0, tag: '' }; cat = e.cat || 'life'; d.cats.add(cat); d.any = true;
@@ -848,11 +796,6 @@ function compute() {
       d.any = true;
     } else if (e.type === 'relapse') {
       if (!bossIds.has(e.boss)) r.tag = 'Boss 已刪除';
-      (hits.relapse[e.boss] ||= []).push(hit);
-    } else if (e.type === 'contract_open') {
-      r = { xp: 0, coins: -(e.stake || 0), tag: '' }; spent += e.stake || 0;
-    } else if (e.type === 'freeze_buy') {
-      r = { xp: 0, coins: -(e.cost || 0), tag: '' }; spent += e.cost || 0; freezeBuys.push(dk);
     }
     if (r.coins > 0) { earned += r.coins; d.coins += r.coins; }
     xp += r.xp; d.xp += r.xp; per[e.id] = r;
@@ -887,25 +830,9 @@ function compute() {
       xp += kx; earned += kc; d.xp += kx; d.coins += kc;
     }
   }
-  // 承諾契約：達成那天拿回 押金 × 倍率（押金在開約時已經扣掉）
-  const contracts = settleContracts(evs, hits, todayKey());
-  let contractsDone = 0, bigWins = 0;
-  const cweeks = {};
-  for (const c of contracts) {
-    const w = cweeks[c.week] ||= { done: 0, n: 0 }; w.n++;
-    if (c.status === 'done') {
-      const d = days[c.doneDay] ||= emptyDay();
-      earned += c.payout - c.stake; spent -= c.stake; d.coins += c.payout; d.contractDone = true;
-      contractsDone++; w.done++; if (c.stake >= 500) bigWins++;
-    }
-    if (per[c.id]) per[c.id].tag = c.status === 'done' ? `達成，拿回 ${fmt(c.payout)}` : c.status === 'failed' ? '沒達成，押金沒收'
-      : `進行中 ${c.goal.kind === 'clean' ? `犯了 ${c.count} 次` : `${c.count} / ${c.goal.target}`}`;
-  }
-  const contractWeekRun = longestWeeks(Object.keys(cweeks).filter(k => cweeks[k].done === cweeks[k].n));
   const bonus = Object.keys(state.unlocked).reduce((s, id) => s + (ACH_BY_ID[id]?.coins || 0), 0);
   const keysWhere = f => new Set(Object.keys(days).filter(k => f(days[k])));
   const anyDays = keysWhere(d => d.any);
-  const fz = planFreezes(anyDays, freezeBuys, todayKey());
   const lv = levelFromXp(xp);
   const vals = Object.values(days);
   let bestWeekCats = 0;
@@ -921,9 +848,7 @@ function compute() {
     bestDiffsInDay: Math.max(0, ...vals.map(d => d.diffs.size)),
     bestCatsInDay: Math.max(0, ...vals.map(d => ['code','health','research'].filter(c => d.cats.has(c)).length)),
     lcBestStreak: longestRun(keysWhere(d => d.lc > 0)),
-    bestStreak: longestRun(anyDays, fz.frozen), streak: currentRun(anyDays, fz.frozen),
-    frozen: fz.frozen, freezesUsed: fz.used, freezesHeld: fz.held,
-    contracts, contractsOpened: contracts.length, contractsDone, bigWins, contractWeekRun, hits,
+    bestStreak: longestRun(anyDays), streak: currentRun(anyDays),
     waterStreak: longestRun(keysWhere(d => (d.habits.water || 0) >= 8)),
     crosschecked: checked.size, submitted: submittedSet.size, graphSolved: graphSet.size,
     topicCount: Object.keys(tagSolved).length, tag: t => tagSolved[t]?.size || 0,
@@ -934,28 +859,6 @@ function compute() {
     habit: id => habitCount[id] || 0,
     habitStreak: id => longestRun(keysWhere(d => (d.habits[id] || 0) > 0)),
   };
-}
-function settleContracts(evs, hits, tk) {
-  const out = [];
-  for (const e of evs) {
-    if (e.type !== 'contract_open') continue;
-    const g = e.goal, wk = e.week, end = addDays(wk, g.kind === 'clean' ? 6 : 7), from = tms(e.ts);
-    const win = (goalHits(hits, g)).filter(h => h.ms >= from && h.day <= end);
-    const c = { id: e.id, ts: e.ts, week: wk, end, goal: g, stake: e.stake, mult: e.mult, payout: Math.round(e.stake * e.mult), count: win.length, status: 'active', doneDay: null };
-    if (g.kind === 'clean') {
-      if (c.count > g.target) c.status = 'failed';
-      else if (tk > end) { c.status = 'done'; c.doneDay = addDays(end, 1); }
-    } else if (c.count >= g.target) { c.status = 'done'; c.doneDay = win[g.target - 1].day; }
-    else if (tk > end) c.status = 'failed';
-    out.push(c);
-  }
-  return out;
-}
-const goalHits = (hits, g) => (g.kind === 'lc' ? hits.lc : g.kind === 'habit' ? hits.habit[g.habit] : hits.relapse[g.boss]) || [];
-function longestWeeks(weeks) {
-  const arr = [...weeks].sort(); let best = 0, cur = 0, prev = null;
-  for (const k of arr) { cur = prev && addDays(prev, 7) === k ? cur + 1 : 1; best = Math.max(best, cur); prev = k; }
-  return best;
 }
 function simulateBosses(evs, critIds, per) {
   const out = {}, tk = todayKey();
@@ -1010,11 +913,8 @@ function addEvent(e) {
   state.events.push(e); return true;
 }
 function commit() { save(); checkUnlocks(); render(); }
-// 契約簽下 1 小時後就不能刪（刪掉等於退押金）
-const locked = e => e.type === 'contract_open' && Date.now() - tms(e.ts) >= CONTRACT.undoMs;
 function removeEvent(id) {
   const i = state.events.findIndex(e => e.id === id); if (i < 0) return;
-  if (locked(state.events[i])) { toast('契約簽下超過 1 小時，不能取消了。'); return; }
   const [ev] = state.events.splice(i, 1); state.deleted.push(id); commit();
   toast(`已刪除「${esc(eventTitle(ev))}」`, { label: '復原', fn: () => {
     state.deleted = state.deleted.filter(x => x !== id); state.events.push(ev); commit(); } });
@@ -1031,8 +931,6 @@ function logHabit(id, btn) {
   const nb = document.querySelector(`[data-act="habit"][data-id="${CSS.escape(id)}"]`);
   if (nb && !reducedMotion()) { nb.classList.add('tapped'); const on = nb.querySelectorAll('.pips i.on'); if (counted && on.length) on[on.length - 1].classList.add('pop'); }
   if (counted && h.xp) flyXp(rect, `+${h.xp} XP`);
-  const bs = state.bundles.filter(b => b.habit === id);
-  if (bs.length) toast(`現在可以享受 ${bs.map(b => `${esc(b.icon)} ${esc(b.name)}`).join('、')}`, null, 'ac');
 }
 
 /* ---------- event normalisation (shared by inbox / paste / form) ---------- */
@@ -1041,8 +939,6 @@ function eventTitle(e) {
   if (e.type === 'habit') return state.habits.find(h => h.id === e.habit)?.name || e.habit;
   if (e.type === 'redeem') return `兌換：${e.reward?.name || ''}`;
   if (e.type === 'restraint' || e.type === 'relapse') return `${e.type === 'restraint' ? '忍住了' : '犯了'}：${state.bosses.find(b => b.id === e.boss)?.name || '已刪除的 Boss'}`;
-  if (e.type === 'contract_open') return `契約：${goalText(e.goal)}`;
-  if (e.type === 'freeze_buy') return '買了連續天數保護卡';
   return e.title || '紀錄';
 }
 function eventIcon(e) {
@@ -1051,8 +947,6 @@ function eventIcon(e) {
   if (e.type === 'redeem') return e.reward?.icon || '🎁';
   if (e.type === 'restraint') return '⚔️';
   if (e.type === 'relapse') return '🩹';
-  if (e.type === 'contract_open') return '📜';
-  if (e.type === 'freeze_buy') return '❄️';
   return e.icon || '⭐';
 }
 /* ---------- 資料檢查 ----------
@@ -1078,22 +972,8 @@ function validEvent(e) {
       ? { ...e, reward: { ...e.reward, name: str(e.reward.name, 80), icon: cleanIcon(e.reward.icon) || '🎁', cost: num(e.reward.cost, 0, 1e6) } } : null;
     case 'restraint': case 'relapse':   // 只整理已經有的欄位，同步時內容才不會變動
       return safeKey(e.boss) ? { ...e, ...(e.amount != null ? { amount: Math.round(num(e.amount, 0, 1e6)) } : {}), ...(e.note != null ? { note: str(e.note, 300) } : {}) } : null;
-    case 'contract_open': {   // 格式不對就整筆不收，不在這裡改內容（改了同步時會一直重推）
-      const g = e.goal, intIn = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
-      if (!g || typeof g !== 'object' || !/^\d{4}-\d{2}-\d{2}$/.test(e.week) || weekStart(e.week) !== e.week) return null;
-      if (!intIn(e.stake, 1, 1e6) || !Object.values(CONTRACT.mult).includes(e.mult)) return null;
-      const okGoal = g.kind === 'lc' ? intIn(g.target, 1, 1000) : g.kind === 'habit' ? safeKey(g.habit) && intIn(g.target, 1, 1000)
-        : g.kind === 'clean' ? safeKey(g.boss) && intIn(g.target, 0, 1000) : false;
-      return okGoal ? e : null;
-    }
-    case 'freeze_buy': return Number.isInteger(e.cost) && e.cost >= 0 && e.cost <= 1e4 ? e : null;
   }
   return null;
-}
-function validBundles(arr) {
-  if (!Array.isArray(arr)) return null;
-  return arr.filter(b => b && typeof b === 'object' && safeKey(b.id) && safeKey(b.habit)).slice(0, 50)
-    .map(b => ({ id: safeKey(b.id), name: str(b.name, 80) || '獎勵', icon: cleanIcon(b.icon) || '🎧', habit: safeKey(b.habit) }));
 }
 function validBosses(arr) {
   if (!Array.isArray(arr)) return null;
@@ -1134,11 +1014,8 @@ function validSettings(o) {
   if (typeof o.haptics === 'boolean') out.haptics = o.haptics;
   if (typeof o.hideLinkTip === 'boolean') out.hideLinkTip = o.hideLinkTip;
   if (Array.isArray(o.widgetHabits)) out.widgetHabits = o.widgetHabits.map(x => safeKey(x)).filter(Boolean).slice(0, 3);
-  if (o.birthday === '' || validMMDD(o.birthday)) out.birthday = o.birthday;
   return out;
 }
-
-const validMMDD = v => typeof v === 'string' && /^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(v);
 
 function normTags(t) {
   const arr = Array.isArray(t) ? t : typeof t === 'string' ? t.split(/[,，]/) : [];
@@ -1182,30 +1059,6 @@ function normalize(raw, source) {
     const amount = type === 'restraint' ? Math.round(num(raw.amount, 0, 1e6)) : 0;
     return { id: safeKey(raw.id) || `${type === 'restraint' ? 'rs' : 'rl'}-${compactTs(ts)}-${b.id}`, type, boss: b.id, ts,
       ...(amount ? { amount } : {}), ...(raw.note ? { note: str(raw.note, 300) } : {}), source };
-  }
-  if (type === 'contract_open') {
-    const g = raw.goal || {}, kind = String(g.kind || '').toLowerCase(), S = compute(), dk = dayKey(ts), wk = weekStart(dk);
-    let goal;
-    if (kind === 'lc') goal = { kind, target: Math.round(num(g.target, 1, 1000, 5)) };
-    else if (kind === 'habit') {
-      const h = state.habits.find(x => x.id === String(g.habit || '') || x.name === String(g.habit || ''));
-      if (!h) throw new Error(`找不到習慣「${str(g.habit, 60)}」`);
-      goal = { kind, habit: h.id, target: Math.round(num(g.target, 1, 1000, 3)) };
-    } else if (kind === 'clean') {
-      const b = state.bosses.find(x => x.id === String(g.boss || '') || x.name === String(g.boss || ''));
-      if (!b) throw new Error(`找不到惡習 Boss「${str(g.boss, 60)}」`);
-      goal = { kind, boss: b.id, target: Math.round(num(g.target, 0, 1000, 0)) };
-    } else throw new Error('goal.kind 必須是 habit / lc / clean');
-    const stake = Math.round(num(raw.stake, 0, 1e6));
-    const err = contractProblem(S, goal, stake, dk);
-    if (err) throw new Error(err);
-    return { id: safeKey(raw.id) || `ct-${compactTs(ts)}`, type, ts, week: wk, goal, stake, mult: contractMult(S, goal, dk), source };
-  }
-  if (type === 'freeze_buy') {
-    const S = compute();
-    if (S.freezesHeld >= FREEZE.max) throw new Error(`保護卡最多持有 ${FREEZE.max} 張`);
-    if (S.balance < FREEZE.cost) throw new Error('代幣不夠買保護卡');
-    return { id: safeKey(raw.id) || `fz-${compactTs(ts)}`, type, ts, cost: FREEZE.cost, source };
   }
   throw new Error(`不支援的 type「${type || '（空白）'}」`);
 }
@@ -1404,11 +1257,11 @@ function logItem(e, S, withDay) {
     sub = `<span class="tagd" style="background:${d.color}">${d.name}</span>${[by, ev, tg, sm, r.tag].filter(Boolean).map(esc).join('，')}`
       + (e.verdict === 'accepted' && !e.leetcode_submitted ? ` <button class="mini" data-act="submitted" data-id="${esc(e.id)}">標記官方提交通過</button>` : '');
   } else sub = esc([e.note, r.tag].filter(Boolean).join('，'));
-  const rw = r.coins < 0 ? `<span class="rw neg">${fmt(r.coins)} <i class="coin sm"></i></span>`
+  const rw = e.type === 'redeem' ? `<span class="rw neg">${fmt(r.coins)} <i class="coin sm"></i></span>`
           : r.xp || r.coins ? `<span class="rw">+${r.xp} XP</span>` : `<span class="rw dim">—</span>`;
   return `<li><span class="t">${withDay ? '' : ''}${hhmm(e.ts)}</span><span class="i" aria-hidden="true">${esc(eventIcon(e))}</span>
     <span class="ttl">${esc(eventTitle(e))}${sub ? `<span class="sub">${sub}</span>` : ''}</span>${rw}
-    ${locked(e) ? '<span></span>' : `<button class="btn-x" data-act="del" data-id="${esc(e.id)}" aria-label="刪除這筆紀錄" title="刪除">×</button>`}</li>`;
+    <button class="btn-x" data-act="del" data-id="${esc(e.id)}" aria-label="刪除這筆紀錄" title="刪除">×</button></li>`;
 }
 
 function viewToday(S) {
@@ -1426,7 +1279,7 @@ function viewToday(S) {
   const linkTip = fs.status !== 'linked' && !state.settings.hideLinkTip && !(fs.status === 'unsupported' && cloud.session)
     ? `<div class="callout"><span>${fs.status === 'needs-permission' ? '瀏覽器需要你再按一次，才能繼續讀取 Goal 資料夾。' : fs.status === 'unsupported' ? '這裡不能讀取資料夾。到設定登入雲端同步，就能和筆電共用紀錄。' : '連結 Goal 資料夾後，AI 判題結果會自動入帳，紀錄也會存進雲端硬碟。'}</span>
        <span class="btns">${fs.status === 'unsupported' ? '<button class="btn btn-brass" data-tab="settings">去設定登入</button>' : `<button class="btn btn-brass" data-act="${fs.status === 'needs-permission' ? 'regrant' : 'link'}">${fs.status === 'needs-permission' ? '繼續讀取資料夾' : '連結 Goal 資料夾'}</button>`}<button class="btn btn-ghost" data-act="hidetip">不用了</button></span></div>` : '';
-  return `${contractPanel(S, tk)}${linkTip}<div class="grid2"><div>
+  return `${linkTip}<div class="grid2"><div>
     <section class="panel"><h2>今天做了什麼？</h2><p class="hint">點一下記一次。圓點是今天的次數和上限。</p><div class="habits">${habits}</div></section>
     <section class="panel"><h2>記錄解題</h2><p class="hint">用 AI 判題會自動入帳；這裡是手動補登。</p>
       <form id="lcform" autocomplete="off">
@@ -1458,12 +1311,12 @@ function heatmap(S) {
   for (let i = 0; i < 140; i++) {
     const k = addDays(start, i);
     if (k > tk) { cells += '<i class="fut"></i>'; continue; }
-    const x = S.days[k]?.xp || 0, fz = S.frozen.has(k);
+    const x = S.days[k]?.xp || 0;
     const l = x === 0 ? 0 : x < 20 ? 1 : x < 50 ? 2 : x < 100 ? 3 : 4;
-    cells += `<i class="${l ? 'l' + l : ''}${fz ? ' frz' : ''}${k === tk ? ' today' : ''}" title="${k}：${fz ? '保護卡補上' : x + ' XP'}"></i>`;
+    cells += `<i class="${l ? 'l' + l : ''}${k === tk ? ' today' : ''}" title="${k}：${x} XP"></i>`;
   }
   return `<div class="heat" role="img" aria-label="最近 20 週每天的 XP">${cells}</div>
-    <div class="legend">${S.frozen.size ? '<i class="frz"></i> 保護卡　' : ''}少 <i style="background:rgba(0,0,0,.24)"></i><i class="l1" style="background:rgba(214,162,67,.32)"></i><i style="background:rgba(214,162,67,.55)"></i><i style="background:rgba(214,162,67,.8)"></i><i style="background:var(--brass-hi)"></i> 多</div>`;
+    <div class="legend">少 <i style="background:rgba(0,0,0,.24)"></i><i class="l1" style="background:rgba(214,162,67,.32)"></i><i style="background:rgba(214,162,67,.55)"></i><i style="background:rgba(214,162,67,.8)"></i><i style="background:var(--brass-hi)"></i> 多</div>`;
 }
 function viewBadges(S) {
   return Object.entries(CATS).map(([cid, c]) => {
@@ -1486,31 +1339,15 @@ function viewShop(S) {
         <span><button class="btn-x" data-act="delreward" data-id="${esc(r.id)}" aria-label="移除這個獎勵" title="移除">×</button>
         <button class="btn btn-brass" data-act="redeem" data-id="${esc(r.id)}" ${short > 0 ? 'disabled' : ''}>兌換</button></span></div></div>`;
   }).join('');
-  const fShort = FREEZE.cost - S.balance, fFull = S.freezesHeld >= FREEZE.max;
-  const freeze = `<div class="ticket freeze"><span class="tic" aria-hidden="true">❄️</span><b>連續天數保護卡</b>
-      <span class="cost"><i class="coin sm"></i>${fmt(FREEZE.cost)}</span>
-      <p class="fdesc">沒紀錄的那天自動用掉一張，連續天數不中斷。要在那天結束前就持有。</p>
-      <div class="act"><span class="short">持有 <span class="num">${S.freezesHeld} / ${FREEZE.max}</span>${S.freezesUsed ? `，用過 <span class="num">${S.freezesUsed}</span> 張` : ''}</span>
-        <button class="btn btn-brass" data-act="buyfreeze" ${fFull || fShort > 0 ? 'disabled' : ''}>${fFull ? '已滿' : fShort > 0 ? `還差 ${fmt(fShort)}` : '購買'}</button></div></div>`;
-  const history = state.events.filter(e => e.type === 'redeem' || e.type === 'freeze_buy').sort((a, b) => tms(b.ts) - tms(a.ts)).slice(0, 12);
-  const bundles = state.bundles.map(b => { const h = state.habits.find(x => x.id === b.habit);
-    return `<li><span class="i" aria-hidden="true">${esc(b.icon)}</span><span class="ttl">${esc(b.name)}<span class="sub">只在${h ? `「${esc(h.icon)} ${esc(h.name)}」` : '（習慣已刪除）'}的時候享受</span></span>
-      <button class="btn-x" data-act="delbundle" data-id="${esc(b.id)}" aria-label="移除這個綁定" title="移除">×</button></li>`; }).join('');
+  const history = state.events.filter(e => e.type === 'redeem').sort((a, b) => tms(b.ts) - tms(a.ts)).slice(0, 12);
   return `<section class="panel"><h2>獎勵商店</h2><p class="hint">你有 <span class="num" style="color:var(--brass-hi);font-size:18px">${fmt(S.balance)}</span> 代幣。兌換後就真的去享受它。</p>
-      <div class="tickets">${freeze}${tickets}</div>${tickets ? '' : '<p class="empty">還沒有自訂獎勵，在下面新增一個。</p>'}</section>
+      <div class="tickets">${tickets || '<p class="empty">還沒有獎勵，在下面新增一個。</p>'}</div></section>
     <div class="grid2"><div><section class="panel"><h2>新增獎勵</h2><p class="hint">訂一個讓你期待的東西，價格決定要努力多久。</p>
       <form id="rewardform" autocomplete="off"><div class="row">
         <label class="field" style="width:70px">圖示<input class="in" name="icon" value="🎁" maxlength="4"></label>
         <label class="field grow">名稱<input class="in" name="name" placeholder="週末看電影" required></label>
         <label class="field" style="width:100px">代幣<input class="in num" name="cost" type="number" min="1" value="200" required></label>
-        <button class="btn btn-brass" type="submit">新增獎勵</button></div></form></section>
-      <section class="panel"><h2>綁定獎勵</h2><p class="hint">喜歡的東西只在做某件事時享受，例如「這個 podcast 只在跑步時聽」。打卡那個習慣後會提醒你。</p>
-        ${bundles ? `<ul class="log bundles">${bundles}</ul>` : ''}
-        <form id="bundleform" autocomplete="off"><div class="row">
-          <label class="field" style="width:70px">圖示<input class="in" name="icon" value="🎧" maxlength="4"></label>
-          <label class="field grow">享受什麼<input class="in" name="name" placeholder="追的 podcast" required></label>
-          <label class="field" style="width:170px">只在做這件事時<select class="in" name="habit">${state.habits.map(h => `<option value="${esc(h.id)}">${esc(h.icon)} ${esc(h.name)}</option>`).join('')}</select></label>
-          <button class="btn btn-brass" type="submit">綁定</button></div></form></section></div>
+        <button class="btn btn-brass" type="submit">新增獎勵</button></div></form></section></div>
     <div><section class="panel"><h2>兌換紀錄</h2>${history.length ? `<ul class="log">${history.map(e => logItem(e, S)).join('')}</ul>` : '<p class="empty">還沒有兌換過。</p>'}</section></div></div>`;
 }
 /* ---------- 惡習 Boss ---------- */
@@ -1581,123 +1418,6 @@ function bossRelapse(id) {
   if (card && !reducedMotion()) card.classList.add('heal');
   const tag = compute().per[ev.id]?.tag || '';
   toast(`記下了。${esc(tag)}。不歸零，明天繼續打。`, { label: '按錯了', fn: () => removeEvent(ev.id) });
-}
-
-/* ---------- 承諾契約 ---------- */
-const CONTRACT_SKIP = 'goal.contractSkip';
-let contractForm = false;   // 「今天」頁的開局表單是否展開
-function daysBetween(a, b) { const u = k => { const [y, m, d] = k.split('-').map(Number); return Date.UTC(y, m - 1, d); }; return Math.round((u(b) - u(a)) / 864e5); }
-function goalText(g) {
-  if (g.kind === 'lc') return `解 ${g.target} 題 LeetCode`;
-  if (g.kind === 'habit') return `${state.habits.find(h => h.id === g.habit)?.name || '已刪除的習慣'} ${g.target} 次`;
-  const n = state.bosses.find(b => b.id === g.boss)?.name || '已刪除的 Boss';
-  return g.target ? `${n}：最多犯 ${g.target} 次` : `${n}：一次都不犯`;
-}
-const goalIcon = g => g.kind === 'lc' ? '🧩' : g.kind === 'habit' ? state.habits.find(h => h.id === g.habit)?.icon || '•' : state.bosses.find(b => b.id === g.boss)?.icon || '👹';
-const sameGoal = (a, b) => a.kind === b.kind && a.habit === b.habit && a.boss === b.boss;
-function parseGoal(v, target) {
-  v = String(v || ''); const i = v.indexOf(':'), kind = i < 0 ? v : v.slice(0, i), id = v.slice(i + 1), t = Math.round(Number(target) || 0);
-  return kind === 'lc' ? { kind, target: t } : kind === 'habit' ? { kind, habit: id, target: t } : kind === 'clean' ? { kind, boss: id, target: t } : null;
-}
-// 最近 4 週（不含本週）平均每週幾次；「預期」再按本週剩下的天數打折
-const contractBase = (S, g, wk) => goalHits(S.hits, g).filter(h => h.day >= addDays(wk, -28) && h.day < wk).length / 4;
-function contractExpect(S, g, dk) { const wk = weekStart(dk); return contractBase(S, g, wk) * (daysBetween(dk, addDays(wk, 6)) + 1) / 7; }
-function contractMult(S, g, dk) {
-  const exp = contractExpect(S, g, dk);
-  return (g.kind === 'clean' ? g.target < exp : g.target > exp) ? CONTRACT.mult.hard : CONTRACT.mult.normal;
-}
-function suggestTarget(S, g, dk) {
-  const exp = contractExpect(S, g, dk);
-  if (g.kind === 'clean') return Math.max(0, Math.ceil(exp) - 1);
-  return Math.min(Math.max(1, Math.floor(exp) + 1), habitCap(g, dk));
-}
-function habitCap(g, dk) {   // 習慣一天有上限，這週（含緩衝日）最多做得到幾次
-  const h = g.kind === 'habit' && state.habits.find(x => x.id === g.habit);
-  return h ? h.dailyMax * (daysBetween(dk, addDays(weekStart(dk), 7)) + 1) : 1000;
-}
-function contractProblem(S, g, stake, dk) {
-  const wk = weekStart(dk), mine = S.contracts.filter(c => c.week === wk);
-  if (mine.length >= CONTRACT.perWeek) return `這週已經有 ${CONTRACT.perWeek} 份契約了`;
-  if (mine.some(c => sameGoal(c.goal, g))) return '這週已經有一樣的契約了';
-  if (g.kind === 'habit' && !hasHabit(g.habit)) return '找不到這個習慣';
-  if (g.kind === 'clean' && !state.bosses.some(b => b.id === g.boss)) return '找不到這個惡習 Boss';
-  if (!Number.isInteger(g.target) || g.target < (g.kind === 'clean' ? 0 : 1)) return g.kind === 'clean' ? '次數不能是負的' : '目標至少 1 次';
-  if (g.target > habitCap(g, dk)) return `這週剩下的天數做不到 ${g.target} 次（每天上限 ${state.habits.find(x => x.id === g.habit).dailyMax} 次）`;
-  if (!Number.isInteger(stake) || stake < CONTRACT.minStake) return `押金至少 ${CONTRACT.minStake} 代幣`;
-  if (stake > S.balance) return `代幣不夠，你現在有 ${fmt(S.balance)}`;
-  return '';
-}
-function freshStart(tk) {
-  const [y, m, d] = tk.split('-').map(Number);
-  if (state.settings.birthday && tk.slice(5) === state.settings.birthday) return '生日快樂！新的一歲，開一局吧。';
-  if (d === 1) return `${m} 月 1 日，新的一個月。`;
-  if (new Date(y, m - 1, d).getDay() === 1) return '週一，新的一週開始了。';
-  return '';
-}
-function contractCard(c, tk) {
-  const g = c.goal, left = daysBetween(tk, c.end) + 1, hard = c.mult === CONTRACT.mult.hard;
-  const span = daysBetween(dayKey(c.ts), c.end) + 1;
-  const pct = g.kind === 'clean' ? (c.status === 'active' ? clamp(daysBetween(dayKey(c.ts), tk) / span, 0, 1) : 1) : Math.min(c.count, g.target) / g.target;
-  const prog = g.kind === 'clean' ? `犯了 <b class="num">${c.count}</b> 次<span class="dim">（上限 ${g.target}）</span>` : `<b class="num">${Math.min(c.count, g.target)} / ${g.target}</b>`;
-  const when = c.status === 'done' ? `達成！拿回 ${fmt(c.payout)} 代幣` : c.status === 'failed' ? `沒達成，押金 ${fmt(c.stake)} 沒收`
-    : g.kind === 'clean' ? (left <= 1 ? '撐過今天就達成' : `撐到週日就達成，還有 ${left} 天`)
-    : tk === c.end ? '今天是緩衝日，最後機會' : `還剩 ${left} 天（含 1 天緩衝）`;
-  const undo = c.status === 'active' && Date.now() - tms(c.ts) < CONTRACT.undoMs ? `<button class="mini" data-act="del" data-id="${esc(c.id)}">取消</button>` : '';
-  return `<div class="contract ${c.status}">
-    <div class="chead"><span class="cico" aria-hidden="true">${esc(goalIcon(g))}</span><b>${esc(goalText(g))}</b>${undo}</div>
-    <div class="bar" role="progressbar" aria-valuenow="${Math.round(pct * 100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct * 100}%"></i></div>
-    <div class="cline"><span>${prog}</span><span>${when}</span></div>
-    <div class="cstake"><i class="coin sm"></i> 押 <span class="num">${fmt(c.stake)}</span> → 拿回 <span class="num">${fmt(c.payout)}</span>${hard ? '<span class="chard">挑戰 ×2</span>' : '<span class="dim">×1.5</span>'}</div></div>`;
-}
-function contractOptions(S, wk) {
-  const taken = S.contracts.filter(c => c.week === wk).map(c => c.goal);
-  return [...state.habits.map(h => [`habit:${h.id}`, `${h.icon} ${h.name}`, { kind: 'habit', habit: h.id }]), ['lc', '🧩 解 LeetCode', { kind: 'lc' }],
-    ...state.bosses.map(b => [`clean:${b.id}`, `${b.icon} 不犯：${b.name}`, { kind: 'clean', boss: b.id }])].filter(o => !taken.some(t => sameGoal(t, o[2])));
-}
-function contractPreview(S, g, stake, tk) {
-  const avg = contractBase(S, g, weekStart(tk)), mult = contractMult(S, g, tk), err = contractProblem(S, g, stake, tk);
-  const base = `最近 4 週平均每週${g.kind === 'clean' ? '犯' : ''} ${Math.round(avg * 10) / 10} 次${g.kind === 'clean' ? '，比平均少就是挑戰' : '，比平均多就是挑戰'}。`;
-  return err ? `<span class="warn">${esc(err)}</span>` : `達成拿回 <b class="num">${fmt(Math.round(stake * mult))}</b> 代幣${mult === CONTRACT.mult.hard ? '（挑戰目標 ×2）' : '（×1.5）'}。${base}`;
-}
-const targetLabel = g => g && g.kind === 'clean' ? '最多犯幾次' : g && g.kind === 'lc' ? '題數' : '次數';
-function contractFormHTML(S, tk) {
-  if (S.balance < CONTRACT.minStake) return `<p class="empty">代幣還不夠押注（至少 ${CONTRACT.minStake}）。先打卡賺一點再來。</p>`;
-  const opts = contractOptions(S, weekStart(tk)); if (!opts.length) return '';
-  const g = { ...opts[0][2] }; g.target = suggestTarget(S, g, tk);
-  const stake = Math.min(100, Math.floor(S.balance / 10) * 10 || S.balance);
-  return `<form id="cform" autocomplete="off"><div class="row">
-      <label class="field grow">本週目標<select class="in" name="goal">${opts.map(([v, n]) => `<option value="${esc(v)}">${esc(n)}</option>`).join('')}</select></label>
-      <label class="field" style="width:110px"><span id="ctlabel">${targetLabel(g)}</span><input class="in num" name="target" type="number" min="0" inputmode="numeric" value="${g.target}" required></label>
-      <label class="field" style="width:110px">押金<input class="in num" name="stake" type="number" min="${CONTRACT.minStake}" max="${S.balance}" step="10" inputmode="numeric" value="${stake}" required></label></div>
-    <p class="cprev" id="cprev">${contractPreview(S, g, stake, tk)}</p>
-    <div class="btns"><button class="btn btn-brass" type="submit">簽下契約</button><button class="btn btn-ghost" type="button" data-act="cskip">先不要</button></div></form>`;
-}
-function contractPanel(S, tk) {
-  const wk = weekStart(tk), n = S.contracts.filter(c => c.week === wk).length, fresh = freshStart(tk);
-  const shown = S.contracts.filter(c => c.week === wk || c.end >= addDays(tk, -1)).sort((a, b) => tms(a.ts) - tms(b.ts));
-  const canOpen = n < CONTRACT.perWeek && contractOptions(S, wk).length > 0;
-  const showForm = canOpen && (contractForm || (fresh && !n && lsGet(CONTRACT_SKIP) !== tk));
-  if (!shown.length && !showForm) return `<div class="callout cbar"><span>📜 本週還沒開局。押一點代幣在本週目標上，達成拿回 ${CONTRACT.mult.normal}～${CONTRACT.mult.hard} 倍。</span>
-    <span class="btns"><button class="btn btn-brass" data-act="cform">開局</button></span></div>`;
-  const intro = fresh && !n ? `${esc(fresh)}選一個本週目標押代幣：達成拿回 ${CONTRACT.mult.normal}～${CONTRACT.mult.hard} 倍，沒達成押金沒收。` : `本週 ${n} / ${CONTRACT.perWeek} 份。簽約之後的紀錄才算，簽約後 1 小時內可以取消。`;
-  return `<section class="panel cpanel"><h2>${fresh && !n ? '新的開始' : '本週契約'}</h2><p class="hint">${intro}</p>
-    ${shown.length ? `<div class="contracts">${shown.map(c => contractCard(c, tk)).join('')}</div>` : ''}
-    ${showForm ? contractFormHTML(S, tk) : canOpen ? `<div class="btns" style="margin-top:14px"><button class="btn btn-ghost" data-act="cform">再開一份契約</button></div>` : ''}</section>`;
-}
-function updateContractForm(f, goalChanged) {
-  const S = compute(), tk = todayKey(), g = parseGoal(f.elements.goal.value, f.elements.target.value);
-  if (!g) return;
-  if (goalChanged) { g.target = suggestTarget(S, g, tk); f.elements.target.value = g.target; $('#ctlabel').textContent = targetLabel(g); }
-  $('#cprev').innerHTML = contractPreview(S, g, Math.round(Number(f.elements.stake.value) || 0), tk);
-}
-function openContract(fd) {
-  const S = compute(), tk = todayKey(), goal = parseGoal(fd.get('goal'), fd.get('target')), stake = Math.round(Number(fd.get('stake')) || 0);
-  const err = goal ? contractProblem(S, goal, stake, tk) : '請選一個目標';
-  if (err) { toast(esc(err)); return; }
-  const mult = contractMult(S, goal, tk);
-  addEvent({ id: uid('ct'), type: 'contract_open', ts: nowISO(), week: weekStart(tk), goal, stake, mult, source: 'manual' });
-  contractForm = false; commit(); chime('quest'); haptic('success');
-  toast(`<b>簽下契約：${esc(goalText(goal))}</b><br><span class="dim">押 ${fmt(stake)} 代幣，達成拿回 ${fmt(Math.round(stake * mult))}。1 小時內可以取消。</span>`, null, 'ac');
 }
 
 /* ---------- 今日任務 ---------- */
@@ -1860,9 +1580,8 @@ function viewSettings(S) {
       <div class="row"><label class="field" style="min-width:200px">一天從幾點開始算
         <select class="in" id="dayStart">${[0,1,2,3,4,5,6].map(h => `<option value="${h}" ${state.settings.dayStartHour === h ? 'selected' : ''}>凌晨 ${h} 點</option>`).join('')}</select></label>
         <label class="field" style="min-width:140px">震動<select class="in" id="haptics"><option value="1" ${state.settings.haptics !== false ? 'selected' : ''}>開</option><option value="0" ${state.settings.haptics === false ? 'selected' : ''}>關</option></select></label>
-        <label class="field" style="min-width:140px">音效<select class="in" id="sound"><option value="1" ${state.settings.sound ? 'selected' : ''}>開</option><option value="0" ${state.settings.sound ? '' : 'selected'}>關</option></select></label>
-        <label class="field" style="width:140px">生日（月-日）<input class="in num" id="birthday" value="${esc(state.settings.birthday || '')}" placeholder="03-14" maxlength="5" inputmode="numeric"></label></div>
-      <p class="hint" style="margin-top:12px;margin-bottom:0">凌晨 2 點做的事會算進前一天，熬夜不會讓連續天數中斷。週一、每月 1 號和生日，「今天」頁會跳出開局畫面。</p>
+        <label class="field" style="min-width:140px">音效<select class="in" id="sound"><option value="1" ${state.settings.sound ? 'selected' : ''}>開</option><option value="0" ${state.settings.sound ? '' : 'selected'}>關</option></select></label></div>
+      <p class="hint" style="margin-top:12px;margin-bottom:0">凌晨 2 點做的事會算進前一天，熬夜不會讓連續天數中斷。</p>
       <div class="row" style="margin-top:16px">${[0, 1, 2].map(i => `<label class="field grow">手機小工具按鈕 ${i + 1}<select class="in" data-wh="${i}">${state.habits.map(h => `<option value="${esc(h.id)}" ${widgetHabitIds()[i] === h.id ? 'selected' : ''}>${esc(h.icon)} ${esc(h.name)}</option>`).join('')}</select></label>`).join('')}</div></section>
     <section class="panel"><h2>備份</h2><p class="hint">匯入備份會和現有紀錄合併，不會覆蓋。</p>
       <div class="btns"><button class="btn btn-ghost" data-act="export">下載備份</button><label class="btn btn-ghost" style="cursor:pointer">匯入備份<input type="file" id="importfile" accept=".json,application/json" class="sr"></label></div></section>
@@ -1875,7 +1594,7 @@ function viewSettings(S) {
 /* ---------- 慶祝效果：升級、徽章、每日任務、每次打卡 ----------
    celebrations 依序播放：同一次變動先播徽章，最後播升級。 */
 const celebrations = [];
-const LV_SEEN = 'goal.levelSeen', QUEST_SEEN = 'goal.questSeen', WEEK_SEEN = 'goal.weekSeen', BOSS_SEEN = 'goal.bossSeen', CONTRACT_SEEN = 'goal.contractSeen', FREEZE_SEEN = 'goal.freezeSeen';
+const LV_SEEN = 'goal.levelSeen', QUEST_SEEN = 'goal.questSeen', WEEK_SEEN = 'goal.weekSeen', BOSS_SEEN = 'goal.bossSeen';
 let levelReady = false;          // 開機載入（資料夾、雲端）完成前不判斷升級，避免把舊紀錄當成剛升級
 let pendingStamp = false;
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1897,19 +1616,6 @@ function checkMilestones(S) {
     }
   }
   if (bchanged) lsSet(BOSS_SEEN, JSON.stringify(bseen));
-  // 契約結算：這台裝置第一次看到的契約只記下狀態，從進行中變成達成或沒達成時才提示
-  let cseen = {}; try { cseen = JSON.parse(lsGet(CONTRACT_SEEN)) || {}; } catch (e) { /* ignore */ }
-  const cnext = {};
-  for (const c of S.contracts) {
-    cnext[c.id] = c.status;
-    if (cseen[c.id] !== 'active' || c.status === 'active') continue;
-    if (c.status === 'done') { haptic('success'); chime('quest'); toast(`<b>契約達成！</b><br><span class="dim">${esc(goalText(c.goal))}，拿回 ${fmt(c.payout)} 代幣</span>`, null, 'ac'); }
-    else toast(`「${esc(goalText(c.goal))}」沒達成，押金 ${fmt(c.stake)} 沒收。新的一週再開一局。`);
-  }
-  if (JSON.stringify(cnext) !== JSON.stringify(cseen)) lsSet(CONTRACT_SEEN, JSON.stringify(cnext));
-  const fseen = lsGet(FREEZE_SEEN);
-  if (fseen !== null && S.freezesUsed > Number(fseen)) toast(`有一天沒紀錄，用掉 ${S.freezesUsed - Number(fseen)} 張保護卡，連續 ${S.streak} 天保住了 ❄️`, null, 'ac');
-  if (fseen === null || S.freezesUsed !== Number(fseen)) lsSet(FREEZE_SEEN, S.freezesUsed);
   const seen = Number(lsGet(LV_SEEN)) || 0;
   if (!seen) lsSet(LV_SEEN, S.level);
   else if (S.level > seen) { celebrations.push({ type: 'level', from: seen, to: S.level, need: S.need - S.into }); lsSet(LV_SEEN, S.level); }
@@ -2248,7 +1954,6 @@ function mergeState(remote) {
     habits: Array.isArray(newer.habits) && newer.habits.length ? newer.habits : state.habits,
     rewards: Array.isArray(newer.rewards) ? newer.rewards : state.rewards,
     bosses: validBosses(newer.bosses) || state.bosses,
-    bundles: validBundles(newer.bundles) || state.bundles,
     problems: mergeProblems(state.problems || {}, remote.problems || {}),
     importedLists: [...new Set([...(state.importedLists || []), ...(remote.importedLists || [])])],
     settings: { ...state.settings, ...(newer.settings || {}) }, seedVersion: newer.seedVersion || 1 };
@@ -2313,7 +2018,7 @@ async function sbRest(path, opt = {}, retry = true) {
   if (!r.ok) { const t = await r.text().catch(() => ''); throw new Error(`雲端回應 ${r.status}：${t.slice(0, 140)}`); }
   const txt = await r.text(); return txt ? JSON.parse(txt) : null;
 }
-const metaPayload = () => ({ habits: state.habits, rewards: state.rewards, bosses: state.bosses, bundles: state.bundles, settings: state.settings, problems: state.problems,
+const metaPayload = () => ({ habits: state.habits, rewards: state.rewards, bosses: state.bosses, settings: state.settings, problems: state.problems,
   unlocked: state.unlocked, importedLists: state.importedLists, metaAt: state.metaAt || state.updatedAt });
 function touchMeta() { state.metaAt = nowISO(); }
 function scheduleCloudSync(delay = 2500) {
@@ -2362,11 +2067,10 @@ async function syncNow() {
       const lists = Array.isArray(remote.importedLists) ? remote.importedLists.map(x => str(x, 120)) : [];
       state.importedLists = [...new Set([...(state.importedLists || []), ...lists])];
       if (tms(remote.metaAt) > tms(state.metaAt)) {
-        const hb = validHabits(remote.habits), rw = validRewards(remote.rewards), bs = validBosses(remote.bosses), bd = validBundles(remote.bundles);
+        const hb = validHabits(remote.habits), rw = validRewards(remote.rewards), bs = validBosses(remote.bosses);
         if (hb) state.habits = hb;
         if (rw) state.rewards = rw;
-        if (bs) state.bosses = bs;          // 舊版 App 推上來的設定沒有 bosses、bundles，這時保留本機的
-        if (bd) state.bundles = bd;
+        if (bs) state.bosses = bs;          // 舊版 App 推上來的設定沒有 bosses，這時保留本機的
         state.settings = { ...state.settings, ...validSettings(remote.settings), hideLinkTip: state.settings.hideLinkTip };
         state.metaAt = remote.metaAt;
       }
@@ -2509,18 +2213,6 @@ document.addEventListener('click', e => {
     addEvent({ id: uid('rd'), type: 'redeem', ts: nowISO(), reward: { id: r.id, name: r.name, icon: r.icon, cost: r.cost }, source: 'manual' });
     commit(); chime('tick'); toast(`已兌換「${esc(r.name)}」，去享受吧。`);
   }
-  else if (act === 'buyfreeze') {
-    const S = compute(); if (S.balance < FREEZE.cost || S.freezesHeld >= FREEZE.max) return;
-    addEvent({ id: uid('fz'), type: 'freeze_buy', ts: nowISO(), cost: FREEZE.cost, source: 'manual' });
-    commit(); chime('tick'); haptic('tap'); toast('買了一張保護卡。哪天忙到沒紀錄，它會自動補上 ❄️');
-  }
-  else if (act === 'cform') { contractForm = true; render(); const f = $('#cform'); if (f) f.scrollIntoView({ block: 'nearest', behavior: reducedMotion() ? 'auto' : 'smooth' }); }
-  else if (act === 'cskip') { contractForm = false; lsSet(CONTRACT_SKIP, todayKey()); render(); }
-  else if (act === 'delbundle') {
-    const i = state.bundles.findIndex(x => x.id === id); if (i < 0) return;
-    const [b] = state.bundles.splice(i, 1); touchMeta(); save(); render();
-    toast(`已移除「${esc(b.name)}」`, { label: '復原', fn: () => { state.bundles.splice(i, 0, b); touchMeta(); save(); render(); } });
-  }
   else if (act === 'delreward') { state.rewards = state.rewards.filter(x => x.id !== id); touchMeta(); save(); render(); }
   else if (act === 'restrain') bossHit(id, t);
   else if (act === 'relapse') bossRelapse(id);
@@ -2578,13 +2270,6 @@ document.addEventListener('submit', e => {
   } else if (f.id === 'bossform') {
     const name = String(fd.get('name') || '').trim(); if (!name) return;
     addBoss({ name: str(name, 60), icon: cleanIcon(fd.get('icon')) || '👹', days: Number(fd.get('days')) || 14, money: !!fd.get('money') });
-  } else if (f.id === 'cform') {
-    openContract(fd);
-  } else if (f.id === 'bundleform') {
-    const name = str(String(fd.get('name') || '').trim(), 80), habit = safeKey(fd.get('habit'));
-    if (!name || !hasHabit(habit)) return;
-    state.bundles.push({ id: uid('bd'), name, icon: cleanIcon(fd.get('icon')) || '🎧', habit }); touchMeta(); save(); render();
-    toast(`綁定好了：${esc(name)} 只在「${esc(state.habits.find(h => h.id === habit).name)}」時享受`);
   } else if (f.id === 'cloudform') {
     cloudLogin(String(fd.get('email') || '').trim(), String(fd.get('password') || ''));
   }
@@ -2600,11 +2285,6 @@ document.addEventListener('change', e => {
     });
   } else if (t.id === 'dayStart') { state.settings.dayStartHour = Number(t.value); touchMeta(); save(); render(); }
   else if (t.id === 'sound') { state.settings.sound = t.value === '1'; touchMeta(); save(); }
-  else if (t.id === 'birthday') {
-    const v = t.value.trim().replace(/[/.]/g, '-').replace(/^(\d)-/, '0$1-').replace(/-(\d)$/, '-0$1');
-    if (v && !validMMDD(v)) { toast('生日請寫成「月-日」，例如 03-14'); t.value = state.settings.birthday || ''; return; }
-    state.settings.birthday = v; t.value = v; touchMeta(); save();
-  }
   else if (t.id === 'haptics') { state.settings.haptics = t.value === '1'; touchMeta(); save(); if (state.settings.haptics) haptic('success'); }
   else if (t.dataset.wh !== undefined) { const ids = [...widgetHabitIds()]; while (ids.length < 3) ids.push(DEFAULT_WIDGET_HABITS[ids.length]); ids[Number(t.dataset.wh)] = t.value; state.settings.widgetHabits = ids; touchMeta(); save(); render(); }
   else if (t.dataset.f) {
@@ -2617,8 +2297,6 @@ document.addEventListener('change', e => {
 });
 
 document.addEventListener('input', e => {
-  const cf = e.target.closest && e.target.closest('#cform');
-  if (cf) { updateContractForm(cf, e.target.name === 'goal'); return; }
   if (e.target.id === 'pq') { pf.q = e.target.value; const ul = $('#plist'); if (ul) ul.innerHTML = problemRows(compute()); }
 });
 document.addEventListener('change', e => {
