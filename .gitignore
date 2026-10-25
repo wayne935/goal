@@ -1,0 +1,15 @@
+# 私人資料：紀錄、AI 判題結果與題單、本機設定（這個 repo 是公開的）
+data/
+inbox/*
+!inbox/_example.json
+env.txt
+*.env
+.env*
+
+# Android 建置產物與相依套件（www/ 由 build-android.bat 從根目錄複製）
+node_modules/
+android-app/www/
+android-app/android/app/src/main/assets/public/
+*.keystore
+*.jks
+local.properties

@@ -1,0 +1,21 @@
+{
+  "schema": "goal.event/v1",
+  "id": "lc-20261020-031500-two-sum",
+  "type": "leetcode",
+  "ts": "2026-10-20T03:15:00+08:00",
+  "problem": { "id": 1, "slug": "two-sum", "title": "Two Sum", "difficulty": "easy", "tags": ["array", "hash-table"] },
+  "verdict": "accepted",
+  "evidence": {
+    "tests_passed": 18,
+    "tests_total": 18,
+    "edge_cases": ["最小長度 n=2", "含負數", "答案在陣列尾端", "重複值"],
+    "brute_force_crosscheck": true,
+    "random_trials": 300
+  },
+  "complexity": { "time": "O(n)", "space": "O(n)" },
+  "language": "python",
+  "reviewer": "claude-code",
+  "leetcode_submitted": false,
+  "notes": "這是範例檔。檔名以 _ 開頭，網頁會忽略它；複製一份並改掉檔名開頭的 _ 就能測試入帳。",
+  "file": "leetcode/0001_two_sum.py"
+}

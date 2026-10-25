@@ -1,0 +1,9 @@
+{
+  "appId": "com.wayne.goal",
+  "appName": "Goal",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#24473d",
+    "webContentsDebuggingEnabled": false
+  }
+}
