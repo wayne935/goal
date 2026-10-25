@@ -562,7 +562,7 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 7;
+const APP_BUILD = 8;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 const $ = (s, r = document) => r.querySelector(s);
@@ -784,16 +784,14 @@ function freshState() {
            habits: structuredClone(DEFAULT_HABITS), rewards: structuredClone(DEFAULT_REWARDS), bosses: [], bundles: [], problems: {}, importedLists: [],
            settings: { dayStartHour: 4, sound: true, hideLinkTip: false }, metaAt: '' };
 }
+function hydrate(raw) {
+  if (!raw || !Array.isArray(raw.events)) return freshState();
+  const base = freshState();
+  return { ...base, ...raw, settings: { ...base.settings, ...(raw.settings || {}) },
+           deleted: raw.deleted || [], unlocked: raw.unlocked || {}, seedVersion: raw.seedVersion || 1 };
+}
 function loadState() {
-  try {
-    const raw = JSON.parse(localStorage.getItem(LS_KEY));
-    if (raw && Array.isArray(raw.events)) {
-      const base = freshState();
-      return { ...base, ...raw, settings: { ...base.settings, ...(raw.settings || {}) },
-               deleted: raw.deleted || [], unlocked: raw.unlocked || {}, seedVersion: raw.seedVersion || 1 };
-    }
-  } catch (e) { /* storage unavailable or corrupt */ }
-  return freshState();
+  try { return hydrate(JSON.parse(localStorage.getItem(LS_KEY))); } catch (e) { return freshState(); }   // storage unavailable or corrupt
 }
 function migrate(st) {
   st.problems ||= {}; st.importedLists ||= []; st.bosses ||= []; st.bundles ||= [];
@@ -1963,7 +1961,7 @@ function viewHistory(S) {
 }
 function viewSettings(S) {
   const st = fs.status;
-  const statusText = st === 'linked' ? `已連結資料夾「${esc(fs.handle?.name || '')}」` : st === 'needs-permission' ? `已記住「${esc(fs.handle?.name || '')}」，需要再授權一次` : st === 'unsupported' ? '這個瀏覽器不支援讀取資料夾（請用 Chrome 或 Edge）' : '尚未連結資料夾';
+  const statusText = st === 'linked' && !folderMine() ? `資料夾「${esc(fs.handle?.name || '')}」是另一個帳號的紀錄，目前不讀也不寫` : st === 'linked' ? `已連結資料夾「${esc(fs.handle?.name || '')}」` : st === 'needs-permission' ? `已記住「${esc(fs.handle?.name || '')}」，需要再授權一次` : st === 'unsupported' ? '這個瀏覽器不支援讀取資料夾（請用 Chrome 或 Edge）' : '尚未連結資料夾';
   const habitRows = state.habits.map((h, i) => `<div class="hab-row" data-i="${i}">
       <input class="in" data-f="icon" value="${esc(h.icon)}" aria-label="圖示" maxlength="4">
       <input class="in" data-f="name" value="${esc(h.name)}" aria-label="名稱">
@@ -2293,7 +2291,7 @@ function playStamp() {
 }
 
 /* ---------- folder link (File System Access API) ---------- */
-const fs = { status: 'none', handle: null, seen: new Set(), errors: [], lastScan: 0, lastSave: 0, saveTimer: null, scanning: false };
+const fs = { status: 'none', owner: '', handle: null, seen: new Set(), errors: [], lastScan: 0, lastSave: 0, saveTimer: null, scanning: false };
 const idb = (() => {
   const open = () => new Promise((res, rej) => { const r = indexedDB.open('goal-fs', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
   return {
@@ -2334,7 +2332,12 @@ async function loadDataFile() {
   try {
     const d = await sub('data');
     let fh; try { fh = await d.getFileHandle('goal-data.json'); } catch (e) { fh = null; }
-    if (fh) { const remote = JSON.parse(await (await fh.getFile()).text()); mergeState(remote); }
+    if (fh) {
+      const remote = JSON.parse(await (await fh.getFile()).text());
+      fs.owner = typeof remote?.owner === 'string' ? remote.owner : '';
+      if (!folderMine()) { fsError('這個資料夾是另一個帳號的紀錄，沒有讀取也不會寫入'); return; }
+      mergeState(remote);
+    }
     try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
     await writeDataFile(); checkUnlocks();
   } catch (e) { handleFsFailure(e, '讀取 data/goal-data.json 失敗'); }
@@ -2343,16 +2346,18 @@ function scheduleFileSave() {
   if (fs.status !== 'linked') return;
   clearTimeout(fs.saveTimer); fs.saveTimer = setTimeout(writeDataFile, 700);
 }
+// 資料夾裡的紀錄屬於某一個帳號：換別的帳號登入時不讀、不寫、不收 inbox
+const folderMine = () => !fs.owner || !state.owner || fs.owner === state.owner;
 async function writeDataFile() {
-  if (fs.status !== 'linked') return;
+  if (fs.status !== 'linked' || !folderMine()) return;
   try {
     const fh = await (await sub('data')).getFileHandle('goal-data.json', { create: true });
     const w = await fh.createWritable(); await w.write(JSON.stringify(state, null, 1)); await w.close();
-    fs.lastSave = Date.now();
+    fs.lastSave = Date.now(); if (state.owner) fs.owner = state.owner;
   } catch (e) { handleFsFailure(e, '儲存 data/goal-data.json 失敗'); }
 }
 async function scanInbox() {
-  if (fs.status !== 'linked' || fs.scanning) return;
+  if (fs.status !== 'linked' || fs.scanning || !folderMine()) return;
   fs.scanning = true;
   const total = { added: 0, skipped: 0, errors: [], items: [] };
   try {
@@ -2473,7 +2478,7 @@ function scheduleCloudSync(delay = 2500) {
   clearTimeout(cloud.timer); cloud.timer = setTimeout(() => syncNow(), delay);
 }
 async function syncNow() {
-  if (!cloud.session) return;
+  if (!cloud.session || state.owner !== myUid()) return;   // 本機紀錄不是這個帳號的就不同步（見 bindAccount）
   if (cloud.busy) { cloud.again = true; return; }
   if (!navigator.onLine) { cloud.status = 'offline'; renderCloud(); return; }
   cloud.busy = true; cloud.status = 'syncing'; cloud.error = ''; renderCloud();
@@ -2550,13 +2555,60 @@ async function syncNow() {
   if (cloud.again) { cloud.again = false; scheduleCloudSync(500); }
   if (cloud.status === 'ok') syncParty();   // 隊伍失敗不影響同步狀態
 }
+/* ---------- 本機紀錄屬於哪個帳號 ----------
+   瀏覽器裡的紀錄（goal.v1）綁定一個帳號（state.owner）。換另一個帳號登入時，
+   目前的紀錄先收進 goal.v1@<帳號 id>，再換成新帳號自己的（沒有就從空白開始，從雲端拉），
+   不會把上一個人的紀錄同步到新帳號。 */
+function sessionUid(s) {
+  if (!s) return '';
+  if (uuidOk(s.uid)) return s.uid;
+  try { const sub = JSON.parse(atob(String(s.access_token).split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).sub; return uuidOk(sub) ? sub : ''; } catch (e) { return ''; }
+}
+const STASH = k => `${LS_KEY}@${k}`;
+const SEEN_KEYS = () => [LV_SEEN, QUEST_SEEN, WEEK_SEEN, BOSS_SEEN, CONTRACT_SEEN, FREEZE_SEEN, PARTY_SEEN, CONTRACT_SKIP];
+function takeStash(k) {
+  let raw = null; try { raw = JSON.parse(localStorage.getItem(STASH(k))); localStorage.removeItem(STASH(k)); } catch (e) { /* ignore */ }
+  return raw && Array.isArray(raw.events) ? raw : null;
+}
+function putStash(k, st) {
+  try { localStorage.setItem(STASH(k), JSON.stringify(st)); return true; }
+  catch (e) { toast('瀏覽器空間不足，沒辦法保留上一個帳號的本機紀錄（雲端上的不受影響）'); return false; }
+}
+/* login：剛用登入表單登入（prevEmail 是上一次登入的 Email）；boot：開啟時已經是登入狀態 */
+// 回傳 'same'（沿用目前的紀錄）、'switched'（換成另一個帳號的紀錄）或 'blocked'（沒辦法安全切換）
+function bindAccount(uid, email, mode, prevEmail) {
+  if (!uid) return 'blocked';
+  if (state.owner === uid) return 'same';
+  const clean = { lastPull: '', known: {}, metaHash: '' };
+  if (!state.owner) {
+    // 還沒綁定帳號的紀錄（build 8 以前的資料，或從沒登入過）
+    const synced = !!state.sync?.lastPull, hasData = state.events.length > 0;
+    const ask = mode === 'login' && synced && hasData && prevEmail && prevEmail !== email;
+    if (!ask || confirm(`這台裝置上的 ${state.events.length} 筆紀錄之前同步到另一個帳號（${prevEmail}）。\n\n要把它們併入 ${email} 嗎？\n\n確定：併入 ${email}\n取消：${email} 從自己雲端上的紀錄開始；原本的紀錄留在這台裝置，下次用 ${prevEmail} 登入時會回來`)) {
+      state.owner = uid; if (synced) state.sync = clean;   // 以前可能同步過別的帳號：重新完整同步一次
+      save(); return 'same';
+    }
+    if (!putStash('~' + prevEmail, state)) return 'blocked';
+  } else if (!putStash(state.owner, state)) return 'blocked';
+  const raw = takeStash(uid) || takeStash('~' + email);
+  state = migrate(hydrate(raw)); state.owner = uid; if (!raw) state.sync = clean;
+  for (const k of SEEN_KEYS()) { try { localStorage.removeItem(k); } catch (e) { /* ignore */ } }
+  levelReady = false; resetParty(); contractForm = false; hdrPrev = null;
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+  toast(raw ? `已切換到 ${esc(email)} 的紀錄` : `已切換到 ${esc(email)}，從雲端讀取這個帳號的紀錄`);
+  render(); return 'switched';
+}
 async function cloudLogin(email, password) {
   cloud.status = 'syncing'; cloud.error = ''; renderCloud();
   try {
-    saveSession(await sbAuth('password', { email, password }));
+    const prevEmail = lastEmail(), s = await sbAuth('password', { email, password });
+    saveSession(s);
     try { localStorage.setItem('goal.email', email); } catch (e) { /* ignore */ }
-    toast('已登入雲端同步，開始上傳紀錄');
+    const b = bindAccount(sessionUid(s), s.email || email, 'login', prevEmail);
+    if (b === 'blocked') { await cloudLogout(); cloud.error = '沒辦法切換帳號（讀不到帳號 id 或瀏覽器空間不足），為了不把紀錄同步到別的帳號，先登出了'; render(); return; }
+    if (b === 'same') toast('已登入雲端同步，開始上傳紀錄');
     await syncNow();
+    if (!levelReady) { markLevelSeen(); checkUnlocks(); render(); }
   } catch (e) { cloud.status = 'off'; cloud.error = e.message; render(); }
 }
 async function cloudLogout() {
@@ -2618,11 +2670,7 @@ const PARTY_ERR = { already_in_party: '你已經在一個隊伍裡了', party_no
   bad_name: '隊名要 1～30 個字', bad_display_name: '顯示名稱要 1～20 個字', not_logged_in: '請先登入雲端同步', 23505: '今天已經幫他加油過了', 42501: '對方已經不在隊伍裡了' };
 const partyMissing = e => e && (e.status === 404 || ['PGRST202', 'PGRST205', '42P01', '42883'].includes(e.code));
 const partyErr = e => PARTY_ERR[e.sbMsg] || PARTY_ERR[e.code] || (partyMissing(e) ? '隊伍功能還沒啟用：需要先在 Supabase 執行 sync/party-setup.sql' : e.message || String(e));
-function myUid() {
-  const s = cloud.session; if (!s) return '';
-  if (uuidOk(s.uid)) return s.uid;
-  try { const sub = JSON.parse(atob(s.access_token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).sub; return uuidOk(sub) ? sub : ''; } catch (e) { return ''; }
-}
+const myUid = () => sessionUid(cloud.session);
 const validPartyInfo = p => p && typeof p === 'object' && uuidOk(p.id) ? { id: p.id, name: cut(p.name, 30) || '隊伍', code: /^[A-Z0-9]{8}$/.test(p.invite_code) ? p.invite_code : '' } : null;
 const validPartyMember = m => m && typeof m === 'object' && uuidOk(m.user_id) ? { uid: m.user_id, name: cut(m.display_name, 20) || '隊友', joined: isoOk(m.joined_at) ? m.joined_at : '' } : null;
 const validPartyDay = d => d && typeof d === 'object' && uuidOk(d.user_id) && dayOk(d.day) ? { uid: d.user_id, day: d.day, active: d.active === true,
@@ -2966,6 +3014,7 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !IS_N
 render();
 (async () => {
   await loadSession();
+  if (cloud.session && bindAccount(myUid(), cloud.session.email || '', 'boot') === 'blocked') { cloudLogout(); toast('讀不到登入帳號，請重新登入雲端同步'); }
   loadParty();
   await initFS();
   await drainWidgetQueue();

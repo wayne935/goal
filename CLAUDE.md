@@ -26,6 +26,7 @@
 - 主要常數在檔案開頭：`DEFAULT_HABITS`、`DIFF`、`QUEST_POOL`、`WEEK_GOALS`、`BOSS`、`ACH`（徽章，`v: s => ...` 從 `compute()` 的結果取值，`legend: true` 是傳說級）。
 - Android 橋接：`IS_NATIVE`、`nat(method, opts)` 呼叫 `GoalWidgetPlugin.java`；小工具資料由 `pushWidget()` 送出，小工具的打卡由 `drainWidgetQueue()` 收回。
 - 雲端：Supabase（`SB` 常數，publishable key 本來就公開，靠 RLS 保護），資料表見 `sync/supabase-setup.sql`。
+- **本機紀錄屬於某一個帳號**（`state.owner`，build 8）：`bindAccount()` 在開機與登入時檢查，換另一個帳號登入時把目前的 `state` 收進 localStorage `goal.v1@<帳號 id>`、換成新帳號自己的紀錄；`syncNow()` 只在 `state.owner === myUid()` 時同步，連結的 Goal 資料夾也只給 `data/goal-data.json` 裡記的那個帳號讀寫（`folderMine()`）。新增同步路徑時要守住這條規則，不然會把一個人的紀錄傳到另一個帳號。
 - 隊友副本：資料表與政策在 `sync/party-setup.sql`（雲端 session 不能動資料庫，SQL 要使用者自己到 SQL Editor 執行）。網頁的所有隊伍 API 都包在 `partyApi`；隊伍資料（別人的資料）放在記憶體的 `party` 物件與 localStorage `goal.party`，**不進 `state`、也不進 `goal_meta`**。隊友只讀得到 `goal_party_days` 的每日摘要（`partyDayRows()` 在本機算好上傳），從雲端拉回來的一律經過 `validParty*()` / `validCheer()`，名字一律 `esc()`。共同 Boss 由 `partyBoss()` 在前端推算。
 
 ## 寫程式的慣例

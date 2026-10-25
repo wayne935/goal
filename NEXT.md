@@ -1,6 +1,6 @@
 # 接下來要實作的事
 
-> 更新：2026-10-25　｜　目前網頁 build 7（在分支上，等使用者執行 SQL 後再合併），原生 NATIVE_VERSION 3（`version.json` 的 minNative 2）
+> 更新：2026-10-25　｜　目前網頁 build 8，原生 NATIVE_VERSION 3（`version.json` 的 minNative 2）
 > 先讀 `CLAUDE.md`（架構、發佈規則、測試方法）。設計理由與研究依據在 `PLAN.md` 第 8 節。
 
 ## 目前狀態
@@ -14,7 +14,8 @@
 - **8.3 隊友副本完成（build 7，2026-10-25）**：`sync/party-setup.sql`（4 張表、3 個函式、RLS，已在本機 PostgreSQL 模擬 Supabase 實測，`sync/test/run-party-test.sh` 可重跑）、`partyApi` / `party` / `syncParty()` / `partyBoss()`、「今天」頁隊伍面板、設定頁隊伍管理與分享程度、改密碼、`cheer` / `party_reward` 事件、5 個徽章。數值在 `PARTY` 常數，細節見 PLAN 8.3。
   - 使用者的決定：朋友帳號由使用者在 Supabase 後台建、網頁可改密碼；預設只分享「有沒有紀錄 + 分類」；共同 Boss 每人 150 血、打倒每人 +40 XP / +60 代幣；收到加油 +5 代幣、每天最多 3 次計分。
   - 已知取捨：共同 Boss 的獎勵週日結束後才入帳（只檢查上一週，超過兩週沒開網頁會漏掉）；每台裝置用自己本機的紀錄算自己的傷害、用雲端摘要算隊友的，同步前後數字可能差一點；隊友可以竄改自己的摘要（只影響隊內公平）；這次沒做「隊友當契約見證人」和小工具顯示隊伍。
-  - **上線前使用者要做**：① Supabase → SQL Editor 執行 `sync/party-setup.sql` ② 合併分支到 main ③ 端對端測試（建一個測試帳號，兩個瀏覽器各登入一個，組隊、打卡、加油）。
+  - SQL 已執行、build 7 已上線。使用者還要做端對端測試（測試帳號 + 兩個瀏覽器，組隊、打卡、加油）。
+- **build 8 修正（2026-10-25）**：同一個瀏覽器換帳號登入會把上一個帳號的本機紀錄同步過去。現在本機紀錄綁定帳號（`state.owner`、`bindAccount()`），細節見 `SECURITY.md`。被複製過資料的測試帳號要在 Supabase 刪掉重建。
 
 ## 1. 之後的候選（依建議順序）
 1. **提醒通知**（ROADMAP 階段 2 第 5 項）：先做網頁開著時的本機提醒（例如晚上 10 點還沒運動、Boss 今天還沒忍住、契約週日還差幾次）。真正的手機推播要用 Android 原生（WorkManager + 通知），要 bump `NATIVE_VERSION` 並重新建置。

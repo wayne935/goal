@@ -1,5 +1,5 @@
 {
-  "build": 7,
+  "build": 8,
   "minNative": 2,
   "files": [
     "index.html",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "隊友副本：和朋友組隊、每週共同 Boss、互相加油、改密碼與 5 個新徽章（需要先執行 sync/party-setup.sql）"
+  "notes": "修正：換帳號登入時不會再把上一個帳號的本機紀錄同步過去"
 }
