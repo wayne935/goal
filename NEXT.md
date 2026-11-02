@@ -1,6 +1,6 @@
 # 接下來要實作的事
 
-> 更新：2026-10-25　｜　目前網頁 build 8，原生 NATIVE_VERSION 3（`version.json` 的 minNative 2）
+> 更新：2026-11-02　｜　目前網頁 build 9，原生 NATIVE_VERSION 4（`version.json` 的 minNative 4）
 > 先讀 `CLAUDE.md`（架構、發佈規則、測試方法）。設計理由與研究依據在 `PLAN.md` 第 8 節。
 
 ## 目前狀態
@@ -17,9 +17,15 @@
   - SQL 已執行、build 7 已上線。使用者還要做端對端測試（測試帳號 + 兩個瀏覽器，組隊、打卡、加油）。
 - **build 8 修正（2026-10-25）**：同一個瀏覽器換帳號登入會把上一個帳號的本機紀錄同步過去。現在本機紀錄綁定帳號（`state.owner`、`bindAccount()`），細節見 `SECURITY.md`。被複製過資料的測試帳號要在 Supabase 刪掉重建。
 
+- **build 9 鎖機專注與自動紀錄（2026-11-02，PLAN 第 9 節）**：原生 `GuardService` / `LockActivity` / `GuardState` / `GuardReceiver` / `HealthBridge`，網頁的 `focusPanel()`、`reviewPanel()`、`guardSettingsHTML()`、`syncHealth()`、`focus` / `gate` 事件。網頁在瀏覽器實測（含模擬 Android 橋接）；原生程式在雲端用 android-36.jar 編譯檢查過，**還沒在實機跑過**。
+  - 使用者的決定：專注用白名單；緊急解鎖 = 沒收獎勵 + 扣代幣（每週加倍）+ 連勝歸零；社群 / 手遊參考 ClaryMind；學習類任務只能鎖機記錄，喝水這類用按的，分類由使用者在前端設定。
+  - 已知取捨：守護服務是無障礙服務，App 被強制停止時鎖不住（所以專注 / 宵禁期間關掉服務 = 視同緊急解鎖）；Health Connect 只在打開 App 時讀；宵禁守住的獎勵在宵禁結束時（或下次打開 App）才入帳；分心 App 放行對全部分心 App 一起生效（跟 ClaryMind 一樣）。
+  - 使用者還要做：重新建置 App、開權限、實際用一週回報（特別是鎖定畫面在 Pixel 9a / Android 17 上的行為）。
+
 ## 1. 之後的候選（依建議順序）
-1. **提醒通知**（ROADMAP 階段 2 第 5 項）：先做網頁開著時的本機提醒（例如晚上 10 點還沒運動、Boss 今天還沒忍住、契約週日還差幾次）。真正的手機推播要用 Android 原生（WorkManager + 通知），要 bump `NATIVE_VERSION` 並重新建置。
-2. **小工具加「忍住了」按鈕**：原生改動（`GoalWidgetProvider.java`、`goal_widget.xml`、`GoalStore` 佇列支援 `restraint` 事件），要 bump `NATIVE_VERSION`、`minNative`，請使用者重新建置。
-3. **自動判定半夜滑手機**：Android `UsageStatsManager`，需要使用者授權「使用情況存取權」，原生改動。
+1. **實機回饋修正**：build 9 的鎖定畫面、通知、Health Connect 第一次在 Pixel 9a 上跑，先處理使用者回報的問題。
+2. **小工具加「忍住了」按鈕、顯示專注倒數**：原生改動（`GoalWidgetProvider.java`、`goal_widget.xml`、`GoalStore` 佇列支援 `restraint` 事件），要 bump `NATIVE_VERSION`、`minNative`，請使用者重新建置。
+3. **惡習 Boss 接上分心 App 放行紀錄**（`gate` 事件）：放行太多自動算犯了；宵禁取代原本「自動判定半夜滑手機」的構想。
+3b. **筆電也一起鎖**：Chrome 擴充功能在專注期間擋分心網站。
 4. **LeetCode Chrome 擴充功能**（階段 4，可選）：偵測 Accepted，送出 `leetcode_submitted: true` 的事件。
 5. **數值調整**：等使用者回報一週的使用手感，不要自己猜（契約倍率、保護卡價格也一樣）。

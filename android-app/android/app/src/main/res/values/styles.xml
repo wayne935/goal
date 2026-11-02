@@ -19,4 +19,9 @@
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="android:background">@drawable/splash</item>
     </style>
+    <!-- 鎖定畫面（LockActivity 是一般的 Activity，用系統主題） -->
+    <style name="GoalLock" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/goal_lock_bg</item>
+        <item name="android:colorAccent">@color/goal_lock_brass</item>
+    </style>
 </resources>

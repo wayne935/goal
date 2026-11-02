@@ -380,7 +380,36 @@ textarea.in{min-height:140px;resize:vertical;font-family:ui-monospace,Consolas,m
 
 /* ---------- settings ---------- */
 .hab-edit{display:grid;gap:8px}
-.hab-row{display:grid;grid-template-columns:60px minmax(160px,420px) 84px 84px 96px 130px 30px;gap:10px;align-items:center}
+.hab-row{display:grid;grid-template-columns:56px minmax(140px,360px) 72px 72px 84px 110px 110px 92px 30px;gap:8px;align-items:center}
+.focus .fnow{display:flex;align-items:center;gap:14px;background:var(--felt-hi);border-radius:14px;padding:14px 16px;border-left:5px solid var(--brass)}
+.focus .fic{font-size:34px}
+.focus .fnow small{display:block;font-size:13.5px}
+.focus .fcount{margin-left:auto;font-size:44px;line-height:1;color:var(--brass-hi)}
+.fabort{margin-top:14px;padding:14px;border-radius:12px;background:rgba(224,88,63,.12);border:1.5px solid rgba(224,88,63,.4)}
+.fabort p{margin:0 0 10px;font-size:15px}
+.btn.hold{--p:0%;background:linear-gradient(90deg,rgba(224,88,63,.55) var(--p),rgba(224,88,63,.18) var(--p));color:var(--chalk);touch-action:none;user-select:none;-webkit-user-select:none}
+.warnbtn{color:#f0a08c;border-color:rgba(224,88,63,.45)}
+.fmins{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chipbtn{border:1.5px solid var(--chalk-faint);background:rgba(0,0,0,.18);border-radius:99px;padding:6px 14px;font-size:15px}
+.chipbtn.on{background:var(--brass);border-color:var(--brass);color:#3a2805;font-weight:700}
+.habit.lockonly .hr{color:var(--brass-hi)}
+.review h3,.panel h3{font-size:16px;margin:18px 0 4px}
+.rvgrid{display:flex;flex-wrap:wrap;gap:8px}
+.rvh{border:1.5px solid var(--chalk-faint);background:rgba(0,0,0,.18);border-radius:10px;padding:7px 12px;font-size:15px;text-align:left}
+.rvh small{color:var(--chalk-dim);margin-left:4px}
+.rvh.full{opacity:.55}
+.rvh[aria-disabled="true"]{opacity:.5;cursor:not-allowed}
+.appchips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}
+.appchip{background:rgba(0,0,0,.22);border-radius:99px;padding:3px 11px;font-size:14px}
+.habapps{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;font-size:14.5px;padding:4px 0;border-bottom:1px dashed var(--chalk-faint)}
+.picker{margin:12px 0;padding:14px;border-radius:12px;background:var(--felt-hi)}
+.applist{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:4px 12px;max-height:340px;overflow:auto;margin-top:10px}
+.applist label{display:flex;gap:8px;align-items:center;font-size:15px;padding:3px 0}
+.hmap{display:grid;gap:8px;margin-top:10px}
+.hmap label{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:15px}
+.hmap .in{width:auto;padding:5px 8px}
+.hmap input.in{width:90px}
+.status .grow{flex:1}
 .hab-row .in{padding:7px 9px;font-size:15px}
 .hab-row.head{font-size:13px;color:var(--chalk-dim)}
 .hc{display:block}
@@ -562,7 +591,7 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 8;
+const APP_BUILD = 9;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 const $ = (s, r = document) => r.querySelector(s);
@@ -591,17 +620,17 @@ const DEFAULT_HABITS = [
   { id: 'sleep',    name: '睡滿 7 小時',     icon: '😴', cat: 'health',   xp: 15, coins: 10, dailyMax: 1 },
   { id: 'walk',     name: '散步或伸展',      icon: '🚶', cat: 'health',   xp: 8,  coins: 5,  dailyMax: 2 },
   { id: 'paper',    name: '讀一篇論文',      icon: '📄', cat: 'research', xp: 20, coins: 12, dailyMax: 3 },
-  { id: 'write',    name: '寫論文 25 分',    icon: '✍️', cat: 'research', xp: 20, coins: 12, dailyMax: 4 },
+  { id: 'write',    name: '寫論文 25 分',    icon: '✍️', cat: 'research', xp: 20, coins: 12, dailyMax: 4, log: 'focus', unitMin: 25 },
   { id: 'tidy',     name: '整理環境',        icon: '🧹', cat: 'life',     xp: 8,  coins: 5,  dailyMax: 1 },
   // v2：研究與興趣相關的習慣
   { id: 'experiment', name: '跑實驗或分析結果', icon: '🧪', cat: 'research', xp: 20, coins: 12, dailyMax: 3 },
   { id: 'chain',    name: '追一條引用鏈',    icon: '🔗', cat: 'research', xp: 15, coins: 8,  dailyMax: 3 },
-  { id: 'project',  name: '推進個人專案 25 分', icon: '🛠️', cat: 'code',   xp: 15, coins: 10, dailyMax: 4 },
-  { id: 'bass',     name: '練貝斯 20 分',    icon: '🎸', cat: 'hobby',    xp: 12, coins: 8,  dailyMax: 2 },
+  { id: 'project',  name: '推進個人專案 25 分', icon: '🛠️', cat: 'code',   xp: 15, coins: 10, dailyMax: 4, log: 'focus', unitMin: 25 },
+  { id: 'bass',     name: '練貝斯 20 分',    icon: '🎸', cat: 'hobby',    xp: 12, coins: 8,  dailyMax: 2, log: 'both', unitMin: 20 },
   { id: 'chess',    name: '西洋棋一盤或戰術題', icon: '♟️', cat: 'hobby',  xp: 10, coins: 6,  dailyMax: 3 },
   { id: 'bedtime',  name: '凌晨 1 點前上床', icon: '🛏️', cat: 'health',   xp: 15, coins: 10, dailyMax: 1 },
 ];
-const SEED_VERSION = 2;
+const SEED_VERSION = 3;
 const RENAMED_HABITS = { write: ['寫作或實驗 25 分', '寫論文 25 分'] };
 const DEFAULT_REWARDS = [
   { id: 'r-drama', name: '看一集劇',     icon: '📺', cost: 60 },
@@ -651,6 +680,19 @@ const BOSS_PRESETS = [
    習慣、解題的期限是週日再加 1 天緩衝；「不犯」的契約撐到週日結束就算達成。簽約之後的紀錄才算。 */
 const CONTRACT = { perWeek: 2, minStake: 10, mult: { normal: 1.5, hard: 2 }, undoMs: 3600e3 };
 const FREEZE = { cost: 150, max: 2 };
+/* ---------- 鎖手機專注、宵禁、分心 App（Android App，原生端在 GuardState.java） ----------
+   專注完成、宵禁守住、緊急解鎖、分心 App 放行都是原生端寫進佇列的事件（type focus / gate），獎勵與懲罰在 compute() 推算。
+   緊急解鎖扣：這次專注全部代幣 × 50%，同一週每多一次加倍（最多 8 倍），至少 10 代幣。 */
+const FOCUS = { cancelMs: 2 * 60e3, rate: 0.5, minPenalty: 10, maxMult: 8, curfewBase: 60, skipCoins: 3, skipMax: 3, healthDays: 3, reviewBonus: { xp: 5, coins: 5 } };
+const LOG_MODES = [['manual', '用按的'], ['focus', '只能鎖機'], ['both', '都可以']];
+const GUARD_DEFAULT = { allow: [], distract: [], labels: {},
+  gate: { passes: 3, minutes: 10, breath: 10, strict: false, extraCost: 30 },
+  curfew: { on: false, start: '01:00', end: '07:00', habit: 'bedtime', since: 0 },
+  reminder: { on: true, time: '21:30' },
+  health: { on: false, since: 0, exerciseMin: 20, exerciseHabit: 'exercise', sleepHours: 7, sleepHabit: 'sleep', steps: 8000, stepsHabit: 'walk' } };
+const logMode = h => (h && h.log) || 'manual';
+const unitMin = h => (h && h.unitMin) || 25;
+const focusPenalty = (base, k) => Math.max(FOCUS.minPenalty, Math.round(base * FOCUS.rate * Math.min(2 ** Math.max(0, k - 1), FOCUS.maxMult)));
 /* ---------- 隊友副本 ----------
    每週一隻共同 Boss：血量 = 每人 150 × 人數；每人每天每個有紀錄的分類 10 點（一天最多 50）。
    週日結束時已經打倒，每個人各自在本機記一筆 party_reward。隊友的加油在本機變成 cheer 事件。 */
@@ -750,6 +792,15 @@ const ACH = [
   { id:'p_week4',    cat:'life', icon:'⚜️', name:'鐵打的隊伍', desc:'連續 4 週打倒共同 Boss',           goal:4,   coins:250, v:s=>s.partyWeekRun },
   { id:'p_cheer10',  cat:'life', icon:'📣', name:'啦啦隊',     desc:'幫隊友加油 10 次',                 goal:10,  coins:60,  v:s=>s.cheersOut },
   { id:'p_cheered10',cat:'life', icon:'💌', name:'有人挺你',   desc:'收到隊友加油 10 次',               goal:10,  coins:60,  v:s=>s.cheersIn },
+  // 鎖機專注、宵禁、分心 App
+  { id:'fo_first',   cat:'life', icon:'🎯', name:'放下手機',   desc:'完成第一次鎖機專注',               goal:1,   coins:20,  v:s=>s.focus.done },
+  { id:'fo_10h',     cat:'life', icon:'⏳', name:'十小時心流', desc:'鎖機專注累計 10 小時',             goal:10,  coins:120, v:s=>Math.floor(s.focus.minutes / 60) },
+  { id:'fo_50h',     cat:'life', icon:'🧘', name:'深度工作者', desc:'鎖機專注累計 50 小時',             goal:50,  coins:400, v:s=>Math.floor(s.focus.minutes / 60), legend:true },
+  { id:'fo_run10',   cat:'life', icon:'🔒', name:'一次都沒逃', desc:'連續完成 10 次專注，中間沒有緊急解鎖', goal:10, coins:150, v:s=>s.focus.best },
+  { id:'fo_day3h',   cat:'life', icon:'🏔️', name:'深潛日',     desc:'一天鎖機專注 3 小時（180 分）',    goal:180, coins:100, v:s=>s.focus.bestDay },
+  { id:'gt_skip10',  cat:'life', icon:'🫁', name:'深呼吸',     desc:'在分心 App 的放行畫面選「算了」10 次', goal:10, coins:60, v:s=>s.focus.skips },
+  { id:'cf_7',       cat:'health', icon:'🌙', name:'守夜人',   desc:'宵禁守住 7 晚',                    goal:7,   coins:100, v:s=>s.focus.curfewKept },
+  { id:'cf_30',      cat:'health', icon:'🌌', name:'夜貓馴服', desc:'宵禁守住 30 晚',                   goal:30,  coins:300, v:s=>s.focus.curfewKept, legend:true },
 ];
 const ACH_BY_ID = Object.fromEntries(ACH.map(a => [a.id, a]));
 
@@ -800,6 +851,13 @@ function migrate(st) {
     for (const h of DEFAULT_HABITS) if (!st.habits.some(x => x.id === h.id)) st.habits.push(structuredClone(h));
     for (const [id, [from, to]] of Object.entries(RENAMED_HABITS)) { const h = st.habits.find(x => x.id === id); if (h && h.name === from) h.name = to; }
     for (const r of DEFAULT_REWARDS) if (!st.rewards.some(x => x.id === r.id)) st.rewards.push(structuredClone(r));
+    // v3：每個習慣有紀錄方式。讀書、寫論文、推進專案這類「一段時間」的任務預設只能用鎖機專注記錄
+    if (v < 3) for (const h of st.habits) {
+      if (h.log) continue;
+      const nm = String(h.name || ''), mm = nm.match(/(\d+)\s*分/), hh = nm.match(/(\d+(?:\.\d+)?)\s*小時/);
+      h.log = ['write', 'project'].includes(h.id) || /學習|讀書|AI/i.test(nm) ? 'focus' : h.id === 'bass' ? 'both' : 'manual';
+      if (h.log !== 'manual') h.unitMin = mm ? Number(mm[1]) : hh ? Math.round(Number(hh[1]) * 60) : /小時/.test(nm) ? 60 : 25;
+    }
     st.seedVersion = SEED_VERSION;
   }
   return st;
@@ -856,6 +914,7 @@ function compute() {
   const bossIds = new Set(state.bosses.map(b => b.id)), critIds = new Set(); let saved = 0;
   const hits = { lc: [], habit: {}, relapse: {} }, freezeBuys = [];   // 契約要數的紀錄：{ ms, day }
   const partyWeeks = new Set(); let cheersIn = 0, cheersOut = 0;
+  const fo = { done: 0, minutes: 0, run: 0, best: 0, curfewKept: 0, aborts: 0, skips: 0, gates: 0 }, abortWeeks = {};
   for (const e of evs) {
     const dk = dayKey(e.ts), hit = { ms: tms(e.ts), day: dk };
     const d = days[dk] ||= emptyDay();
@@ -906,6 +965,30 @@ function compute() {
       else cheersOut++;
     } else if (e.type === 'party_reward') {
       r = { xp: PARTY.reward.xp, coins: PARTY.reward.coins, tag: '' }; partyWeeks.add(e.week);
+    } else if (e.type === 'focus') {           // 鎖機專注：一次專注 = units 段習慣（受每日上限限制）
+      const h = habitsById[e.habit], units = e.kind === 'curfew' ? 1 : e.units;
+      if (e.result === 'done' || e.result === 'kept') {
+        let n = 0;
+        if (h) for (let i = 0; i < units; i++) { const c = d.habits[e.habit] = (d.habits[e.habit] || 0) + 1; if (c <= h.dailyMax) { n++; (hits.habit[e.habit] ||= []).push(hit); } }
+        const what = e.kind === 'curfew' ? '宵禁守住了' : `${units} 段`;
+        if (!h) r.tag = '習慣已刪除';
+        else { r = { xp: h.xp * n, coins: h.coins * n, tag: n < units ? `${what}，${units - n} 段超過每日上限` : what };
+          if (n) { d.cats.add(h.cat); cat = h.cat; habitCount[e.habit] = (habitCount[e.habit] || 0) + n; } }
+        if (e.kind === 'curfew') fo.curfewKept++;
+        else { fo.done++; fo.minutes += e.minutes; d.focusMin = (d.focusMin || 0) + e.minutes; fo.run++; fo.best = Math.max(fo.best, fo.run); }
+        d.any = true;
+      } else if (e.result === 'aborted') {
+        const k = abortWeeks[weekStart(dk)] = (abortWeeks[weekStart(dk)] || 0) + 1;
+        const pen = focusPenalty(e.kind === 'curfew' || !h ? FOCUS.curfewBase : h.coins * units, k);
+        r = { xp: 0, coins: -pen, tag: `本週第 ${k} 次緊急解鎖，扣 ${pen} 代幣${e.reason ? `。原因：${e.reason}` : ''}` };
+        spent += pen; fo.aborts++; if (e.kind !== 'curfew') fo.run = 0;
+      } else r.tag = '開始 2 分鐘內取消，不扣分';
+    } else if (e.type === 'gate') {            // 分心 App：放行只記錄（加買的扣代幣）；選「算了」給一點代幣
+      if (e.skipped) { const c = d.skips = (d.skips || 0) + 1; fo.skips++;
+        r = c > FOCUS.skipMax ? { xp: 0, coins: 0, tag: '今天的「算了」獎勵已領完，只記錄' } : { xp: 0, coins: FOCUS.skipCoins, tag: `+${FOCUS.skipCoins} 代幣` }; }
+      else { fo.gates++; d.gates = (d.gates || 0) + 1; d.gateMin = (d.gateMin || 0) + e.minutes;
+        if (e.paid > 0) { r = { xp: 0, coins: -e.paid, tag: '' }; spent += e.paid; }
+        r.tag = [e.paid > 0 ? `用 ${e.paid} 代幣加買` : '', e.reason ? `原因：${e.reason}` : ''].filter(Boolean).join('，'); }
     }
     if (r.coins > 0) { earned += r.coins; d.coins += r.coins; }
     xp += r.xp; d.xp += r.xp; per[e.id] = r;
@@ -977,6 +1060,7 @@ function compute() {
     bestStreak: longestRun(anyDays, fz.frozen), streak: currentRun(anyDays, fz.frozen),
     frozen: fz.frozen, freezesUsed: fz.used, freezesHeld: fz.held,
     contracts, contractsOpened: contracts.length, contractsDone, bigWins, contractWeekRun, hits,
+    focus: { ...fo, weekAborts: abortWeeks[weekStart(todayKey())] || 0, bestDay: Math.max(0, ...vals.map(d => d.focusMin || 0)) },
     inParty: party.info ? 1 : 0, partyKills: partyWeeks.size, partyWeekRun: longestWeeks(partyWeeks), cheersIn, cheersOut,
     waterStreak: longestRun(keysWhere(d => (d.habits.water || 0) >= 8)),
     crosschecked: checked.size, submitted: submittedSet.size, graphSolved: graphSet.size,
@@ -1065,16 +1149,22 @@ function addEvent(e) {
 }
 function commit() { save(); checkUnlocks(); render(); }
 // 契約簽下 1 小時後就不能刪（刪掉等於退押金）
-const locked = e => e.type === 'contract_open' && Date.now() - tms(e.ts) >= CONTRACT.undoMs;
+// 緊急解鎖的紀錄不能刪（刪掉等於取消懲罰）
+const locked = e => (e.type === 'contract_open' && Date.now() - tms(e.ts) >= CONTRACT.undoMs) || (e.type === 'focus' && e.result === 'aborted');
 function removeEvent(id) {
   const i = state.events.findIndex(e => e.id === id); if (i < 0) return;
-  if (locked(state.events[i])) { toast('契約簽下超過 1 小時，不能取消了。'); return; }
+  if (locked(state.events[i])) { toast(state.events[i].type === 'focus' ? '緊急解鎖的紀錄不能刪除。' : '契約簽下超過 1 小時，不能取消了。'); return; }
   const [ev] = state.events.splice(i, 1); state.deleted.push(id); commit();
   toast(`已刪除「${esc(eventTitle(ev))}」`, { label: '復原', fn: () => {
     state.deleted = state.deleted.filter(x => x !== id); state.events.push(ev); commit(); } });
 }
 function logHabit(id, btn) {
   const h = state.habits.find(x => x.id === id); if (!h) return;
+  if (logMode(h) === 'focus') {   // 只能鎖機記錄：帶到專注面板
+    if (IS_NATIVE && guard.supported) { guard.form.habit = id; guard.form.minutes = 0; render(); const f = $('#focus'); if (f) f.scrollIntoView({ block: 'start', behavior: reducedMotion() ? 'auto' : 'smooth' }); }
+    toast(`「${esc(h.name)}」只能用${IS_NATIVE ? '上面的' : '手機 App 的'}鎖機專注記錄，時間到會自動入帳。`);
+    return;
+  }
   const S0 = compute(); const used = S0.days[todayKey()]?.habits[id] || 0;
   const rect = btn ? btn.getBoundingClientRect() : null;
   addEvent({ id: uid('h'), type: 'habit', habit: id, ts: nowISO(), source: 'manual' });
@@ -1099,6 +1189,12 @@ function eventTitle(e) {
   if (e.type === 'freeze_buy') return '買了連續天數保護卡';
   if (e.type === 'cheer') return e.from ? `${e.from} 幫你加油` : `幫 ${e.to} 加油`;
   if (e.type === 'party_reward') return '和隊友打倒了共同 Boss';
+  if (e.type === 'focus') {
+    const n = state.habits.find(h => h.id === e.habit)?.name || e.habit;
+    if (e.kind === 'curfew') return e.result === 'kept' ? '宵禁守住了一整晚' : '宵禁中緊急解鎖';
+    return e.result === 'done' ? `${n}（鎖機 ${e.minutes} 分）` : e.result === 'aborted' ? `緊急解鎖：${n}` : `取消專注：${n}`;
+  }
+  if (e.type === 'gate') return e.skipped ? `忍住沒打開 ${e.app || ''}` : `放行 ${e.app || '分心 App'} ${e.minutes} 分鐘`;
   return e.title || '紀錄';
 }
 function eventIcon(e) {
@@ -1111,6 +1207,8 @@ function eventIcon(e) {
   if (e.type === 'freeze_buy') return '❄️';
   if (e.type === 'cheer') return '📣';
   if (e.type === 'party_reward') return '🛡️';
+  if (e.type === 'focus') return e.result === 'aborted' ? '🔓' : e.result === 'cancelled' ? '↩️' : e.kind === 'curfew' ? '🌙' : state.habits.find(h => h.id === e.habit)?.icon || '🎯';
+  if (e.type === 'gate') return e.skipped ? '🫁' : '🔑';
   return e.icon || '⭐';
 }
 /* ---------- 資料檢查 ----------
@@ -1145,6 +1243,16 @@ function validEvent(e) {
       return okGoal ? e : null;
     }
     case 'freeze_buy': return Number.isInteger(e.cost) && e.cost >= 0 && e.cost <= 1e4 ? e : null;
+    // 專注、宵禁、放行只由 Android App 的原生端產生（normalize 不接受），這裡只檢查格式
+    case 'focus': {
+      const intIn = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
+      if (!safeKey(e.habit) || (e.reason != null && typeof e.reason !== 'string')) return null;
+      if (e.kind === 'session') return ['done', 'aborted', 'cancelled'].includes(e.result) && intIn(e.minutes, 1, 240) && intIn(e.units, 1, 12) ? e : null;
+      if (e.kind === 'curfew') return ['kept', 'aborted'].includes(e.result) && dayOk(e.night) ? e : null;
+      return null;
+    }
+    case 'gate': return Number.isInteger(e.minutes) && e.minutes >= 0 && e.minutes <= 60 && (e.paid == null || (Number.isInteger(e.paid) && e.paid >= 0 && e.paid <= 1000))
+      && (e.app == null || typeof e.app === 'string') && (e.reason == null || typeof e.reason === 'string') ? e : null;
     // 隊伍事件只由網頁自己產生（normalize 不接受），這裡只檢查格式
     case 'cheer': { const n = e.from ?? e.to; return (e.from == null) !== (e.to == null) && typeof n === 'string' && n && cut(n, 20) === n ? e : null; }
     case 'party_reward': return safeKey(e.party) && dayOk(e.week) && Array.isArray(e.members) && e.members.length <= PARTY.size
@@ -1165,7 +1273,10 @@ function validBosses(arr) {
 function validHabits(arr) {
   if (!Array.isArray(arr)) return null;
   const out = arr.filter(h => h && typeof h === 'object' && safeKey(h.id)).map(h => ({ ...h, id: safeKey(h.id), name: str(h.name, 60),
-    icon: cleanIcon(h.icon) || '•', cat: CATS[h.cat] ? h.cat : 'life', xp: num(h.xp, 0, 1000), coins: num(h.coins, 0, 1000), dailyMax: num(h.dailyMax, 1, 100, 1) }));
+    icon: cleanIcon(h.icon) || '•', cat: CATS[h.cat] ? h.cat : 'life', xp: num(h.xp, 0, 1000), coins: num(h.coins, 0, 1000), dailyMax: num(h.dailyMax, 1, 100, 1),
+    // 缺欄位時保持 undefined（logMode / unitMin 會用預設值），舊版 App 推上來的設定才不會蓋掉
+    log: LOG_MODES.some(([k]) => k === h.log) ? h.log : undefined, unitMin: h.unitMin == null ? undefined : Math.round(num(h.unitMin, 5, 240, 25)),
+    apps: Array.isArray(h.apps) ? [...new Set(h.apps.filter(pkgOk))].slice(0, 30) : undefined }));
   return out.length ? out : null;
 }
 function validRewards(arr) {
@@ -1198,7 +1309,30 @@ function validSettings(o) {
   if (Array.isArray(o.widgetHabits)) out.widgetHabits = o.widgetHabits.map(x => safeKey(x)).filter(Boolean).slice(0, 3);
   if (o.birthday === '' || validMMDD(o.birthday)) out.birthday = o.birthday;
   if (o.partyShare === 'basic' || o.partyShare === 'xp') out.partyShare = o.partyShare;
+  if (o.guard && typeof o.guard === 'object') out.guard = validGuard(o.guard);
   return out;
+}
+const pkgOk = v => typeof v === 'string' && v.length <= 120 && /^[A-Za-z][\w]*(\.[A-Za-z_][\w]*)+$/.test(v);
+const hhmmOk = v => typeof v === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(v);
+function validGuard(g) {
+  const pk = a => Array.isArray(a) ? [...new Set(a.filter(pkgOk))].slice(0, 80) : [];
+  const labels = {};
+  if (g.labels && typeof g.labels === 'object') for (const [k, v] of Object.entries(g.labels).slice(0, 300)) if (pkgOk(k)) labels[k] = cut(v, 40);
+  const ga = g.gate || {}, cf = g.curfew || {}, rm = g.reminder || {}, he = g.health || {}, D = GUARD_DEFAULT;
+  const r = (v, lo, hi, d) => Math.round(num(v, lo, hi, d));
+  return { allow: pk(g.allow), distract: pk(g.distract), labels,
+    gate: { passes: r(ga.passes, 0, 20, D.gate.passes), minutes: r(ga.minutes, 1, 60, D.gate.minutes), breath: r(ga.breath, 3, 60, D.gate.breath), strict: !!ga.strict, extraCost: r(ga.extraCost, 0, 1000, D.gate.extraCost) },
+    curfew: { on: !!cf.on, start: hhmmOk(cf.start) ? cf.start : D.curfew.start, end: hhmmOk(cf.end) ? cf.end : D.curfew.end, habit: safeKey(cf.habit) || D.curfew.habit, since: r(cf.since, 0, 1e13, 0) },
+    reminder: { on: rm.on !== false, time: hhmmOk(rm.time) ? rm.time : D.reminder.time },
+    health: { on: !!he.on, since: r(he.since, 0, 1e13, 0), exerciseMin: r(he.exerciseMin, 5, 240, D.health.exerciseMin), exerciseHabit: safeKey(he.exerciseHabit) || D.health.exerciseHabit,
+      sleepHours: num(he.sleepHours, 3, 12, D.health.sleepHours), sleepHabit: safeKey(he.sleepHabit) || D.health.sleepHabit,
+      steps: r(he.steps, 500, 50000, D.health.steps), stepsHabit: safeKey(he.stepsHabit) || D.health.stepsHabit } };
+}
+const G = () => validGuard(state.settings.guard || {});
+// 雲端或備份的習慣缺少紀錄方式欄位（舊版 App 推上來的）時，保留本機的
+function keepHabitExtras(list, local) {
+  return list.map(h => { const l = local.find(x => x.id === h.id); if (!l) return h;
+    const o = { ...h }; for (const k of ['log', 'unitMin', 'apps']) if (o[k] === undefined && l[k] !== undefined) o[k] = l[k]; return o; });
 }
 
 const cut = (v, n) => [...str(v, n * 4).trim()].slice(0, n).join('');   // 以字元計（emoji 不會被切成一半）
@@ -1233,6 +1367,7 @@ function normalize(raw, source) {
     const key = String(raw.habit || '');
     const h = state.habits.find(x => x.id === key || x.name === key);
     if (!h) throw new Error(`找不到習慣「${key}」，請用設定裡的習慣 id`);
+    if (logMode(h) === 'focus') throw new Error(`「${h.name}」只能用手機鎖機專注記錄`);
     return { id: safeKey(raw.id) || `h-${compactTs(ts)}-${h.id}`, type: 'habit', habit: h.id, ts, note: str(raw.note, 300), source };
   }
   if (type === 'custom') {
@@ -1424,7 +1559,7 @@ let historyDays = 21;
 
 function render() {
   const S = compute();
-  if (typeof pushWidget === 'function') pushWidget();
+  if (typeof pushWidget === 'function') { pushWidget(); pushGuard(); }
   renderHeader(S); renderTabs();
   const v = $('#view');
   try {
@@ -1481,19 +1616,20 @@ function viewToday(S) {
   const tk = todayKey(), td = S.days[tk] || { xp: 0, coins: 0, habits: {} };
   const todays = state.events.filter(e => dayKey(e.ts) === tk).sort((a, b) => tms(b.ts) - tms(a.ts));
   const habits = state.habits.map(h => {
-    const c = td.habits?.[h.id] || 0, full = c >= h.dailyMax;
+    const c = td.habits?.[h.id] || 0, full = c >= h.dailyMax, lockOnly = logMode(h) === 'focus';
     const pips = h.dailyMax <= 12 ? `<div class="pips" aria-hidden="true">${Array.from({ length: h.dailyMax }, (_, i) => `<i class="${i < c ? 'on' : ''}"></i>`).join('')}</div>` : '';
-    return `<button class="habit${full ? ' full' : ''}" style="--c:${CATS[h.cat]?.color || 'var(--life)'}" data-act="habit" data-id="${esc(h.id)}" aria-label="記錄${esc(h.name)}，今天 ${c} / ${h.dailyMax}">
+    return `<button class="habit${full ? ' full' : ''}${lockOnly ? ' lockonly' : ''}" style="--c:${CATS[h.cat]?.color || 'var(--life)'}" data-act="habit" data-id="${esc(h.id)}" aria-label="記錄${esc(h.name)}，今天 ${c} / ${h.dailyMax}">
       <span class="hi" aria-hidden="true">${esc(h.icon)}</span><span class="hn">${esc(h.name)}</span>${pips}
-      <span class="hr num">${full ? '今日已滿' : `+${h.xp} XP　+${h.coins} 幣`}</span></button>`;
+      <span class="hr num">${full ? '今日已滿' : lockOnly ? `🔒 鎖機 ${unitMin(h)} 分一段` : `+${h.xp} XP　+${h.coins} 幣`}</span></button>`;
   }).join('');
   const near = ACH.filter(a => !state.unlocked[a.id]).map(a => ({ a, p: progressOf(a, S) / a.goal }))
     .sort((x, y) => y.p - x.p).slice(0, 3);
   const linkTip = fs.status !== 'linked' && !state.settings.hideLinkTip && !(fs.status === 'unsupported' && cloud.session)
     ? `<div class="callout"><span>${fs.status === 'needs-permission' ? '瀏覽器需要你再按一次，才能繼續讀取 Goal 資料夾。' : fs.status === 'unsupported' ? '這裡不能讀取資料夾。到設定登入雲端同步，就能和筆電共用紀錄。' : '連結 Goal 資料夾後，AI 判題結果會自動入帳，紀錄也會存進雲端硬碟。'}</span>
        <span class="btns">${fs.status === 'unsupported' ? '<button class="btn btn-brass" data-tab="settings">去設定登入</button>' : `<button class="btn btn-brass" data-act="${fs.status === 'needs-permission' ? 'regrant' : 'link'}">${fs.status === 'needs-permission' ? '繼續讀取資料夾' : '連結 Goal 資料夾'}</button>`}<button class="btn btn-ghost" data-act="hidetip">不用了</button></span></div>` : '';
-  return `${contractPanel(S, tk)}${linkTip}<div class="grid2"><div>
-    <section class="panel"><h2>今天做了什麼？</h2><p class="hint">點一下記一次。圓點是今天的次數和上限。</p><div class="habits">${habits}</div></section>
+  return `${reviewPanel(S, tk)}${contractPanel(S, tk)}${linkTip}<div class="grid2"><div>
+    ${focusPanel(S, tk)}
+    <section class="panel"><h2>今天做了什麼？</h2><p class="hint">點一下記一次，圓點是今天的次數和上限。🔒 的任務只能用上面的鎖機專注記錄。</p><div class="habits">${habits}</div></section>
     <section class="panel"><h2>記錄解題</h2><p class="hint">用 AI 判題會自動入帳；這裡是手動補登。</p>
       <form id="lcform" autocomplete="off">
         <div class="row"><label class="field" style="width:96px">題號<input class="in num" name="pid" inputmode="numeric" placeholder="1"></label>
@@ -1511,7 +1647,7 @@ function viewToday(S) {
     ${questPanel(S, tk)}
     ${partyPanel(S, tk)}
     <section class="panel"><h2>${dayLabel(tk)}</h2>
-      <div class="sumline"><span><b>${fmt(td.xp)}</b> XP</span><span><b>${fmt(td.coins)}</b> 代幣</span><span><b>${todays.length}</b> 筆</span></div>
+      <div class="sumline"><span><b>${fmt(td.xp)}</b> XP</span><span><b>${fmt(td.coins)}</b> 代幣</span><span><b>${todays.length}</b> 筆</span>${guard.review ? '' : '<button class="mini" data-act="rvopen">今日回顧</button>'}</div>
       ${todays.length ? `<ul class="log">${todays.map(e => logItem(e, S)).join('')}</ul>` : `<p class="empty">還沒有紀錄。從喝一杯水開始也算數。</p>`}</section>
     <section class="panel"><h2>快拿到的徽章</h2><p class="hint">差一點點就解鎖。</p>
       <div class="near">${near.map(({ a }) => { const v = progressOf(a, S); return `<div class="it">${pinHTML(a, false, v / a.goal, 56)}<div><b>${esc(a.name)}</b><small>${esc(a.desc)}</small><div class="bar"><i style="width:${v / a.goal * 100}%"></i></div><small class="num">${fmt(v)} / ${fmt(a.goal)}</small></div></div>`; }).join('') || '<p class="empty">全部徽章都拿到了。</p>'}</div></section>
@@ -1969,6 +2105,8 @@ function viewSettings(S) {
       <label class="hc"><span>代幣</span><input class="in num" data-f="coins" type="number" min="0" value="${h.coins}"></label>
       <label class="hc"><span>每日上限</span><input class="in num" data-f="dailyMax" type="number" min="1" value="${h.dailyMax}"></label>
       <label class="hc"><span>分類</span><select class="in" data-f="cat">${Object.entries(CATS).map(([k, c]) => `<option value="${k}" ${h.cat === k ? 'selected' : ''}>${c.name}</option>`).join('')}</select></label>
+      <label class="hc"><span>紀錄方式</span><select class="in" data-f="log">${LOG_MODES.map(([k, n]) => `<option value="${k}" ${logMode(h) === k ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
+      <label class="hc"><span>鎖機一段（分）</span><input class="in num" data-f="unitMin" type="number" min="5" max="240" value="${unitMin(h)}" ${logMode(h) === 'manual' ? 'disabled' : ''}></label>
       <button class="btn-x" data-act="delhabit" data-i="${i}" aria-label="刪除習慣" title="刪除">×</button></div>`).join('');
   return `<div class="grid2"><div>
     <section class="panel"><h2>雲端同步</h2><div id="cloudbox">${cloudBoxHTML()}</div>${cloud.session ? PW_HTML : ''}</section>
@@ -1991,12 +2129,13 @@ function viewSettings(S) {
         <label class="field" style="min-width:140px">音效<select class="in" id="sound"><option value="1" ${state.settings.sound ? 'selected' : ''}>開</option><option value="0" ${state.settings.sound ? '' : 'selected'}>關</option></select></label>
         <label class="field" style="width:140px">生日（月-日）<input class="in num" id="birthday" value="${esc(state.settings.birthday || '')}" placeholder="03-14" maxlength="5" inputmode="numeric"></label></div>
       <p class="hint" style="margin-top:12px;margin-bottom:0">凌晨 2 點做的事會算進前一天，熬夜不會讓連續天數中斷。週一、每月 1 號和生日，「今天」頁會跳出開局畫面。</p>
-      <div class="row" style="margin-top:16px">${[0, 1, 2].map(i => `<label class="field grow">手機小工具按鈕 ${i + 1}<select class="in" data-wh="${i}">${state.habits.map(h => `<option value="${esc(h.id)}" ${widgetHabitIds()[i] === h.id ? 'selected' : ''}>${esc(h.icon)} ${esc(h.name)}</option>`).join('')}</select></label>`).join('')}</div></section>
+      <div class="row" style="margin-top:16px">${[0, 1, 2].map(i => `<label class="field grow">手機小工具按鈕 ${i + 1}<select class="in" data-wh="${i}">${state.habits.filter(h => logMode(h) !== 'focus').map(h => `<option value="${esc(h.id)}" ${widgetHabitIds()[i] === h.id ? 'selected' : ''}>${esc(h.icon)} ${esc(h.name)}</option>`).join('')}</select></label>`).join('')}</div></section>
     <section class="panel"><h2>備份</h2><p class="hint">匯入備份會和現有紀錄合併，不會覆蓋。</p>
       <div class="btns"><button class="btn btn-ghost" data-act="export">下載備份</button><label class="btn btn-ghost" style="cursor:pointer">匯入備份<input type="file" id="importfile" accept=".json,application/json" class="sr"></label></div></section>
   </div></div>
-  <section class="panel"><h2>習慣</h2><p class="hint">改數值會重新計算過去的紀錄。習慣 id 給 AI 用：${state.habits.map(h => `<code class="k">${esc(h.id)}</code>`).join(' ')}</p>
-      <div class="hab-edit"><div class="hab-row head"><span>圖示</span><span>名稱</span><span>XP</span><span>代幣</span><span>每日上限</span><span>分類</span><span></span></div>${habitRows}</div>
+  <section class="panel"><h2>鎖機與自動紀錄</h2>${guardSettingsHTML()}</section>
+  <section class="panel"><h2>習慣</h2><p class="hint">「紀錄方式」：用按的、只能鎖機（按鈕、小工具、AI 都不能記，只有手機鎖機專注完成才算）、都可以。鎖機專注每滿「一段」分鐘記一次。改數值會重新計算過去的紀錄。習慣 id 給 AI 用：${state.habits.map(h => `<code class="k">${esc(h.id)}</code>`).join(' ')}</p>
+      <div class="hab-edit"><div class="hab-row head"><span>圖示</span><span>名稱</span><span>XP</span><span>代幣</span><span>每日上限</span><span>分類</span><span>紀錄方式</span><span>鎖機一段</span><span></span></div>${habitRows}</div>
       <div class="btns" style="margin-top:14px"><button class="btn btn-ghost" data-act="addhabit">新增習慣</button></div></section>`;
 }
 
@@ -2398,7 +2537,7 @@ function mergeState(remote) {
   const unlocked = validUnlocked(remote.unlocked);
   for (const [k, v] of Object.entries(state.unlocked)) if (!unlocked[k] || tms(v) < tms(unlocked[k])) unlocked[k] = v;
   state = { ...state, events: [...map.values()], deleted: [...del], unlocked,
-    habits: Array.isArray(newer.habits) && newer.habits.length ? newer.habits : state.habits,
+    habits: Array.isArray(newer.habits) && newer.habits.length ? keepHabitExtras(newer.habits, state.habits) : state.habits,
     rewards: Array.isArray(newer.rewards) ? newer.rewards : state.rewards,
     bosses: validBosses(newer.bosses) || state.bosses,
     bundles: validBundles(newer.bundles) || state.bundles,
@@ -2520,7 +2659,7 @@ async function syncNow() {
       state.importedLists = [...new Set([...(state.importedLists || []), ...lists])];
       if (tms(remote.metaAt) > tms(state.metaAt)) {
         const hb = validHabits(remote.habits), rw = validRewards(remote.rewards), bs = validBosses(remote.bosses), bd = validBundles(remote.bundles);
-        if (hb) state.habits = hb;
+        if (hb) state.habits = keepHabitExtras(hb, state.habits);
         if (rw) state.rewards = rw;
         if (bs) state.bosses = bs;          // 舊版 App 推上來的設定沒有 bosses、bundles，這時保留本機的
         if (bd) state.bundles = bd;
@@ -2646,7 +2785,8 @@ function renderCloud() {
 }
 setInterval(() => { if (cloud.session && !document.hidden) syncNow(); }, 60000);
 addEventListener('online', () => scheduleCloudSync(500));
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { drainWidgetQueue(); scheduleCloudSync(800); } });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { drainWidgetQueue(); scheduleCloudSync(800);
+  if (IS_NATIVE) refreshGuard().then(handleLaunch).then(() => syncHealth(false)); } });
 
 /* ---------- 隊友副本（資料表見 sync/party-setup.sql） ----------
    只分享自己算好的每日摘要（goal_party_days）：有沒有紀錄、分類，選擇分享時再加 XP 與連續天數。
@@ -2806,9 +2946,304 @@ document.addEventListener('visibilitychange', () => {
   if (!document.hidden && IS_NATIVE && Date.now() - lastUpdateCheck > 6 * 3600e3) { lastUpdateCheck = Date.now(); checkAppUpdate(false); }
 });
 
+/* ---------- 鎖機專注、宵禁、分心 App、今日回顧、Health Connect ----------
+   原生端（Android App）負責鎖手機與記錄；網頁負責設定、顯示與計分。網頁版（筆電）只能看設定與紀錄。 */
+const guard = { supported: false, status: null, apps: null, picker: '', pickQ: '', confirm: false, form: { habit: '', minutes: 0 },
+  pushed: '', timer: null, review: false, reviewDay: 0, healthAt: 0, polling: null };
+const REVIEWED = 'goal.reviewed', REVIEW_SKIP = 'goal.reviewSkip';
+const focusHabits = () => state.habits.filter(h => logMode(h) !== 'manual');
+const appName = pkg => G().labels[pkg] || (guard.apps || []).find(a => a.pkg === pkg)?.label || pkg.split('.').pop();
+const mmss = ms => { const s = Math.max(0, Math.round(ms / 1000)); return s >= 3600 ? `${Math.floor(s / 3600)}:${String(Math.floor(s / 60) % 60).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}` : `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; };
+function setG(fn) { const g = G(); fn(g); state.settings.guard = validGuard(g); touchMeta(); save(); pushGuard(); }
+
+async function refreshGuard(rerender = true) {
+  if (!IS_NATIVE) return;
+  const before = JSON.stringify(guard.status && { s: guard.status.session?.id, g: guard.status.guard, n: guard.status.notify, m: guard.status.mode, h: guard.status.health });
+  try { guard.status = await nat('guardStatus'); guard.supported = true; }
+  catch (e) { guard.supported = false; guard.status = null; return; }
+  const after = JSON.stringify({ s: guard.status.session?.id, g: guard.status.guard, n: guard.status.notify, m: guard.status.mode, h: guard.status.health });
+  pushGuard();
+  focusPoll();
+  if (rerender && before !== after && (tab === 'today' || tab === 'settings')) { await drainWidgetQueue(); render(); }
+}
+// 專注中每秒更新倒數；時間到就請原生端結算，再把事件收回來
+function focusPoll() {
+  clearInterval(guard.polling); guard.polling = null;
+  const se = guard.status && guard.status.session; if (!se) return;
+  guard.polling = setInterval(() => {
+    const el = $('#fcount'), left = se.end - Date.now();
+    if (el) el.textContent = mmss(left);
+    if (left <= 0) { clearInterval(guard.polling); guard.polling = null; setTimeout(async () => { await refreshGuard(false); await drainWidgetQueue(); render(); }, 1500); }
+    else if (se.canCancel && Date.now() - se.start >= FOCUS.cancelMs) { se.canCancel = false; if (tab === 'today' && !guard.confirm) render(); }
+  }, 1000);
+}
+function pushGuard() {
+  if (!IS_NATIVE || !guard.supported) return;
+  clearTimeout(guard.timer);
+  guard.timer = setTimeout(() => {
+    const S = compute(), g = G();
+    const config = { dayStartHour: state.settings.dayStartHour ?? 4, allow: g.allow, distract: g.distract, gate: g.gate, reminder: g.reminder,
+      curfew: { ...g.curfew, penalty: focusPenalty(FOCUS.curfewBase, S.focus.weekAborts + 1) }, coins: S.balance };
+    const key = JSON.stringify(config); if (key === guard.pushed) return;
+    nat('guardConfig', { config }).then(() => { guard.pushed = key; }).catch(e => console.warn('guard config', e));
+  }, 500);
+}
+async function loadApps() {
+  if (!IS_NATIVE || guard.apps) return;
+  try { const r = await nat('listApps'); guard.apps = (r.apps || []).filter(a => pkgOk(a.pkg)).map(a => ({ pkg: a.pkg, label: cut(a.label, 40) || a.pkg, system: !!a.system }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'zh-Hant'));
+    // 第一次：白名單預設放簡訊、地圖、日曆
+    if (!state.settings.guard) setG(g => { g.allow = [r.defaultSms, 'com.google.android.apps.maps', 'com.google.android.calendar'].filter(p => pkgOk(p) && guard.apps.some(a => a.pkg === p));
+      for (const p of g.allow) g.labels[p] = appName(p); });
+  } catch (e) { guard.apps = []; }
+}
+async function handleLaunch() {
+  if (!IS_NATIVE || !guard.supported) return;
+  try { const r = await nat('consumeLaunch');
+    if (r && (r.open === 'review' || r.open === 'focus')) {
+      tab = 'today'; if (r.open === 'review') { guard.review = true; guard.reviewDay = 0; }
+      render(); const el = $(r.open === 'review' ? '#review' : '#focus'); if (el) el.scrollIntoView({ block: 'start' });
+    }
+  } catch (e) { /* ignore */ }
+}
+
+/* ----- 開始 / 取消 / 緊急解鎖 ----- */
+function focusPlan(h, minutes, S) {
+  const units = Math.max(1, Math.floor(minutes / unitMin(h))), used = S.days[todayKey()]?.habits[h.id] || 0, n = Math.max(0, Math.min(units, h.dailyMax - used));
+  return { units, n, xp: h.xp * n, coins: h.coins * n, penalty: focusPenalty(h.coins * units, S.focus.weekAborts + 1) };
+}
+async function startFocus() {
+  const h = state.habits.find(x => x.id === guard.form.habit); if (!h) return;
+  const S = compute(), minutes = guard.form.minutes || unitMin(h), p = focusPlan(h, minutes, S);
+  try {
+    await nat('focusStart', { habit: h.id, name: h.name, icon: h.icon, minutes, units: p.units, apps: h.apps || [], penalty: p.penalty, xp: p.xp, coins: p.coins });
+    haptic('success'); chime('tick'); toast(`開始專注 ${minutes} 分鐘。白名單以外的 App 先鎖起來，時間到自動入帳。`);
+    await refreshGuard(false); render();
+  } catch (e) {
+    const m = String(e && e.message || e);
+    toast(/guard_off/.test(m) ? '先開啟「Goal 專注守護」無障礙服務，手機才鎖得起來。' : `沒辦法開始：${esc(m)}`);
+    await refreshGuard(false); render();
+  }
+}
+async function cancelFocus() {
+  try { const r = await nat('focusCancel'); toast(r && r.ok ? '已取消，這次不扣分。' : '開始超過 2 分鐘了，只能緊急解鎖。'); } catch (e) { /* ignore */ }
+  await refreshGuard(false); await drainWidgetQueue(); render();
+}
+async function abortFocus() {
+  const reason = ($('#freason')?.value || '').trim();
+  if (reason.length < 2) { toast('先寫一句為什麼要解鎖'); return; }
+  try { await nat('focusAbort', { reason }); } catch (e) { toast(`解鎖失敗：${esc(e.message || e)}`); return; }
+  guard.confirm = false; haptic('tap'); toast('已解鎖。下次再撐久一點。');
+  await refreshGuard(false); await drainWidgetQueue(); render();
+}
+// 「按住 5 秒」按鈕：放開就重來
+let holdTimer = null;
+document.addEventListener('pointerdown', e => {
+  const b = e.target.closest && e.target.closest('[data-hold]'); if (!b) return;
+  if (($('#freason')?.value || '').trim().length < 2) { toast('先寫一句為什麼要解鎖'); return; }
+  e.preventDefault(); const t0 = Date.now(), label = b.dataset.label || b.textContent;
+  b.dataset.label = label; clearInterval(holdTimer);
+  holdTimer = setInterval(() => { const left = 5000 - (Date.now() - t0); b.style.setProperty('--p', `${Math.min(100, (Date.now() - t0) / 50)}%`);
+    if (left <= 0) { clearInterval(holdTimer); holdTimer = null; abortFocus(); } else b.textContent = `繼續按住… ${(left / 1000).toFixed(1)}`; }, 100);
+});
+const holdStop = () => { if (!holdTimer) return; clearInterval(holdTimer); holdTimer = null;
+  const b = $('[data-hold]'); if (b) { b.textContent = b.dataset.label; b.style.setProperty('--p', '0%'); } };
+['pointerup', 'pointercancel', 'pointerleave'].forEach(t => document.addEventListener(t, holdStop, true));
+
+/* ----- 「今天」頁：鎖機專注 ----- */
+function focusPanel(S, tk) {
+  const fh = focusHabits(), td = S.days[tk] || {}, g = G(), st = guard.status;
+  const stats = `<div class="sumline"><span>今天專注 <b>${fmt(td.focusMin || 0)}</b> 分</span><span>連勝 <b>${S.focus.run}</b> 次</span>${S.focus.weekAborts ? `<span>本週緊急解鎖 <b>${S.focus.weekAborts}</b> 次</span>` : ''}</div>`;
+  const curfew = g.curfew.on ? `<p class="hint" style="margin:10px 0 0">🌙 宵禁 ${esc(g.curfew.start)}–${esc(g.curfew.end)}${st && st.mode === 'curfew' ? '：現在是宵禁時間' : st && st.curfewOpen ? '：今晚已緊急解鎖' : ''}。守住一整晚自動記錄「${esc(state.habits.find(h => h.id === g.curfew.habit)?.name || '')}」。</p>` : '';
+  let body;
+  if (!IS_NATIVE) body = `<p class="hint">在手機 App 開始：白名單以外的 App 會鎖起來，時間到自動入帳，不用記得按。${fh.some(h => logMode(h) === 'focus') ? `<br>只能鎖機記錄：${fh.filter(h => logMode(h) === 'focus').map(h => `${esc(h.icon)} ${esc(h.name)}`).join('、')}` : ''}</p>`;
+  else if (!guard.supported) body = `<p class="hint">要重新建置一次 App 才有鎖機功能：在筆電雙擊 <code class="k">android-app\\build-android.bat</code>，再到 Android Studio 按 ▶ Run。</p>`;
+  else if (st && st.session) {
+    const se = st.session, h = state.habits.find(x => x.id === se.habit) || { icon: se.icon, name: se.name };
+    body = `<div class="fnow"><span class="fic" aria-hidden="true">${esc(h.icon)}</span><div><b>${esc(h.name)}</b><small class="dim">${hhmm(nowISO(new Date(se.end)))} 結束，自動記錄 +${fmt(se.xp)} XP、+${fmt(se.coins)} 代幣</small></div>
+      <span class="num fcount" id="fcount">${mmss(se.end - Date.now())}</span></div>
+      ${guard.confirm ? `<div class="fabort"><p>這次不給獎勵，扣 <b class="num">${fmt(se.penalty)}</b> 代幣，專注連勝歸零。這週每多解鎖一次，扣的代幣加倍。</p>
+        <input class="in" id="freason" maxlength="200" placeholder="寫一句為什麼要解鎖（必填）">
+        <div class="btns" style="margin-top:10px"><button class="btn hold" data-hold>按住 5 秒解鎖</button><button class="btn btn-brass" data-act="fkeep">算了，繼續撐</button></div></div>`
+      : `<div class="btns" style="margin-top:12px">${se.canCancel ? '<button class="btn btn-ghost" data-act="fcancel">取消（2 分鐘內不扣分）</button>' : ''}<button class="btn btn-ghost warnbtn" data-act="fabort">緊急解鎖…</button></div>`}`;
+  } else if (st && !st.guard) body = `<div class="callout" style="margin:0"><span>先到手機的「無障礙」設定開啟 <b>Goal 專注守護</b>，手機才鎖得起來。它只看現在打開哪個 App，不讀畫面內容。</span>
+      <span class="btns"><button class="btn btn-brass" data-act="gsettings">去開啟</button></span></div>
+      <p class="hint" style="margin:10px 0 0">如果開關是灰色的：到 <a href="#" data-act="gappinfo">App 資訊</a> → 右上角 ⋮ →「允許受限制的設定」，再回來開。</p>`;
+  else if (!fh.length) body = `<p class="hint">還沒有可以鎖機記錄的任務。到設定 → 習慣，把「紀錄方式」改成「只能鎖機」或「都可以」。</p>`;
+  else {
+    if (!fh.some(h => h.id === guard.form.habit)) { guard.form.habit = fh[0].id; guard.form.minutes = 0; }
+    const h = fh.find(x => x.id === guard.form.habit), u = unitMin(h), mins = guard.form.minutes || u, p = focusPlan(h, mins, S);
+    const opts = [...new Set([1, 2, 3, 4].map(k => k * u).filter(m => m <= 240))];
+    const apps = [...g.allow, ...(h.apps || [])];
+    body = `<div class="row"><label class="field grow">做什麼<select class="in" id="fhabit">${fh.map(x => `<option value="${esc(x.id)}" ${x.id === h.id ? 'selected' : ''}>${esc(x.icon)} ${esc(x.name)}${logMode(x) === 'focus' ? '（只能鎖機）' : ''}</option>`).join('')}</select></label></div>
+      <div class="fmins" role="radiogroup" aria-label="時間">${opts.map(m => `<button class="chipbtn${m === mins ? ' on' : ''}" data-act="fmin" data-m="${m}" aria-pressed="${m === mins}">${m >= 60 && m % 60 === 0 ? `${m / 60} 小時` : `${m} 分`}</button>`).join('')}</div>
+      <p class="hint" style="margin:10px 0 0">${p.n ? `完成記 ${p.n} 段：<b>+${fmt(p.xp)} XP、+${fmt(p.coins)} 代幣</b>` : '今天這個任務已達每日上限，完成只記錄不計分'}。中途緊急解鎖扣 ${fmt(p.penalty)} 代幣。<br>
+        可以用：電話、鬧鐘、輸入法${apps.length ? '、' + apps.map(a => esc(appName(a))).join('、') : ''}。<a href="#" data-tab="settings">改白名單</a></p>
+      <div class="btns" style="margin-top:12px"><button class="btn btn-brass" data-act="fstart">🔒 開始專注</button></div>
+      ${st && !st.notify ? '<p class="hint" style="margin:10px 0 0"><a href="#" data-act="gnotify">允許通知</a>，才看得到倒數和完成提醒。</p>' : ''}`;
+  }
+  return `<section class="panel focus" id="focus"><h2>🎯 鎖機專注</h2>${body}${stats}${curfew}</section>`;
+}
+
+/* ----- 「今天」頁：今日回顧（補登漏記的事、兌換已經享受的獎勵） ----- */
+function reviewDue(tk) {
+  const g = G(); if (lsGet(REVIEWED) === tk || lsGet(REVIEW_SKIP) === tk) return false;
+  const [hh, mm] = g.reminder.time.split(':').map(Number), now = new Date();
+  return dayKey(nowISO()) === tk && (now.getHours() * 60 + now.getMinutes() >= hh * 60 + mm || now.getHours() < (state.settings.dayStartHour ?? 4));
+}
+function reviewPanel(S, tk) {
+  if (!guard.review) return reviewDue(tk) ? `<div class="callout"><span>📝 <b>今日回顧</b>：有沒有做了但忘記記的事？喝了手搖、看了電影要兌換嗎？</span>
+    <span class="btns"><button class="btn btn-brass" data-act="rvopen">開始回顧</button><button class="btn btn-ghost" data-act="rvskip">今天不用</button></span></div>` : '';
+  const day = guard.reviewDay ? addDays(tk, -1) : tk, d = S.days[day] || emptyDay();
+  const hab = state.habits.map(h => {
+    const c = d.habits[h.id] || 0, lockOnly = logMode(h) === 'focus';
+    return `<button class="rvh${c >= h.dailyMax ? ' full' : ''}" data-act="${lockOnly ? 'rvlock' : 'rvhabit'}" data-id="${esc(h.id)}" ${lockOnly ? 'aria-disabled="true"' : ''}>
+      <span aria-hidden="true">${esc(h.icon)}</span> ${esc(h.name)} <small class="num">${lockOnly ? '🔒 只能鎖機' : `${c} / ${h.dailyMax}`}</small></button>`;
+  }).join('');
+  const rew = state.rewards.map(r => `<button class="rvh" data-act="rvredeem" data-id="${esc(r.id)}"><span aria-hidden="true">${esc(r.icon)}</span> ${esc(r.name)} <small class="num">−${fmt(r.cost)}</small></button>`).join('');
+  return `<section class="panel review" id="review"><h2>📝 今日回顧</h2>
+    <div class="seg" role="radiogroup" aria-label="哪一天">${['今天', '昨天'].map((n, i) => `<label><input type="radio" name="rvday" value="${i}" ${guard.reviewDay === i ? 'checked' : ''}><span>${n}</span></label>`).join('')}</div>
+    <h3>做了但忘記記的事</h3><p class="hint">點一下補登一次（記在${guard.reviewDay ? '昨天晚上' : '現在'}）。</p><div class="rvgrid">${hab}</div>
+    <h3>已經享受、還沒兌換的獎勵</h3><p class="hint">先享受後付款也可以：代幣不夠會變成負的，之後賺回來。</p><div class="rvgrid">${rew}</div>
+    <div class="btns" style="margin-top:16px"><button class="btn btn-brass" data-act="rvdone">回顧完成（+${FOCUS.reviewBonus.coins} 代幣）</button><button class="btn btn-ghost" data-act="rvclose">先關掉</button></div></section>`;
+}
+function reviewTs() {
+  if (!guard.reviewDay) return nowISO();
+  const [y, m, d] = addDays(todayKey(), -1).split('-').map(Number);
+  return nowISO(new Date(y, m - 1, d, 21, 0, 0));
+}
+function reviewHabit(id) {
+  const h = state.habits.find(x => x.id === id); if (!h || logMode(h) === 'focus') return;
+  addEvent({ id: uid('h'), type: 'habit', habit: id, ts: reviewTs(), note: '回顧時補登', source: 'review' });
+  commit(); chime('tick'); haptic('tap'); toast(`補登「${esc(h.name)}」`);
+}
+function reviewRedeem(id) {
+  const r = state.rewards.find(x => x.id === id); if (!r) return;
+  addEvent({ id: uid('rd'), type: 'redeem', ts: reviewTs(), reward: { id: r.id, name: r.name, icon: r.icon, cost: r.cost }, note: '回顧時補兌換', source: 'review' });
+  const bal = compute().balance; commit(); chime('tick');
+  toast(bal < 0 ? `兌換「${esc(r.name)}」，代幣目前 ${fmt(bal)}，之後賺回來。` : `兌換「${esc(r.name)}」`);
+}
+function reviewDone() {
+  const tk = todayKey();
+  addEvent({ id: `rv-${tk}`, type: 'custom', ts: nowISO(), title: '完成今日回顧', icon: '📝', cat: 'life', xp: FOCUS.reviewBonus.xp, coins: FOCUS.reviewBonus.coins, source: 'review' });
+  lsSet(REVIEWED, tk); guard.review = false; commit(); toast('回顧完成，明天見。');
+}
+
+/* ----- 設定：鎖機與自動紀錄 ----- */
+function chipList(list, empty) {
+  return list.length ? `<div class="appchips">${list.map(p => `<span class="appchip">${esc(appName(p))}</span>`).join('')}</div>` : `<p class="empty">${empty}</p>`;
+}
+function appPicker() {
+  const t = guard.picker; if (!t) return '';
+  const g = G(), hid = t.startsWith('habit:') ? t.slice(6) : '', h = hid && state.habits.find(x => x.id === hid);
+  const sel = new Set(t === 'allow' ? g.allow : t === 'distract' ? g.distract : (h?.apps || []));
+  if (!guard.apps) { loadApps().then(() => { if (tab === 'settings') render(); }); return '<p class="hint">讀取手機上的 App…</p>'; }
+  const q = guard.pickQ.trim().toLowerCase();
+  const list = guard.apps.filter(a => (!q || a.label.toLowerCase().includes(q) || a.pkg.includes(q)) && !(t !== 'distract' && a.system));
+  const title = t === 'allow' ? '專注和宵禁時可以用的 App' : t === 'distract' ? '要上鎖的分心 App' : `${esc(h?.icon || '')} ${esc(h?.name || '')} 額外可以用的 App`;
+  return `<div class="picker"><div class="row" style="justify-content:space-between"><b>${title}</b><button class="btn btn-brass" data-act="gpickdone">完成</button></div>
+    <input class="in" id="gpq" placeholder="搜尋 App" value="${esc(guard.pickQ)}" style="margin-top:10px">
+    <div class="applist">${list.map(a => `<label><input type="checkbox" data-gpick="${esc(a.pkg)}" ${sel.has(a.pkg) ? 'checked' : ''}><span>${esc(a.label)}</span></label>`).join('') || '<p class="empty">找不到</p>'}</div>
+    ${t !== 'distract' ? '<p class="hint" style="margin:8px 0 0">電話、鬧鐘、輸入法、主畫面、系統視窗一定可以用，不在清單裡。</p>' : ''}</div>`;
+}
+function guardSettingsHTML() {
+  const g = G(), st = guard.status, hopt = sel => state.habits.map(h => `<option value="${esc(h.id)}" ${h.id === sel ? 'selected' : ''}>${esc(h.icon)} ${esc(h.name)}</option>`).join('');
+  const native = IS_NATIVE && guard.supported, dis = native ? '' : 'disabled';
+  const perm = (on, text, act, btn) => `<div class="status"><i class="dot ${on ? 'on' : 'warn'}"></i><span class="grow">${text}</span>${on ? '' : `<button class="btn btn-ghost" data-act="${act}">${btn}</button>`}</div>`;
+  const hs = st && st.health || {};
+  return `${!IS_NATIVE ? '<p class="hint">這些設定會同步到手機；鎖手機、通知和 Health Connect 只在 Android App 裡運作。</p>' : !guard.supported ? '<p class="hint">要重新建置一次 App（build-android.bat）才有鎖機功能。設定可以先改，會同步到手機。</p>' : ''}
+    ${native ? `<h3>權限</h3>${perm(st && st.guard, 'Goal 專注守護（無障礙服務）：鎖手機要用', 'gsettings', '去開啟')}${perm(st && st.notify, '通知：專注倒數、完成、晚上提醒', 'gnotify', '允許')}
+      ${hs.available ? perm(hs.steps && hs.exercise && hs.sleep, 'Health Connect：讀步數、運動、睡眠', 'ghealth', '連結') : '<p class="hint">這支手機沒有 Health Connect（需要 Android 14 以上）。</p>'}` : ''}
+    <h3>專注與宵禁的白名單</h3><p class="hint">鎖機時只能用這些 App。每個任務還可以另外加（例如練貝斯加節拍器、讀論文加 PDF 閱讀器）。</p>
+    ${chipList(g.allow, '目前只能用電話和鬧鐘')}<div class="btns" style="margin:8px 0 12px"><button class="btn btn-ghost" data-act="gpick" data-t="allow" ${dis}>選擇 App</button></div>
+    ${focusHabits().map(h => `<div class="habapps"><span>${esc(h.icon)} ${esc(h.name)}</span>${(h.apps || []).length ? `<span class="dim">＋${h.apps.map(a => esc(appName(a))).join('、')}</span>` : '<span class="dim">沒有額外的</span>'}<button class="mini" data-act="gpick" data-t="habit:${esc(h.id)}" ${dis}>改</button></div>`).join('')}
+    ${guard.picker ? appPicker() : ''}
+    <h3>分心 App（上鎖、深呼吸才放行）</h3><p class="hint">預設鎖住，要打開得先深呼吸、說原因、選要用多久，時間到自動鎖回去（參考 ClaryMind）。選「算了」+${FOCUS.skipCoins} 代幣（每天 ${FOCUS.skipMax} 次）。</p>
+    ${chipList(g.distract, '還沒有選')}<div class="btns" style="margin:8px 0 12px"><button class="btn btn-ghost" data-act="gpick" data-t="distract" ${dis}>選擇 App</button></div>
+    <div class="row">
+      <label class="field" style="width:120px">每天免費放行<input class="in num" type="number" min="0" max="20" data-g="gate.passes" value="${g.gate.passes}"></label>
+      <label class="field" style="width:120px">每次最多（分）<input class="in num" type="number" min="1" max="60" data-g="gate.minutes" value="${g.gate.minutes}"></label>
+      <label class="field" style="width:120px">深呼吸（秒）<input class="in num" type="number" min="3" max="60" data-g="gate.breath" value="${g.gate.breath}"></label>
+      <label class="field" style="width:150px">用完之後<select class="in" data-g="gate.strict"><option value="0" ${g.gate.strict ? '' : 'selected'}>可以用代幣加買</option><option value="1" ${g.gate.strict ? 'selected' : ''}>嚴格：明天再說</option></select></label>
+      <label class="field" style="width:120px">加買一次（代幣）<input class="in num" type="number" min="0" max="1000" data-g="gate.extraCost" value="${g.gate.extraCost}"></label></div>
+    <h3>睡前宵禁</h3><p class="hint">時段內只能用白名單 App。守住一整晚自動記錄；緊急解鎖扣 ${focusPenalty(FOCUS.curfewBase, 1)} 代幣起（同一週加倍）。</p>
+    <div class="row">
+      <label class="field" style="width:110px">宵禁<select class="in" data-g="curfew.on"><option value="0" ${g.curfew.on ? '' : 'selected'}>關</option><option value="1" ${g.curfew.on ? 'selected' : ''}>開</option></select></label>
+      <label class="field" style="width:120px">開始<input class="in num" type="time" data-g="curfew.start" value="${esc(g.curfew.start)}"></label>
+      <label class="field" style="width:120px">結束<input class="in num" type="time" data-g="curfew.end" value="${esc(g.curfew.end)}"></label>
+      <label class="field grow">守住算哪個習慣<select class="in" data-g="curfew.habit">${hopt(g.curfew.habit)}</select></label></div>
+    <h3>晚上提醒（今日回顧）</h3><p class="hint">時間到跳通知，點開就是「今日回顧」：補登漏記的事、兌換已經享受的獎勵。網頁版在這個時間之後也會在「今天」頁提示。</p>
+    <div class="row">
+      <label class="field" style="width:110px">提醒<select class="in" data-g="reminder.on"><option value="1" ${g.reminder.on ? 'selected' : ''}>開</option><option value="0" ${g.reminder.on ? '' : 'selected'}>關</option></select></label>
+      <label class="field" style="width:120px">時間<input class="in num" type="time" data-g="reminder.time" value="${esc(g.reminder.time)}"></label></div>
+    <h3>Health Connect 自動記錄</h3><p class="hint">從手機（Pixel、手錶、健身 App）讀資料，達標就自動入帳。打開 App 時讀最近 ${FOCUS.healthDays} 天，只記開啟之後的。</p>
+    <div class="row">
+      <label class="field" style="width:110px">自動記錄<select class="in" data-g="health.on"><option value="0" ${g.health.on ? '' : 'selected'}>關</option><option value="1" ${g.health.on ? 'selected' : ''}>開</option></select></label>
+      ${native && g.health.on ? '<button class="btn btn-ghost" data-act="ghsync">立即同步</button>' : ''}</div>
+    <div class="hmap">
+      <label>運動 ≥ <input class="in num" type="number" min="5" max="240" data-g="health.exerciseMin" value="${g.health.exerciseMin}"> 分 → <select class="in" data-g="health.exerciseHabit">${hopt(g.health.exerciseHabit)}</select></label>
+      <label>睡眠 ≥ <input class="in num" type="number" min="3" max="12" step="0.5" data-g="health.sleepHours" value="${g.health.sleepHours}"> 小時 → <select class="in" data-g="health.sleepHabit">${hopt(g.health.sleepHabit)}</select></label>
+      <label>步數 ≥ <input class="in num" type="number" min="500" max="50000" step="500" data-g="health.steps" value="${g.health.steps}"> 步 → <select class="in" data-g="health.stepsHabit">${hopt(g.health.stepsHabit)}</select></label></div>`;
+}
+function setGuardField(path, el) {
+  const [a, b] = path.split('.');
+  let v = el.type === 'number' ? Number(el.value) : el.tagName === 'SELECT' && /^[01]$/.test(el.value) && ['on', 'strict'].includes(b) ? el.value === '1' : el.value;
+  setG(g => {
+    if (b === 'on' && v && !g[a].on) g[a].since = Date.now();   // 開啟宵禁 / 健康記錄的時間：之前的不算
+    g[a][b] = v;
+  });
+  if (a === 'health' && b === 'on' && v && IS_NATIVE && guard.supported) {
+    const hs = guard.status && guard.status.health;
+    if (hs && hs.available && !(hs.steps && hs.exercise && hs.sleep)) nat('healthRequest').catch(() => {});
+    setTimeout(() => syncHealth(true), 4000);
+  }
+  if (['curfew', 'health', 'reminder'].includes(a) && b === 'on') render();
+}
+function togglePick(pkg, on) {
+  const t = guard.picker, label = guard.apps?.find(a => a.pkg === pkg)?.label || pkg;
+  if (t.startsWith('habit:')) {
+    const h = state.habits.find(x => x.id === t.slice(6)); if (!h) return;
+    h.apps = on ? [...new Set([...(h.apps || []), pkg])].slice(0, 30) : (h.apps || []).filter(x => x !== pkg);
+    setG(g => { g.labels[pkg] = label; }); return;
+  }
+  setG(g => { const k = t === 'allow' ? 'allow' : 'distract'; g[k] = on ? [...new Set([...g[k], pkg])] : g[k].filter(x => x !== pkg); g.labels[pkg] = label; });
+}
+
+/* ----- Health Connect：達標就寫成習慣事件（id 固定，重複讀不會重複記） ----- */
+async function syncHealth(force) {
+  const g = G().health; if (!IS_NATIVE || !guard.supported || !g.on) return;
+  if (!force && Date.now() - guard.healthAt < 30 * 60e3) return;
+  guard.healthAt = Date.now();
+  let r; try { r = await nat('healthRead', { days: FOCUS.healthDays }); } catch (e) { if (force) toast(`讀不到 Health Connect：${esc(e.message || e)}`); return; }
+  const since = (g.since || Date.now()) - 24 * 3600e3, evs = [], idOk = v => typeof v === 'string' && /^[\w-]{1,80}$/.test(v);
+  for (const x of Array.isArray(r.exercise) ? r.exercise : []) {
+    const mins = Math.round((x.end - x.start) / 60e3);
+    if (!idOk(x.id) || !(x.end > x.start) || x.start < since || mins < g.exerciseMin || !hasHabit(g.exerciseHabit)) continue;
+    evs.push({ id: `hc-ex-${x.id}`, type: 'habit', habit: g.exerciseHabit, ts: nowISO(new Date(x.end)), note: `${x.title ? cut(x.title, 30) + ' ' : ''}${mins} 分鐘（Health Connect）`, source: 'health' });
+  }
+  for (const x of Array.isArray(r.sleep) ? r.sleep : []) {
+    const hrs = (x.end - x.start) / 3600e3;
+    if (!idOk(x.id) || !(x.end > x.start) || x.end < since || hrs < g.sleepHours || !hasHabit(g.sleepHabit)) continue;
+    evs.push({ id: `hc-sl-${x.id}`, type: 'habit', habit: g.sleepHabit, ts: nowISO(new Date(x.end)), note: `睡了 ${hrs.toFixed(1)} 小時（Health Connect）`, source: 'health' });
+  }
+  const today = nowISO().slice(0, 10);
+  for (const x of Array.isArray(r.steps) ? r.steps : []) {
+    if (!dayOk(x.day) || !(x.count >= g.steps) || !hasHabit(g.stepsHabit)) continue;
+    const [y, m, d] = x.day.split('-').map(Number), at = x.day === today ? new Date() : new Date(y, m - 1, d, 21, 0, 0);
+    if (at.getTime() < since) continue;
+    evs.push({ id: `hc-st-${x.day}`, type: 'habit', habit: g.stepsHabit, ts: nowISO(at), note: `${fmt(x.count)} 步（Health Connect）`, source: 'health' });
+  }
+  let added = 0;
+  for (const e of evs) { const v = validEvent(e); if (v && addEvent(v)) added++; }
+  if (added) { save(); checkUnlocks(); render(); toast(`從 Health Connect 自動記錄了 ${added} 筆`, null, 'ac'); }
+  else if (force) toast('Health Connect 沒有新的達標紀錄');
+}
+
 /* ---------- Android 桌面小工具 ---------- */
 const DEFAULT_WIDGET_HABITS = ['water', 'exercise', 'paper'];
-const widgetHabitIds = () => (state.settings.widgetHabits || DEFAULT_WIDGET_HABITS).filter(hasHabit).slice(0, 3);
+const widgetOk = id => hasHabit(id) && logMode(state.habits.find(h => h.id === id)) !== 'focus';
+const widgetHabitIds = () => { const ids = (state.settings.widgetHabits || DEFAULT_WIDGET_HABITS).filter(widgetOk);
+  for (const h of state.habits) { if (ids.length >= 3) break; if (!ids.includes(h.id) && widgetOk(h.id)) ids.push(h.id); } return ids.slice(0, 3); };
 let widgetTimer = null;
 function pushWidget() {
   if (!IS_NATIVE) return;
@@ -2827,10 +3262,20 @@ async function drainWidgetQueue() {
   try {
     const r = await nat('drainQueue'); const evs = (r && r.events) || [];
     if (!evs.length) return;
-    const res = ingest(evs, 'widget');
+    // 專注、宵禁、放行是原生端產生的事件，直接檢查格式後入帳；其他（小工具打卡）照舊走 ingest
+    const own = evs.filter(e => e && (e.type === 'focus' || e.type === 'gate')), rest = evs.filter(e => !own.includes(e));
+    const res = rest.length ? ingest(rest, 'widget') : { added: 0 };
+    let added = res.added;
+    for (const e of own) { const v = validEvent(e); if (v && addEvent(v)) { added++; announceFocus(v); } }
     await nat('ackQueue', { ids: evs.map(e => e.id) });
-    if (res.added) { save(); checkUnlocks(); render(); }
+    if (added) { save(); checkUnlocks(); render(); }
   } catch (e) { console.warn('widget queue', e); }
+}
+function announceFocus(e) {
+  if (e.type !== 'focus' || Date.now() - tms(e.ts) > 6 * 3600e3) return;
+  const h = state.habits.find(x => x.id === e.habit);
+  if (e.result === 'done') { haptic('success'); chime('quest'); toast(`<b>專注完成！</b><br><span class="dim">${esc(h?.icon || '🎯')} ${esc(h?.name || '')} ${e.minutes} 分鐘，已自動入帳</span>`, null, 'ac'); }
+  else if (e.kind === 'curfew' && e.result === 'kept') toast('<b>昨晚的宵禁守住了 🌙</b>', null, 'ac');
 }
 // App 裡的外部連結（例如 LeetCode）用手機瀏覽器打開
 document.addEventListener('click', e => {
@@ -2845,6 +3290,25 @@ document.addEventListener('click', e => {
   if (t.dataset.tab) { tab = t.dataset.tab; try { localStorage.setItem(TAB_KEY, tab); } catch (x) { /* ignore */ } render(); scrollTo({ top: 0 }); return; }
   const act = t.dataset.act, id = t.dataset.id;
   if (act === 'habit') logHabit(id, t);
+  else if (act === 'fstart') startFocus();
+  else if (act === 'fmin') { guard.form.minutes = Number(t.dataset.m) || 0; render(); }
+  else if (act === 'fcancel') cancelFocus();
+  else if (act === 'fabort') { guard.confirm = true; render(); const r = $('#freason'); if (r) r.focus(); }
+  else if (act === 'fkeep') { guard.confirm = false; render(); }
+  else if (act === 'gsettings') { e.preventDefault(); nat('openGuardSettings').catch(() => {}); }
+  else if (act === 'gappinfo') { e.preventDefault(); nat('openAppSettings').catch(() => {}); }
+  else if (act === 'gnotify') { e.preventDefault(); nat('requestNotify').catch(() => {}); setTimeout(() => refreshGuard(), 3000); }
+  else if (act === 'ghealth') { nat('healthRequest').catch(() => toast('這支手機沒有 Health Connect')); }
+  else if (act === 'ghsync') syncHealth(true);
+  else if (act === 'gpick') { guard.picker = t.dataset.t; guard.pickQ = ''; render(); const pk = $('.picker'); if (pk) pk.scrollIntoView({ block: 'nearest' }); }
+  else if (act === 'gpickdone') { guard.picker = ''; render(); }
+  else if (act === 'rvopen') { guard.review = true; guard.reviewDay = 0; tab = 'today'; render(); const r = $('#review'); if (r) r.scrollIntoView({ block: 'start', behavior: reducedMotion() ? 'auto' : 'smooth' }); }
+  else if (act === 'rvskip') { lsSet(REVIEW_SKIP, todayKey()); render(); }
+  else if (act === 'rvclose') { guard.review = false; render(); }
+  else if (act === 'rvhabit') reviewHabit(id);
+  else if (act === 'rvlock') toast('這個任務只能用鎖機專注記錄，不能補登。');
+  else if (act === 'rvredeem') reviewRedeem(id);
+  else if (act === 'rvdone') reviewDone();
   else if (act === 'del') removeEvent(id);
   else if (act === 'pview') { pf.view = t.dataset.v; render(); }
   else if (act === 'pdoing') { const p = state.problems[t.dataset.slug]; if (p) { setProblem(p.slug, { doing: !p.doing }); render(); } }
@@ -2982,20 +3446,26 @@ document.addEventListener('change', e => {
     if (state.settings.partyShare === 'basic' && party.info) partyApi.clearStats(myUid()).catch(e => console.warn('party', e));
     syncParty(); toast(state.settings.partyShare === 'xp' ? '隊友會看到你每天的 XP 和連續天數' : '隊友只看得到有沒有紀錄和分類，已上傳的 XP 會清掉');
   }
+  else if (t.dataset.g) setGuardField(t.dataset.g, t);
+  else if (t.dataset.gpick) togglePick(t.dataset.gpick, t.checked);
+  else if (t.id === 'fhabit') { guard.form.habit = t.value; guard.form.minutes = 0; render(); }
+  else if (t.name === 'rvday') { guard.reviewDay = Number(t.value) ? 1 : 0; render(); }
   else if (t.id === 'haptics') { state.settings.haptics = t.value === '1'; touchMeta(); save(); if (state.settings.haptics) haptic('success'); }
   else if (t.dataset.wh !== undefined) { const ids = [...widgetHabitIds()]; while (ids.length < 3) ids.push(DEFAULT_WIDGET_HABITS[ids.length]); ids[Number(t.dataset.wh)] = t.value; state.settings.widgetHabits = ids; touchMeta(); save(); render(); }
   else if (t.dataset.f) {
     const row = t.closest('.hab-row'), h = state.habits[Number(row.dataset.i)]; if (!h) return;
     const f = t.dataset.f;
-    h[f] = ['xp', 'coins', 'dailyMax'].includes(f) ? Math.max(f === 'dailyMax' ? 1 : 0, Number(t.value) || 0) : t.value;
+    h[f] = ['xp', 'coins', 'dailyMax'].includes(f) ? Math.max(f === 'dailyMax' ? 1 : 0, Number(t.value) || 0)
+      : f === 'unitMin' ? clamp(Math.round(Number(t.value) || 25), 5, 240) : f === 'log' ? (LOG_MODES.some(([k]) => k === t.value) ? t.value : 'manual') : t.value;
     touchMeta();
-    save(); renderHeader(compute());
+    save(); if (f === 'log') render(); else renderHeader(compute());
   }
 });
 
 document.addEventListener('input', e => {
   const cf = e.target.closest && e.target.closest('#cform');
   if (cf) { updateContractForm(cf, e.target.name === 'goal'); return; }
+  if (e.target.id === 'gpq') { guard.pickQ = e.target.value; const box = $('.picker'); if (box) { const pos = e.target.selectionStart; box.outerHTML = appPicker(); const q = $('#gpq'); if (q) { q.focus(); q.setSelectionRange(pos, pos); } } return; }
   if (e.target.id === 'pq') { pf.q = e.target.value; const ul = $('#plist'); if (ul) ul.innerHTML = problemRows(compute()); }
 });
 document.addEventListener('change', e => {
@@ -3018,15 +3488,20 @@ render();
   loadParty();
   await initFS();
   await drainWidgetQueue();
+  await refreshGuard(false);
+  if (guard.supported) await loadApps();   // 第一次會把簡訊、地圖、日曆放進白名單
+  await drainWidgetQueue();   // 原生端在 guardStatus 時結算的專注、宵禁
   render();
   if (cloud.session) await syncNow();
+  handleLaunch(); syncHealth(false);
   // 第一次在這個裝置開啟時，把目前等級當作「已看過」，之後升級才播動畫
   if (!lsGet(LV_SEEN)) lsSet(LV_SEEN, compute().level);
   levelReady = true; checkUnlocks();
   checkAppUpdate(false);
 })();
 setInterval(() => { if (tab === 'today' && !document.hidden) renderHeader(compute()); }, 60000);
-window.__goal = { get state() { return state; }, compute, ingest, extractJSON, render, checkUnlocks, partyApi, party, syncParty, partyBoss,
+setInterval(() => { if (tab === 'today' && !document.hidden && !guard.review && reviewDue(todayKey()) && !$('.callout [data-act="rvopen"]')) render(); }, 5 * 60000);
+window.__goal = { get state() { return state; }, compute, ingest, extractJSON, render, checkUnlocks, partyApi, party, syncParty, partyBoss, guard, addEvent, validEvent, focusPenalty, G,
   celebrate: c => { celebrations.push(c); if ($('#overlay').hidden) showNextCelebration(); } };
 </script>
 </body>

@@ -164,6 +164,17 @@ final class GoalStore {
         return name;
     }
 
+    /** 原生端產生的事件（專注、宵禁、分心 App 放行）也走同一個佇列：網頁打開時收回，也會直接上傳雲端。 */
+    static synchronized void enqueue(Context c, JSONObject ev) {
+        JSONArray q = getQueue(c);
+        for (int i = 0; i < q.length(); i++) {
+            JSONObject e = q.optJSONObject(i);
+            if (e != null && ev.optString("id").equals(e.optString("id"))) return;
+        }
+        q.put(ev);
+        setQueue(c, q);
+    }
+
     static synchronized JSONArray getQueue(Context c) {
         try { return new JSONArray(prefs(c).getString("queue", "[]")); } catch (JSONException e) { return new JSONArray(); }
     }

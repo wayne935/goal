@@ -31,6 +31,15 @@
 
 - **震動（build 4 起）：** 網頁更新會自動送到手機，但手機原生的震動波形（升級、徽章、打卡）需要重新建置一次 App 才有；沒重建之前，升級動畫照常播放，只是震動較弱或沒有。震動可在 App 的「設定 → 偏好 → 震動」關閉。
 
+## 鎖機專注、分心 App、宵禁、Health Connect（build 9 起，要重新建置一次）
+重新建置安裝後，在 App 的「設定 → 鎖機與自動紀錄」：
+1. **開啟 Goal 專注守護**：按「去開啟」→ 手機的「無障礙」設定 → 已下載的應用程式 → Goal 專注守護 → 開啟。它只看「現在打開的是哪個 App」，不讀畫面內容。
+   - 如果開關是灰色的（顯示「受限制的設定」）：到「設定 → 應用程式 → Goal」，右上角 ⋮ →「允許受限制的設定」，再回去開。
+2. **允許通知**：專注倒數、完成入帳、晚上提醒、宵禁前提醒都靠通知。
+3. **連結 Health Connect**（可選）：打開「Health Connect 自動記錄」，在跳出的畫面允許步數、運動、睡眠。
+4. 選**白名單**（專注和宵禁時能用的 App）、**分心 App**（平常就上鎖的 App），要的話打開**宵禁**。
+5. 到「今天」頁的「鎖機專注」選任務和時間，按「開始專注」。想中途解鎖：鎖定畫面或 Goal 裡按「緊急解鎖」，寫原因、按住 5 秒（會扣代幣）。
+
 ## 出問題時
 - `build-android.bat` 視窗出現錯誤：整段複製給 Claude。
 - Android Studio 建置失敗：打開下方 **Build** 分頁，複製紅色的錯誤訊息給 Claude。
@@ -44,3 +53,8 @@
 | `android/app/src/main/java/com/wayne/goal/GoalWidgetPlugin.java` | App 網頁與原生端之間的橋 |
 | `android/app/src/main/java/com/wayne/goal/GoalUpdater.java` | 自動更新：下載新版網頁並切換 |
 | `android/app/src/main/res/layout/goal_widget.xml` | 小工具版面 |
+| `android/app/src/main/java/com/wayne/goal/GuardState.java` | 鎖手機的規則：專注、宵禁、分心 App 放行、事件、鬧鐘、通知 |
+| `android/app/src/main/java/com/wayne/goal/GuardService.java` | 守護服務（無障礙服務）：偵測前景 App |
+| `android/app/src/main/java/com/wayne/goal/LockActivity.java` | 鎖定畫面、緊急解鎖、深呼吸放行 |
+| `android/app/src/main/java/com/wayne/goal/GuardReceiver.java` | 專注結束、晚上提醒、宵禁的鬧鐘；開機後重新排程 |
+| `android/app/src/main/java/com/wayne/goal/HealthBridge.java` | 讀 Health Connect（步數、運動、睡眠） |
