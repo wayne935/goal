@@ -1,6 +1,6 @@
 {
-  "build": 8,
-  "minNative": 2,
+  "build": 9,
+  "minNative": 4,
   "files": [
     "index.html",
     "manifest.json",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "修正：換帳號登入時不會再把上一個帳號的本機紀錄同步過去"
+  "notes": "新功能：鎖機專注（時間到自動入帳）、分心 App 上鎖、睡前宵禁、今日回顧、Health Connect 自動記錄（需要重新建置 App）"
 }

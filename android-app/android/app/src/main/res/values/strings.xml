@@ -4,4 +4,8 @@
     <string name="title_activity_main">Goal</string>
     <string name="package_name">com.wayne.goal</string>
     <string name="custom_url_scheme">com.wayne.goal</string>
+    <string name="guard_label">Goal 專注守護</string>
+    <string name="guard_desc">Goal 只用這個服務判斷「現在打開的是哪個 App」，不讀取畫面內容。專注、宵禁時，白名單以外的 App 會被鎖定畫面蓋住；你設定的分心 App 要先深呼吸、寫原因才能放行。隨時可以在 Goal 裡緊急解鎖。</string>
+    <color name="goal_lock_bg">#1B3A31</color>
+    <color name="goal_lock_brass">#D6A243</color>
 </resources>

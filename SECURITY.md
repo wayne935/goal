@@ -63,3 +63,10 @@
 - 新增任何會顯示在畫面上的欄位，一律用 `esc()`；新增任何外部資料入口，先經過 `validEvent` / `validHabits` / `validProblems` 等檢查函式。
 - 不要把 Supabase 的 secret key 或 service_role key 放進程式碼；網頁只能用 publishable key。
 - 新增資料表時，一定要開 Row Level Security，並加上「只能存取自己資料」的 policy。
+
+## build 9（2026-11-02）：鎖手機功能
+- **無障礙服務（Goal 專注守護）**只接收「視窗切換」事件（`typeWindowStateChanged`），`canRetrieveWindowContent=false`，讀不到畫面上的文字或輸入內容；只用前景 App 的套件名稱判斷要不要蓋鎖定畫面。
+- 專注、宵禁、放行事件由原生端產生，網頁用 `validEvent()` 檢查格式後才入帳；`normalize()`（inbox、貼上、AI）不接受這兩種事件，避免偽造「專注完成」。顯示的 App 名稱、原因都經過 `esc()`。
+- 鎖手機設定（`guardConfig`）來自網頁，所以 **SECURITY 第 7 項（誰能推到 repo 誰就能改你手機上的網頁）現在也代表能改鎖機設定**。但緊急解鎖、電話、緊急求救、鬧鐘是原生程式寫死的，網頁無法關掉；最壞的情況是被設成鎖住很多 App，隨時可以緊急解鎖或關閉無障礙服務。建議開啟 GitHub 兩步驟驗證。
+- Health Connect 只申請讀取（步數、運動、睡眠），只在打開 App 時讀，不申請背景讀取；轉成的事件只存「達標了」與時長，不存原始健康資料。
+- 新增的 receiver、activity、service 都是 `exported="false"`（Health Connect 要求的權限說明 alias 除外，它只能由系統以 `START_VIEW_PERMISSION_USAGE` 權限開啟，打開的是 App 首頁）。
