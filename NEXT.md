@@ -1,6 +1,6 @@
 # 接下來要實作的事
 
-> 更新：2026-11-02　｜　目前網頁 build 9，原生 NATIVE_VERSION 4（`version.json` 的 minNative 4）
+> 更新：2026-11-04　｜　目前網頁 build 10，原生 NATIVE_VERSION 4（`version.json` 的 minNative 4）
 > 先讀 `CLAUDE.md`（架構、發佈規則、測試方法）。設計理由與研究依據在 `PLAN.md` 第 8 節。
 
 ## 目前狀態
@@ -21,6 +21,7 @@
   - 使用者的決定：專注用白名單；緊急解鎖 = 沒收獎勵 + 扣代幣（每週加倍）+ 連勝歸零；社群 / 手遊參考 ClaryMind；學習類任務只能鎖機記錄，喝水這類用按的，分類由使用者在前端設定。
   - 已知取捨：守護服務是無障礙服務，App 被強制停止時鎖不住（所以專注 / 宵禁期間關掉服務 = 視同緊急解鎖）；Health Connect 只在打開 App 時讀；宵禁守住的獎勵在宵禁結束時（或下次打開 App）才入帳；分心 App 放行對全部分心 App 一起生效（跟 ClaryMind 一樣）。
   - 使用者還要做：重新建置 App、開權限、實際用一週回報（特別是鎖定畫面在 Pixel 9a / Android 17 上的行為）。
+- **build 10 手機介面修正（2026-11-04）**：習慣設定卡片排版（980px 以下）、專注面板統計列間距、Health Connect 自動記錄的慶祝畫面（`celebrations` 新類型 `health`，`playHealth()`；`syncHealth()` 用 `compute()` 前後差算總獎勵、`S.per[id]` 算每筆）與 `healthSummary()`。
 
 ## 1. 之後的候選（依建議順序）
 1. **實機回饋修正**：build 9 的鎖定畫面、通知、Health Connect 第一次在 Pixel 9a 上跑，先處理使用者回報的問題。

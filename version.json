@@ -1,5 +1,5 @@
 {
-  "build": 9,
+  "build": 10,
   "minNative": 4,
   "files": [
     "index.html",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "新功能：鎖機專注（時間到自動入帳）、分心 App 上鎖、睡前宵禁、今日回顧、Health Connect 自動記錄（需要重新建置 App）"
+  "notes": "手機版介面修正：設定頁習慣改成卡片排版、鎖機專注按鈕下方文字不再重疊、Health Connect 自動記錄有動畫並列出記了什麼"
 }

@@ -381,6 +381,7 @@ textarea.in{min-height:140px;resize:vertical;font-family:ui-monospace,Consolas,m
 /* ---------- settings ---------- */
 .hab-edit{display:grid;gap:8px}
 .hab-row{display:grid;grid-template-columns:56px minmax(140px,360px) 72px 72px 84px 110px 110px 92px 30px;gap:8px;align-items:center}
+.hab-row .in:disabled{opacity:.4}
 .focus .fnow{display:flex;align-items:center;gap:14px;background:var(--felt-hi);border-radius:14px;padding:14px 16px;border-left:5px solid var(--brass)}
 .focus .fic{font-size:34px}
 .focus .fnow small{display:block;font-size:13.5px}
@@ -392,6 +393,14 @@ textarea.in{min-height:140px;resize:vertical;font-family:ui-monospace,Consolas,m
 .fmins{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .chipbtn{border:1.5px solid var(--chalk-faint);background:rgba(0,0,0,.18);border-radius:99px;padding:6px 14px;font-size:15px}
 .chipbtn.on{background:var(--brass);border-color:var(--brass);color:#3a2805;font-weight:700}
+.focus .sumline{margin:16px 0 0;padding-top:12px;border-top:1px dashed var(--chalk-faint);flex-wrap:wrap;gap:6px 18px}
+.focus .hint{line-height:1.6}
+@media (max-width:720px){
+  .focus .fstart{width:100%;padding:13px 18px;font-size:17px}
+  .focus .fnow{flex-wrap:wrap;gap:10px 14px}
+  .focus .fcount{font-size:38px}
+  .fmins .chipbtn{flex:1;min-width:64px}
+}
 .habit.lockonly .hr{color:var(--brass-hi)}
 .review h3,.panel h3{font-size:16px;margin:18px 0 4px}
 .rvgrid{display:flex;flex-wrap:wrap;gap:8px}
@@ -414,16 +423,17 @@ textarea.in{min-height:140px;resize:vertical;font-family:ui-monospace,Consolas,m
 .hab-row.head{font-size:13px;color:var(--chalk-dim)}
 .hc{display:block}
 .hc span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-@media (max-width:700px){
+@media (max-width:980px){
   .hab-edit{gap:12px}
-  .hab-row{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding-bottom:12px;border-bottom:1px dashed var(--chalk-faint)}
+  .hab-row{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px 8px;padding:12px 12px 14px;border-radius:12px;background:rgba(0,0,0,.16);border-left:4px solid var(--c,var(--chalk-faint))}
   .hab-row.head{display:none}
-  .hab-row>.in[data-f="icon"]{grid-column:1}
-  .hab-row>.in[data-f="name"]{grid-column:2/4}
-  .hab-row>.btn-x{grid-column:4;grid-row:1;justify-self:end;align-self:center}
-  .hab-row>.hc{grid-row:2}
-  .hc span{position:static;width:auto;height:auto;clip:auto;display:block;font-size:12px;color:var(--chalk-dim);margin-bottom:2px}
-  .hab-row .in{padding:7px 8px}
+  .hab-row>.in[data-f="icon"]{grid-column:1;text-align:center;font-size:20px;padding:5px 2px}
+  .hab-row>.in[data-f="name"]{grid-column:2/6;font-weight:700}
+  .hab-row>.btn-x{grid-column:6;grid-row:1;justify-self:end;align-self:center;width:36px;height:36px}
+  .hab-row>.hc{grid-column:span 2;min-width:0}
+  .hc span{position:static;width:auto;height:auto;clip:auto;display:block;font-size:12.5px;color:var(--chalk-dim);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hab-row .in{padding:8px 9px}
+  .hab-row select.in{padding-right:4px}
 }
 .status{display:flex;align-items:center;gap:10px;font-size:16px;margin-bottom:12px}
 .btns{display:flex;gap:10px;flex-wrap:wrap}
@@ -520,6 +530,32 @@ code.k{font-family:ui-monospace,Consolas,monospace;font-size:13.5px;background:r
 .cel-boss.impact .crown{animation:crown .6s .3s cubic-bezier(.3,1.6,.5,1) forwards}
 @keyframes crown{to{opacity:1;transform:none}}
 .cel .bonus .sub{font-family:var(--ff-zh);font-size:17px;font-weight:400}
+/* Health Connect：自動記錄的清單 */
+.hc-orb{--s:132px;width:var(--s);height:var(--s);border-radius:50%;display:grid;place-items:center;position:relative;
+  background:radial-gradient(circle at 36% 30%,#7fe0cf,var(--health) 52%,#16695d);box-shadow:0 0 0 6px rgba(51,176,158,.22),0 18px 40px rgba(0,0,0,.5)}
+.hc-orb span{font-size:60px;line-height:1;filter:drop-shadow(0 3px 2px rgba(0,0,0,.3))}
+.hc-orb::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:3px solid rgba(127,224,207,.7);opacity:0}
+.cel-health .hc-orb{animation:orbin .7s cubic-bezier(.3,1.5,.5,1) both}
+.cel-health.impact .hc-orb::after{animation:pulse 1.6s .1s ease-out 2}
+@keyframes orbin{0%{transform:scale(.3);opacity:0}100%{transform:none;opacity:1}}
+@keyframes pulse{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.45)}}
+.cel-health .rays{background:repeating-conic-gradient(from 0deg,rgba(127,224,207,.16) 0deg 5deg,transparent 5deg 15deg)}
+.cel-health .stage{margin-bottom:20px}
+.hcl{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:8px;width:min(400px,calc(100vw - 48px));text-align:left}
+.hcl li{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:10px;align-items:center;background:rgba(47,90,77,.72);border-radius:12px;padding:9px 12px;border-left:4px solid var(--health);
+  opacity:0;transform:translateX(-18px)}
+.cel.impact .hcl li{animation:rowin .42s cubic-bezier(.2,1.2,.4,1) forwards;animation-delay:calc(.25s + var(--i) * .32s)}
+@keyframes rowin{to{opacity:1;transform:none}}
+.hcl .i{font-size:24px;text-align:center}
+.hcl b{display:block;font-size:16px;line-height:1.3;overflow-wrap:anywhere}
+.hcl small{display:block;font-size:13.5px;color:var(--chalk-dim)}
+.hcl .rw{font-family:var(--ff-num);font-weight:700;font-size:16px;color:var(--brass-hi);text-align:right;white-space:nowrap;line-height:1.25}
+.hcl .rw small{display:block;font-family:var(--ff-zh);font-weight:400;font-size:12.5px;color:var(--chalk-dim);margin-top:1px}
+.hcl li.cap{border-left-color:var(--chalk-faint)}
+.hcl li.cap .rw{color:var(--chalk-dim)}
+.hcl li.more{display:block;text-align:center;background:none;border:0;font-size:14px;color:var(--chalk-dim);padding:2px}
+.cel-health .bonus{gap:14px;font-size:26px}
+.cel-health .bonus .x{display:flex;align-items:center;gap:6px}
 /* level */
 .medal-xl{--s:210px;width:var(--s);height:var(--s);border-radius:50%;display:grid;place-items:center;position:relative;will-change:transform;
   background:radial-gradient(circle at 34% 28%,var(--brass-hi),var(--brass) 48%,var(--brass-lo));
@@ -564,6 +600,8 @@ code.k{font-family:ui-monospace,Consolas,monospace;font-size:13.5px;background:r
   .odo{height:78px}.odo .col span{height:78px;line-height:78px;font-size:78px}
   .medal-xl small{bottom:22px}
   .cel h2{font-size:31px}
+  .hc-orb{--s:110px}.hc-orb span{font-size:50px}
+  .cel-health h2{font-size:27px}
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -591,7 +629,7 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 9;
+const APP_BUILD = 10;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 const $ = (s, r = document) => r.querySelector(s);
@@ -2098,7 +2136,7 @@ function viewHistory(S) {
 function viewSettings(S) {
   const st = fs.status;
   const statusText = st === 'linked' && !folderMine() ? `資料夾「${esc(fs.handle?.name || '')}」是另一個帳號的紀錄，目前不讀也不寫` : st === 'linked' ? `已連結資料夾「${esc(fs.handle?.name || '')}」` : st === 'needs-permission' ? `已記住「${esc(fs.handle?.name || '')}」，需要再授權一次` : st === 'unsupported' ? '這個瀏覽器不支援讀取資料夾（請用 Chrome 或 Edge）' : '尚未連結資料夾';
-  const habitRows = state.habits.map((h, i) => `<div class="hab-row" data-i="${i}">
+  const habitRows = state.habits.map((h, i) => `<div class="hab-row" data-i="${i}" style="--c:${CATS[h.cat]?.color || 'var(--chalk-faint)'}">
       <input class="in" data-f="icon" value="${esc(h.icon)}" aria-label="圖示" maxlength="4">
       <input class="in" data-f="name" value="${esc(h.name)}" aria-label="名稱">
       <label class="hc"><span>XP</span><input class="in num" data-f="xp" type="number" min="0" value="${h.xp}"></label>
@@ -2257,7 +2295,19 @@ function showNextCelebration() {
   }
   const rest = celebrations.length - 1;
   const next = rest ? `繼續（還有 ${rest} 個）` : '收下';
-  if (c.type === 'party') {
+  if (c.type === 'health') {
+    const show = c.items.slice(0, 5), more = c.items.length - show.length;
+    box.innerHTML = `<div class="cel cel-health"><div class="rays"></div>
+      <div class="stage"><div class="shock"></div><div class="shock s2"></div><div class="hc-orb" aria-hidden="true"><span>💚</span></div></div>
+      <h2 id="ul-name" class="reveal d1">自動記錄了 ${c.items.length} 筆</h2>
+      <p class="reveal d1">Health Connect 讀到你達標了，已經幫你打卡</p>
+      <ul class="hcl">${show.map((x, i) => `<li class="${x.xp || x.coins ? '' : 'cap'}" style="--i:${i}"><span class="i" aria-hidden="true">${esc(x.icon)}</span>
+        <span><b>${esc(x.name)}</b><small>${esc(dayLabel(x.day))}・${esc(x.note)}</small></span>
+        <span class="rw">${x.xp || x.coins ? `+${fmt(x.xp)} XP<small>+${fmt(x.coins)} 代幣</small>` : '<small>已達每日上限</small><small>只記錄</small>'}</span></li>`).join('')}
+        ${more ? `<li class="more" style="--i:${show.length}">還有 ${more} 筆，在「紀錄」頁看得到</li>` : ''}</ul>
+      <div class="bonus hcb" style="opacity:0"><span class="x">+<span class="num" id="cel-xp">0</span> XP</span><span class="x"><i class="coin"></i>+<span class="num" id="cel-coins">0</span></span></div>
+      <div class="btns hcb" style="opacity:0"><button class="btn btn-brass" id="ul-ok">${next}</button></div></div>`;
+  } else if (c.type === 'party') {
     box.innerHTML = `<div class="cel cel-boss"><div class="rays"></div>
       <div class="stage"><div class="shock"></div><div class="shock s2"></div>
         <div class="boss-xl" aria-hidden="true"><span class="bx">${c.icon}</span><span class="crown">🛡️</span></div></div>
@@ -2301,7 +2351,7 @@ function showNextCelebration() {
   $('#ul-ok').focus();
   $('#ul-ok').onclick = () => { closeCelebration(false); };
   const all = $('#ul-all'); if (all) all.onclick = () => closeCelebration(true);
-  if (c.type === 'badge') playBadge(c.a, box); else if (c.type === 'boss' || c.type === 'party') playBoss(c, box); else playLevel(c, box);
+  if (c.type === 'health') playHealth(c, box); else if (c.type === 'badge') playBadge(c.a, box); else if (c.type === 'boss' || c.type === 'party') playBoss(c, box); else playLevel(c, box);
 }
 function playBoss(c, box) {
   const bx = $('.boss-xl', box);
@@ -2313,6 +2363,23 @@ function playBoss(c, box) {
     if (reducedMotion()) $('#cel-coins', box).textContent = fmt(c.coins);
   });
   if (reducedMotion()) $('#cel-coins', box).textContent = fmt(c.coins);
+}
+// Health Connect：一筆一筆滑進來（每筆「叮」一聲），最後總數跳動、撒彩紙
+function playHealth(c, box) {
+  const rows = [...box.querySelectorAll('.hcl li')], tail = [...box.querySelectorAll('.hcb')], rm = reducedMotion();
+  const finish = () => {
+    if (!$('#overlay').hidden && box.contains(tail[0])) {
+      tail.forEach(el => { el.style.transition = rm ? '' : 'opacity .35s'; el.style.opacity = '1'; });
+      if (rm) { $('#cel-xp', box).textContent = fmt(c.xp); $('#cel-coins', box).textContent = fmt(c.coins); return; }
+      animateCount($('#cel-xp', box), 0, c.xp, 800); animateCount($('#cel-coins', box), 0, c.coins, 800);
+      burst($('.hc-orb', box), 'badge'); chime('quest'); haptic('success');
+    }
+  };
+  impactAt(box, 450, 'tap', () => {
+    if (rm) { finish(); return; }
+    rows.forEach((li, i) => setTimeout(() => { if (!$('#overlay').hidden && li.isConnected) { chime('tick'); if (i < 5) haptic('tap'); } }, 250 + i * 320 + 120));
+    setTimeout(finish, 250 + rows.length * 320 + 200);
+  });
 }
 function closeCelebration(all) {
   const c = celebrations.shift();
@@ -3079,7 +3146,7 @@ function focusPanel(S, tk) {
       <div class="fmins" role="radiogroup" aria-label="時間">${opts.map(m => `<button class="chipbtn${m === mins ? ' on' : ''}" data-act="fmin" data-m="${m}" aria-pressed="${m === mins}">${m >= 60 && m % 60 === 0 ? `${m / 60} 小時` : `${m} 分`}</button>`).join('')}</div>
       <p class="hint" style="margin:10px 0 0">${p.n ? `完成記 ${p.n} 段：<b>+${fmt(p.xp)} XP、+${fmt(p.coins)} 代幣</b>` : '今天這個任務已達每日上限，完成只記錄不計分'}。中途緊急解鎖扣 ${fmt(p.penalty)} 代幣。<br>
         可以用：電話、鬧鐘、輸入法${apps.length ? '、' + apps.map(a => esc(appName(a))).join('、') : ''}。<a href="#" data-tab="settings">改白名單</a></p>
-      <div class="btns" style="margin-top:12px"><button class="btn btn-brass" data-act="fstart">🔒 開始專注</button></div>
+      <div class="btns" style="margin-top:12px"><button class="btn btn-brass fstart" data-act="fstart">🔒 開始專注</button></div>
       ${st && !st.notify ? '<p class="hint" style="margin:10px 0 0"><a href="#" data-act="gnotify">允許通知</a>，才看得到倒數和完成提醒。</p>' : ''}`;
   }
   return `<section class="panel focus" id="focus"><h2>🎯 鎖機專注</h2>${body}${stats}${curfew}</section>`;
@@ -3233,10 +3300,32 @@ async function syncHealth(force) {
     if (at.getTime() < since) continue;
     evs.push({ id: `hc-st-${x.day}`, type: 'habit', habit: g.stepsHabit, ts: nowISO(at), note: `${fmt(x.count)} 步（Health Connect）`, source: 'health' });
   }
-  let added = 0;
-  for (const e of evs) { const v = validEvent(e); if (v && addEvent(v)) added++; }
-  if (added) { save(); checkUnlocks(); render(); toast(`從 Health Connect 自動記錄了 ${added} 筆`, null, 'ac'); }
-  else if (force) toast('Health Connect 沒有新的達標紀錄');
+  const S0 = compute(), added = [];
+  for (const e of evs) { const v = validEvent(e); if (v && addEvent(v)) added.push(v); }
+  if (added.length) {
+    save();
+    const S1 = compute();
+    const items = added.sort((a, b) => tms(a.ts) - tms(b.ts)).map(e => {
+      const h = state.habits.find(x => x.id === e.habit) || {}, rw = S1.per[e.id] || { xp: 0, coins: 0 };
+      return { icon: h.icon || '✅', name: h.name || e.habit, note: (e.note || '').replace(/（Health Connect）$/, ''), day: dayKey(e.ts), xp: rw.xp, coins: rw.coins };
+    });
+    // 總數用前後差：同時完成的每日任務、每週目標也算進去
+    const c = { type: 'health', items, xp: Math.max(0, S1.xp - S0.xp), coins: Math.max(0, S1.balance - S0.balance) };
+    if ($('#overlay').hidden) celebrations.unshift(c); else celebrations.push(c);   // 排在因此解鎖的徽章前面
+    checkUnlocks(); render();
+    if ($('#overlay').hidden) showNextCelebration();
+  } else if (force) toast(healthSummary(r, g), null, 'ac');
+}
+// 沒有新的達標紀錄時，告訴使用者讀到了什麼、離目標還差多少
+function healthSummary(r, g) {
+  const today = nowISO().slice(0, 10), parts = [];
+  const st = (Array.isArray(r.steps) ? r.steps : []).find(x => x && x.day === today);
+  if (hasHabit(g.stepsHabit)) parts.push(`今天 <b class="num">${fmt(st ? st.count : 0)}</b> / ${fmt(g.steps)} 步`);
+  const sl = (Array.isArray(r.sleep) ? r.sleep : []).filter(x => x && x.end > x.start).sort((a, b) => b.end - a.end)[0];
+  if (sl && hasHabit(g.sleepHabit)) parts.push(`最近一次睡 <b class="num">${((sl.end - sl.start) / 3600e3).toFixed(1)}</b> / ${g.sleepHours} 小時`);
+  const ex = (Array.isArray(r.exercise) ? r.exercise : []).filter(x => x && x.end > x.start && dayKey(nowISO(new Date(x.end))) === todayKey());
+  if (hasHabit(g.exerciseHabit)) parts.push(ex.length ? `今天運動 <b class="num">${fmt(Math.max(...ex.map(x => Math.round((x.end - x.start) / 60e3))))}</b> / ${g.exerciseMin} 分` : '今天還沒有運動紀錄');
+  return `<b>Health Connect 已同步</b>，沒有新的達標紀錄<br><span class="dim">${parts.map(x => x + '<br>').join('')}已經記過的不會重複記</span>`;
 }
 
 /* ---------- Android 桌面小工具 ---------- */
