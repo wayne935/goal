@@ -36,6 +36,7 @@
 - 介面文字用繁體中文、口語、正面（例如「犯了不歸零」）；數字用 `fmt()`，數字字型加 `class="num"`。
 - 選項的寫法：只有開 / 關用 `sw(attrs, on)` 開關（讀 `t.checked`）；2～4 個短選項用 `.seg` 分段按鈕（中文字加 `zh`）；長清單才用 `<select class="in">`（已用 `base-select` 美化，不支援的瀏覽器退回原生）。
 - 字體：`--ff-zh` 是 Nunito（英文）→ 昭源甜圓（中文），數字 `--ff-num` 是 Barlow Condensed。
+- 「今天」頁（`viewToday()`）：新面板要包進 `slot(順序, html)`，手機一欄時照順序排；一次性的提示寫成一行的 `.note` 放進 `.notes`，不要再做整塊的 callout 把打卡格往下擠。
 - 顏色用 `:root` 的 CSS 變數；手機版斷點是 720px，底部分頁列目前 7 個分頁，再加就太擠了。
 - 動畫都要尊重 `reducedMotion()`；音效用 `chime(kind)`，震動用 `haptic(kind)`。
 

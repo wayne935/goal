@@ -159,6 +159,28 @@ textarea.in{min-height:140px;resize:vertical;font-family:ui-monospace,Consolas,m
 .btn-x{background:none;border:0;color:var(--chalk-dim);width:30px;height:30px;border-radius:8px;font-size:18px;line-height:1}
 .btn-x:hover{background:rgba(0,0,0,.25);color:var(--chalk)}
 .callout{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:rgba(230,180,58,.12);border:1.5px solid rgba(230,180,58,.35);border-radius:12px;padding:12px 16px;margin-bottom:22px;font-size:15px}
+/* 「今天」頁上方的提示：一行一條，不要把打卡格擠到下面 */
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:8px;margin-bottom:18px}
+.note{display:flex;align-items:center;gap:8px;background:rgba(230,180,58,.1);border:1.5px solid rgba(230,180,58,.3);border-radius:12px;padding:7px 8px 7px 14px;font-size:14.5px;line-height:1.45}
+.note>span:first-child{flex:1;min-width:0}
+.note .btn-x{width:32px;height:32px;flex:none}
+.note .btns{flex:none;gap:2px;margin-left:auto;flex-wrap:nowrap;align-items:center}
+.btn-sm{padding:6px 13px;font-size:14.5px;border-radius:9px}
+.tgrid .slot{min-width:0}
+.tgrid>div>.slot:last-child>*{margin-bottom:0}
+details.fmini>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+details.fmini>summary::-webkit-details-marker{display:none}
+details.fmini>summary h2{margin:0}
+details.fmini>summary .sumline{margin:0;flex:1}
+details.fmini>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--brass);border-bottom:2px solid var(--brass);transform:rotate(45deg);margin:0 4px 4px auto;transition:transform .2s}
+details.fmini[open]>summary::after{transform:rotate(225deg);margin-bottom:-4px}
+details.fmini[open]>summary{margin-bottom:12px}
+@media (max-width:960px){
+  .tgrid{display:flex;flex-direction:column;align-items:stretch}
+  .tgrid>div{display:contents}
+  .tgrid .slot{order:var(--o)}
+  .tgrid>div>.slot:last-child>*{margin-bottom:22px}
+}
 
 /* ---------- log list ---------- */
 .log{list-style:none;margin:0;padding:0}
@@ -483,16 +505,26 @@ code.k{font-family:ui-monospace,Consolas,monospace;font-size:13.5px;background:r
 /* ---------- mobile ---------- */
 @media (max-width:720px){
   .wrap{padding:0 16px}
-  .top{gap:14px;padding-top:18px;flex-wrap:wrap}
-  .level{--s:64px}
-  .level b{font-size:30px}
-  .level small{bottom:6px;font-size:9px}
+  /* 手機：頁首縮成一行、固定在上方，往下捲也看得到經驗條、代幣、連續天數 */
+  .top{position:sticky;top:0;z-index:15;gap:10px;margin:0 -16px 14px;padding:calc(8px + env(safe-area-inset-top)) 16px 8px;
+    background:var(--felt);box-shadow:0 8px 14px -10px rgba(0,0,0,.6)}
+  .level{--s:46px;box-shadow:0 2px 0 #0f2420,0 5px 10px rgba(0,0,0,.35)}
+  .level::before{inset:4px}
+  .level b{font-size:22px;transform:translateY(-1px)}
+  .level small{display:none}
+  .xp-line span{font-size:12.5px;white-space:nowrap}
+  .groove{height:9px;margin-top:3px}
+  .panel{scroll-margin-top:76px}
   .habits{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   .habit{min-height:88px;padding:10px 10px 9px}
   .xp-line h1{display:none}
   .xp-line h1{font-size:21px}
-  .counters{width:100%;justify-content:flex-start;gap:24px}
-  .counter .num{font-size:28px}
+  .counters{gap:12px}
+  .counter{gap:5px}
+  .counter .num{font-size:23px}
+  .counter small{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .coin{width:20px;height:20px}.coin::after{inset:4px}
+  .flame{font-size:19px}
   .tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;margin:0;border:0;background:var(--felt-deep);justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(0,0,0,.35)}
   .tab{flex-direction:column;gap:0;font-size:12.5px;padding:4px 3px;min-width:0}
   .tab .ti{font-size:21px}
@@ -655,7 +687,7 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 11;
+const APP_BUILD = 12;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 const $ = (s, r = document) => r.querySelector(s);
@@ -1226,7 +1258,7 @@ function logHabit(id, btn) {
   const h = state.habits.find(x => x.id === id); if (!h) return;
   if (logMode(h) === 'focus') {   // 只能鎖機記錄：帶到專注面板
     if (IS_NATIVE && guard.supported) { guard.form.habit = id; guard.form.minutes = 0; render(); const f = $('#focus'); if (f) f.scrollIntoView({ block: 'start', behavior: reducedMotion() ? 'auto' : 'smooth' }); }
-    toast(`「${esc(h.name)}」只能用${IS_NATIVE ? '上面的' : '手機 App 的'}鎖機專注記錄，時間到會自動入帳。`);
+    toast(`「${esc(h.name)}」只能用${IS_NATIVE ? '' : '手機 App 的'}鎖機專注記錄，時間到會自動入帳。`);
     return;
   }
   const S0 = compute(); const used = S0.days[todayKey()]?.habits[id] || 0;
@@ -1689,12 +1721,19 @@ function viewToday(S) {
   const near = ACH.filter(a => !state.unlocked[a.id]).map(a => ({ a, p: progressOf(a, S) / a.goal }))
     .sort((x, y) => y.p - x.p).slice(0, 3);
   const linkTip = fs.status !== 'linked' && !state.settings.hideLinkTip && !(fs.status === 'unsupported' && cloud.session)
-    ? `<div class="callout"><span>${fs.status === 'needs-permission' ? '瀏覽器需要你再按一次，才能繼續讀取 Goal 資料夾。' : fs.status === 'unsupported' ? '這裡不能讀取資料夾。到設定登入雲端同步，就能和筆電共用紀錄。' : '連結 Goal 資料夾後，AI 判題結果會自動入帳，紀錄也會存進雲端硬碟。'}</span>
-       <span class="btns">${fs.status === 'unsupported' ? '<button class="btn btn-brass" data-tab="settings">去設定登入</button>' : `<button class="btn btn-brass" data-act="${fs.status === 'needs-permission' ? 'regrant' : 'link'}">${fs.status === 'needs-permission' ? '繼續讀取資料夾' : '連結 Goal 資料夾'}</button>`}<button class="btn btn-ghost" data-act="hidetip">不用了</button></span></div>` : '';
-  return `${reviewPanel(S, tk)}${contractPanel(S, tk)}${linkTip}<div class="grid2"><div>
-    ${focusPanel(S, tk)}
-    <section class="panel"><h2>今天做了什麼？</h2><p class="hint">點一下記一次，圓點是今天的次數和上限。🔒 的任務只能用上面的鎖機專注記錄。</p><div class="habits">${habits}</div></section>
-    <section class="panel"><h2>記錄解題</h2><p class="hint">用 AI 判題會自動入帳；這裡是手動補登。</p>
+    ? `<div class="note"><span>${fs.status === 'needs-permission' ? '📁 再按一次，才能繼續讀取 Goal 資料夾。' : fs.status === 'unsupported' ? '☁️ 登入雲端同步，就能和筆電共用紀錄。' : '📁 連結 Goal 資料夾：AI 判題自動入帳，紀錄存進雲端硬碟。'}</span>
+       <span class="btns">${fs.status === 'unsupported' ? '<button class="btn btn-brass btn-sm" data-tab="settings">去登入</button>' : `<button class="btn btn-brass btn-sm" data-act="${fs.status === 'needs-permission' ? 'regrant' : 'link'}">${fs.status === 'needs-permission' ? '繼續讀取' : '連結'}</button>`}<button class="btn-x" data-act="hidetip" aria-label="不用了，不要再提醒" title="不用了">×</button></span></div>` : '';
+  /* 上方：只放「現在要處理」的東西（進行中的專注、打開的回顧、開局表單），其他提示一行一條 */
+  const notes = [reviewPanel(S, tk), contractNudge(S, tk), linkTip].filter(x => x.startsWith('<div class="note')).join('');
+  const review = guard.review ? reviewPanel(S, tk) : '';
+  const ci = contractInfo(S, tk), contract = contractPanel(S, tk);
+  const focusLive = IS_NATIVE && !!guard.status?.session, focus = focusPanel(S, tk);
+  /* 手機上是一欄，用 --o 決定順序：打卡 → 專注 → 任務 → 契約 → 今天的紀錄 → 解題 → 隊伍 → 熱力圖 → 徽章 */
+  const slot = (o, html) => html ? `<div class="slot" style="--o:${o}">${html}</div>` : '';
+  return `${notes ? `<div class="notes">${notes}</div>` : ''}${review}${focusLive ? focus : ''}${ci.showForm ? contract : ''}<div class="grid2 tgrid"><div>
+    ${slot(1, `<section class="panel"><h2>今天做了什麼？</h2><p class="hint">點一下記一次，圓點是今天的次數和上限。🔒 的任務只能用鎖機專注記錄。</p><div class="habits">${habits}</div></section>`)}
+    ${focusLive ? '' : slot(IS_NATIVE ? 2 : 8, focus)}
+    ${slot(6, `<section class="panel"><h2>記錄解題</h2><p class="hint">用 AI 判題會自動入帳；這裡是手動補登。</p>
       <form id="lcform" autocomplete="off">
         <div class="row"><label class="field" style="width:96px">題號<input class="in num" name="pid" inputmode="numeric" placeholder="1"></label>
           <label class="field grow">題目名稱<input class="in" name="title" placeholder="Two Sum" required></label></div>
@@ -1702,20 +1741,20 @@ function viewToday(S) {
           <div class="seg" role="radiogroup" aria-label="難度">${Object.entries(DIFF).map(([k, d], i) => `<label style="--dc:${d.color}"><input type="radio" name="diff" value="${k}" ${i === 1 ? 'checked' : ''}><span>${d.name}</span></label>`).join('')}</div>
           <button class="btn btn-brass" type="submit">記錄解題</button></div>
         <fieldset class="chips"><legend>主題（可選，用來解鎖主題徽章）</legend>${COMMON_TAGS.map(([k, n]) => `<label><input type="checkbox" name="tags" value="${k}"><span>${n}</span></label>`).join('')}</fieldset>
-      </form></section>
-    <section class="panel"><h2>最近 20 週</h2>${heatmap(S)}
+      </form></section>`)}
+    ${slot(9, `<section class="panel"><h2>最近 20 週</h2>${heatmap(S)}
       <div class="stats"><div class="stat"><span class="num">${S.lcUnique}</span><small>解過的題目</small></div>
         <div class="stat"><span class="num">${Object.keys(state.unlocked).length}<span class="dim" style="font-size:18px"> / ${ACH.length}</span></span><small>徽章</small></div>
-        <div class="stat"><span class="num">${S.bestStreak}</span><small>最長連續天數</small></div></div></section>
+        <div class="stat"><span class="num">${S.bestStreak}</span><small>最長連續天數</small></div></div></section>`)}
   </div><div>
-    ${questPanel(S, tk)}
-    ${partyPanel(S, tk)}
-    <section class="panel"><h2>${dayLabel(tk)}</h2>
+    ${slot(3, questPanel(S, tk))}
+    ${ci.showForm ? '' : slot(4, contract)}
+    ${slot(5, `<section class="panel"><h2>${dayLabel(tk)}</h2>
       <div class="sumline"><span><b>${fmt(td.xp)}</b> XP</span><span><b>${fmt(td.coins)}</b> 代幣</span><span><b>${todays.length}</b> 筆</span>${guard.review ? '' : '<button class="mini" data-act="rvopen">今日回顧</button>'}</div>
-      ${todays.length ? `<ul class="log">${todays.map(e => logItem(e, S)).join('')}</ul>` : `<p class="empty">還沒有紀錄。從喝一杯水開始也算數。</p>`}</section>
-    <section class="panel"><h2>快拿到的徽章</h2><p class="hint">差一點點就解鎖。</p>
-      <div class="near">${near.map(({ a }) => { const v = progressOf(a, S); return `<div class="it">${pinHTML(a, false, v / a.goal, 56)}<div><b>${esc(a.name)}</b><small>${esc(a.desc)}</small><div class="bar"><i style="width:${v / a.goal * 100}%"></i></div><small class="num">${fmt(v)} / ${fmt(a.goal)}</small></div></div>`; }).join('') || '<p class="empty">全部徽章都拿到了。</p>'}</div></section>
-
+      ${todays.length ? `<ul class="log">${todays.map(e => logItem(e, S)).join('')}</ul>` : `<p class="empty">還沒有紀錄。從喝一杯水開始也算數。</p>`}</section>`)}
+    ${slot(7, partyPanel(S, tk))}
+    ${slot(10, `<section class="panel"><h2>快拿到的徽章</h2><p class="hint">差一點點就解鎖。</p>
+      <div class="near">${near.map(({ a }) => { const v = progressOf(a, S); return `<div class="it">${pinHTML(a, false, v / a.goal, 56)}<div><b>${esc(a.name)}</b><small>${esc(a.desc)}</small><div class="bar"><i style="width:${v / a.goal * 100}%"></i></div><small class="num">${fmt(v)} / ${fmt(a.goal)}</small></div></div>`; }).join('') || '<p class="empty">全部徽章都拿到了。</p>'}</div></section>`)}
   </div></div>`;
 }
 function heatmap(S) {
@@ -1939,13 +1978,17 @@ function contractFormHTML(S, tk) {
     <p class="cprev" id="cprev">${contractPreview(S, g, stake, tk)}</p>
     <div class="btns"><button class="btn btn-brass" type="submit">簽下契約</button><button class="btn btn-ghost" type="button" data-act="cskip">先不要</button></div></form>`;
 }
-function contractPanel(S, tk) {
+function contractInfo(S, tk) {
   const wk = weekStart(tk), n = S.contracts.filter(c => c.week === wk).length, fresh = freshStart(tk);
   const shown = S.contracts.filter(c => c.week === wk || c.end >= addDays(tk, -1)).sort((a, b) => tms(a.ts) - tms(b.ts));
   const canOpen = n < CONTRACT.perWeek && contractOptions(S, wk).length > 0;
-  const showForm = canOpen && (contractForm || (fresh && !n && lsGet(CONTRACT_SKIP) !== tk));
-  if (!shown.length && !showForm) return `<div class="callout cbar"><span>📜 本週還沒開局。押一點代幣在本週目標上，達成拿回 ${CONTRACT.mult.normal}～${CONTRACT.mult.hard} 倍。</span>
-    <span class="btns"><button class="btn btn-brass" data-act="cform">開局</button></span></div>`;
+  return { wk, n, fresh, shown, canOpen, showForm: canOpen && (contractForm || (fresh && !n && lsGet(CONTRACT_SKIP) !== tk)) };
+}
+const contractNudge = (S, tk) => { const c = contractInfo(S, tk); return c.shown.length || c.showForm ? '' : `<div class="note"><span>📜 本週還沒開局：押代幣在本週目標上，達成拿回 ${CONTRACT.mult.normal}～${CONTRACT.mult.hard} 倍。</span>
+    <span class="btns"><button class="btn btn-brass btn-sm" data-act="cform">開局</button></span></div>`; };
+function contractPanel(S, tk) {
+  const { n, fresh, shown, canOpen, showForm } = contractInfo(S, tk);
+  if (!shown.length && !showForm) return '';
   const intro = fresh && !n ? `${esc(fresh)}選一個本週目標押代幣：達成拿回 ${CONTRACT.mult.normal}～${CONTRACT.mult.hard} 倍，沒達成押金沒收。` : `本週 ${n} / ${CONTRACT.perWeek} 份。簽約之後的紀錄才算，簽約後 1 小時內可以取消。`;
   return `<section class="panel cpanel"><h2>${fresh && !n ? '新的開始' : '本週契約'}</h2><p class="hint">${intro}</p>
     ${shown.length ? `<div class="contracts">${shown.map(c => contractCard(c, tk)).join('')}</div>` : ''}
@@ -3177,6 +3220,7 @@ function focusPanel(S, tk) {
       <div class="btns" style="margin-top:12px"><button class="btn btn-brass fstart" data-act="fstart">🔒 開始專注</button></div>
       ${st && !st.notify ? '<p class="hint" style="margin:10px 0 0"><a href="#" data-act="gnotify">允許通知</a>，才看得到倒數和完成提醒。</p>' : ''}`;
   }
+  if (!IS_NATIVE) return `<details class="panel focus fmini" id="focus"><summary><h2>🎯 鎖機專注</h2>${stats}</summary>${body}${curfew}</details>`;
   return `<section class="panel focus" id="focus"><h2>🎯 鎖機專注</h2>${body}${stats}${curfew}</section>`;
 }
 
@@ -3187,8 +3231,8 @@ function reviewDue(tk) {
   return dayKey(nowISO()) === tk && (now.getHours() * 60 + now.getMinutes() >= hh * 60 + mm || now.getHours() < (state.settings.dayStartHour ?? 4));
 }
 function reviewPanel(S, tk) {
-  if (!guard.review) return reviewDue(tk) ? `<div class="callout"><span>📝 <b>今日回顧</b>：有沒有做了但忘記記的事？喝了手搖、看了電影要兌換嗎？</span>
-    <span class="btns"><button class="btn btn-brass" data-act="rvopen">開始回顧</button><button class="btn btn-ghost" data-act="rvskip">今天不用</button></span></div>` : '';
+  if (!guard.review) return reviewDue(tk) ? `<div class="note"><span>📝 <b>今日回顧</b>：有忘記記的事、或享受過要兌換的獎勵嗎？</span>
+    <span class="btns"><button class="btn btn-brass btn-sm" data-act="rvopen">開始</button><button class="btn-x" data-act="rvskip" aria-label="今天不用回顧" title="今天不用">×</button></span></div>` : '';
   const day = guard.reviewDay ? addDays(tk, -1) : tk, d = S.days[day] || emptyDay();
   const hab = state.habits.map(h => {
     const c = d.habits[h.id] || 0, lockOnly = logMode(h) === 'focus';
@@ -3617,7 +3661,7 @@ render();
   checkAppUpdate(false);
 })();
 setInterval(() => { if (tab === 'today' && !document.hidden) renderHeader(compute()); }, 60000);
-setInterval(() => { if (tab === 'today' && !document.hidden && !guard.review && reviewDue(todayKey()) && !$('.callout [data-act="rvopen"]')) render(); }, 5 * 60000);
+setInterval(() => { if (tab === 'today' && !document.hidden && !guard.review && reviewDue(todayKey()) && !$('.notes [data-act="rvopen"]')) render(); }, 5 * 60000);
 window.__goal = { get state() { return state; }, compute, ingest, extractJSON, render, checkUnlocks, partyApi, party, syncParty, partyBoss, guard, addEvent, validEvent, focusPenalty, G,
   celebrate: c => { celebrations.push(c); if ($('#overlay').hidden) showNextCelebration(); } };
 </script>
