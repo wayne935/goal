@@ -1,6 +1,6 @@
 /* Goal 成就板 service worker：離線可用。
    頁面本身用「網路優先」，確保更新後馬上拿到新版；離線時才用快取。 */
-const CACHE = 'goal-v3';
+const CACHE = 'goal-v4';   // build 11 換字體，清掉舊的霞鶩文楷快取
 const CORE = ['./', './index.html', './manifest.json', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

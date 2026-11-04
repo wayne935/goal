@@ -34,6 +34,8 @@
 - 照現有風格：緊湊的單行函式、`$()`、模板字串產生 HTML、`data-act` 事件委派（click / submit / change 都在檔案最後）。
 - **所有顯示在畫面上的文字都要經過 `esc()`**；所有外部資料（inbox、貼上、備份、雲端）都要經過 `validXxx()`。這是 build 3 資安修正的重點，不要退步。
 - 介面文字用繁體中文、口語、正面（例如「犯了不歸零」）；數字用 `fmt()`，數字字型加 `class="num"`。
+- 選項的寫法：只有開 / 關用 `sw(attrs, on)` 開關（讀 `t.checked`）；2～4 個短選項用 `.seg` 分段按鈕（中文字加 `zh`）；長清單才用 `<select class="in">`（已用 `base-select` 美化，不支援的瀏覽器退回原生）。
+- 字體：`--ff-zh` 是 Nunito（英文）→ 昭源甜圓（中文），數字 `--ff-num` 是 Barlow Condensed。
 - 顏色用 `:root` 的 CSS 變數；手機版斷點是 720px，底部分頁列目前 7 個分頁，再加就太擠了。
 - 動畫都要尊重 `reducedMotion()`；音效用 `chime(kind)`，震動用 `haptic(kind)`。
 

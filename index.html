@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=LXGW+WenKai+TC:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Chiron+GoRound+TC:wght@400..700&family=Nunito:wght@400..800&display=swap" rel="stylesheet">
 <style>
 :root{
   --felt:#24473d; --felt-deep:#183129; --felt-hi:#2f5a4d; --felt-hi2:#376657;
@@ -21,11 +21,11 @@
   --chalk:#efe8d6; --chalk-dim:#aebdaf; --chalk-faint:rgba(239,232,214,.16);
   --code:#e0583f; --health:#33b09e; --research:#5b82e6; --life:#e6b43a; --hobby:#b07ad6;
   --pewter:#55675f;
-  --ff-zh:"LXGW WenKai TC","Microsoft JhengHei","PingFang TC","Noto Sans CJK TC",sans-serif;
+  --ff-zh:"Nunito","Chiron GoRound TC","Microsoft JhengHei","PingFang TC","Noto Sans CJK TC",sans-serif;   /* 英文用 Nunito，中文自動落到甜圓 */
   --ff-num:"Barlow Condensed","Arial Narrow",var(--ff-zh);
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;color-scheme:dark;accent-color:var(--brass)}
 body{margin:0;min-height:100vh;background:var(--felt);color:var(--chalk);font-family:var(--ff-zh);font-size:16px;line-height:1.6;overflow-x:hidden}
 body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.32;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
@@ -114,6 +114,32 @@ textarea.in{min-height:140px;resize:vertical;font-family:ui-monospace,Consolas,m
 .seg span{display:block;padding:6px 13px;border-radius:8px;font-family:var(--ff-num);font-weight:600;font-size:17px;color:var(--chalk-dim)}
 .seg input:checked+span{background:var(--dc);color:#10241e}
 .seg input:focus-visible+span{outline:2px solid var(--brass-hi)}
+.seg.zh span{font-family:var(--ff-zh);font-size:15px;font-weight:700;padding:7px 12px}
+.switch{display:flex;align-items:center;min-height:44px;position:relative;cursor:pointer}
+.switch input{position:absolute;opacity:0;width:1px;height:1px}
+.switch i{flex:none;width:50px;height:28px;border-radius:99px;background:rgba(0,0,0,.32);box-shadow:inset 0 2px 3px rgba(0,0,0,.45);position:relative;transition:background .2s}
+.switch i::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--chalk-dim);box-shadow:0 2px 0 rgba(0,0,0,.3);transition:transform .2s cubic-bezier(.3,1.4,.5,1),background .2s}
+.switch input:checked+i{background:rgba(214,162,67,.55)}
+.switch input:checked+i::after{transform:translateX(22px);background:radial-gradient(circle at 35% 30%,var(--brass-hi),var(--brass) 70%)}
+.switch input:focus-visible+i{outline:2.5px solid var(--brass-hi);outline-offset:2px}
+/* 下拉選單：支援的瀏覽器（Chrome / Android WebView 135+）換成自己的樣式，其他瀏覽器維持原生選單 */
+@supports (appearance:base-select){
+  select.in,select.in::picker(select){appearance:base-select}
+  select.in{display:flex;align-items:center;gap:8px;cursor:pointer}
+  select.in::picker-icon{content:"";flex:none;width:8px;height:8px;margin:0 3px 4px auto;border-right:2px solid var(--brass);border-bottom:2px solid var(--brass);transform:rotate(45deg);transition:transform .2s,margin .2s}
+  select.in:open::picker-icon{transform:rotate(225deg);margin-bottom:-4px}
+  select.in:open{border-color:var(--brass)}
+  select.in::picker(select){background:var(--felt-deep);color:var(--chalk);border:1.5px solid rgba(214,162,67,.45);border-radius:14px;padding:5px;margin-block:6px;
+    min-inline-size:anchor-size(self-inline);max-block-size:min(60vh,420px);box-shadow:0 14px 34px rgba(0,0,0,.5);
+    opacity:0;transform:translateY(-6px) scale(.98);transition:opacity .15s,transform .15s,overlay .15s allow-discrete,display .15s allow-discrete}
+  select.in:open::picker(select){opacity:1;transform:none}
+  @starting-style{select.in:open::picker(select){opacity:0;transform:translateY(-6px) scale(.98)}}
+  select.in option{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;font-size:16px;line-height:1.35;min-height:42px}
+  select.in option:hover,select.in option:focus-visible{background:var(--felt-hi);outline:none}
+  select.in option:checked{background:linear-gradient(var(--brass-hi),var(--brass));color:#3a2805;font-weight:700}
+  select.in option::checkmark{content:"✓";order:1;margin-left:auto}
+  select.in option:disabled{opacity:.45}
+}
 .chips{border:0;padding:0;margin:14px 0 0;display:flex;flex-wrap:wrap;gap:6px}
 .chips legend{font-size:14px;color:var(--chalk-dim);padding:0;margin-bottom:6px}
 .chips label{position:relative}
@@ -629,7 +655,7 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 10;
+const APP_BUILD = 11;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 const $ = (s, r = document) => r.querySelector(s);
@@ -1787,7 +1813,7 @@ function viewBoss(S) {
       <form id="bossform" autocomplete="off"><div class="row">
         <label class="field" style="width:70px">圖示<input class="in" name="icon" value="👹" maxlength="4"></label>
         <label class="field grow">要克制的事<input class="in" name="name" placeholder="睡前看 YouTube" required></label>
-        <label class="field" style="width:150px">難度<select class="in" name="days">${BOSS_DAYS.map(([d, n]) => `<option value="${d}" ${d === 14 ? 'selected' : ''}>${n}</option>`).join('')}</select></label></div>
+        <div class="field">難度<div class="seg zh" role="radiogroup" aria-label="難度">${BOSS_DAYS.map(([d, n]) => `<label style="--dc:var(--brass)"><input type="radio" name="days" value="${d}" ${d === 14 ? 'checked' : ''}><span>${n.split('：')[1]}</span></label>`).join('')}</div></div></div>
         <div class="row" style="margin-top:12px;justify-content:space-between"><label class="chk"><input type="checkbox" name="money"> 會花錢（忍住時記下省了多少）</label>
           <button class="btn btn-brass" type="submit">召喚 Boss</button></div></form></section>
       <section class="panel"><h2>存錢罐</h2><p class="hint">忍住一筆消費時記下的金額。這是真的錢，不是代幣。</p>
@@ -2163,8 +2189,8 @@ function viewSettings(S) {
       <div class="status" style="justify-content:space-between;flex-wrap:wrap"><span class="dim">${IS_NATIVE ? 'App' : '網頁'}版本 build <span class="num">${APP_BUILD}</span></span>${IS_NATIVE ? '<button class="btn btn-ghost" data-act="appupdate">檢查更新</button>' : ''}</div>
       <div class="row"><label class="field" style="min-width:200px">一天從幾點開始算
         <select class="in" id="dayStart">${[0,1,2,3,4,5,6].map(h => `<option value="${h}" ${state.settings.dayStartHour === h ? 'selected' : ''}>凌晨 ${h} 點</option>`).join('')}</select></label>
-        <label class="field" style="min-width:140px">震動<select class="in" id="haptics"><option value="1" ${state.settings.haptics !== false ? 'selected' : ''}>開</option><option value="0" ${state.settings.haptics === false ? 'selected' : ''}>關</option></select></label>
-        <label class="field" style="min-width:140px">音效<select class="in" id="sound"><option value="1" ${state.settings.sound ? 'selected' : ''}>開</option><option value="0" ${state.settings.sound ? '' : 'selected'}>關</option></select></label>
+        <label class="field" style="width:80px">震動${sw('id="haptics"', state.settings.haptics !== false)}</label>
+        <label class="field" style="width:80px">音效${sw('id="sound"', !!state.settings.sound)}</label>
         <label class="field" style="width:140px">生日（月-日）<input class="in num" id="birthday" value="${esc(state.settings.birthday || '')}" placeholder="03-14" maxlength="5" inputmode="numeric"></label></div>
       <p class="hint" style="margin-top:12px;margin-bottom:0">凌晨 2 點做的事會算進前一天，熬夜不會讓連續天數中斷。週一、每月 1 號和生日，「今天」頁會跳出開局畫面。</p>
       <div class="row" style="margin-top:16px">${[0, 1, 2].map(i => `<label class="field grow">手機小工具按鈕 ${i + 1}<select class="in" data-wh="${i}">${state.habits.filter(h => logMode(h) !== 'focus').map(h => `<option value="${esc(h.id)}" ${widgetHabitIds()[i] === h.id ? 'selected' : ''}>${esc(h.icon)} ${esc(h.name)}</option>`).join('')}</select></label>`).join('')}</div></section>
@@ -2183,6 +2209,8 @@ const celebrations = [];
 const LV_SEEN = 'goal.levelSeen', QUEST_SEEN = 'goal.questSeen', WEEK_SEEN = 'goal.weekSeen', BOSS_SEEN = 'goal.bossSeen', CONTRACT_SEEN = 'goal.contractSeen', FREEZE_SEEN = 'goal.freezeSeen';
 let levelReady = false;          // 開機載入（資料夾、雲端）完成前不判斷升級，避免把舊紀錄當成剛升級
 let pendingStamp = false;
+/* 開關：取代只有「開 / 關」的下拉選單（change 事件用 t.checked 讀） */
+const sw = (attrs, on) => `<span class="switch"><input type="checkbox" role="switch" ${attrs} ${on ? 'checked' : ''}><i aria-hidden="true"></i></span>`;
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, String(v)); } catch (e) { /* ignore */ } };
@@ -3231,21 +3259,21 @@ function guardSettingsHTML() {
       <label class="field" style="width:120px">每天免費放行<input class="in num" type="number" min="0" max="20" data-g="gate.passes" value="${g.gate.passes}"></label>
       <label class="field" style="width:120px">每次最多（分）<input class="in num" type="number" min="1" max="60" data-g="gate.minutes" value="${g.gate.minutes}"></label>
       <label class="field" style="width:120px">深呼吸（秒）<input class="in num" type="number" min="3" max="60" data-g="gate.breath" value="${g.gate.breath}"></label>
-      <label class="field" style="width:150px">用完之後<select class="in" data-g="gate.strict"><option value="0" ${g.gate.strict ? '' : 'selected'}>可以用代幣加買</option><option value="1" ${g.gate.strict ? 'selected' : ''}>嚴格：明天再說</option></select></label>
+      <label class="field" style="width:150px">嚴格（用完明天再說）${sw('data-g="gate.strict"', g.gate.strict)}</label>
       <label class="field" style="width:120px">加買一次（代幣）<input class="in num" type="number" min="0" max="1000" data-g="gate.extraCost" value="${g.gate.extraCost}"></label></div>
     <h3>睡前宵禁</h3><p class="hint">時段內只能用白名單 App。守住一整晚自動記錄；緊急解鎖扣 ${focusPenalty(FOCUS.curfewBase, 1)} 代幣起（同一週加倍）。</p>
     <div class="row">
-      <label class="field" style="width:110px">宵禁<select class="in" data-g="curfew.on"><option value="0" ${g.curfew.on ? '' : 'selected'}>關</option><option value="1" ${g.curfew.on ? 'selected' : ''}>開</option></select></label>
+      <label class="field" style="width:80px">宵禁${sw('data-g="curfew.on"', g.curfew.on)}</label>
       <label class="field" style="width:120px">開始<input class="in num" type="time" data-g="curfew.start" value="${esc(g.curfew.start)}"></label>
       <label class="field" style="width:120px">結束<input class="in num" type="time" data-g="curfew.end" value="${esc(g.curfew.end)}"></label>
       <label class="field grow">守住算哪個習慣<select class="in" data-g="curfew.habit">${hopt(g.curfew.habit)}</select></label></div>
     <h3>晚上提醒（今日回顧）</h3><p class="hint">時間到跳通知，點開就是「今日回顧」：補登漏記的事、兌換已經享受的獎勵。網頁版在這個時間之後也會在「今天」頁提示。</p>
     <div class="row">
-      <label class="field" style="width:110px">提醒<select class="in" data-g="reminder.on"><option value="1" ${g.reminder.on ? 'selected' : ''}>開</option><option value="0" ${g.reminder.on ? '' : 'selected'}>關</option></select></label>
+      <label class="field" style="width:80px">提醒${sw('data-g="reminder.on"', g.reminder.on)}</label>
       <label class="field" style="width:120px">時間<input class="in num" type="time" data-g="reminder.time" value="${esc(g.reminder.time)}"></label></div>
     <h3>Health Connect 自動記錄</h3><p class="hint">從手機（Pixel、手錶、健身 App）讀資料，達標就自動入帳。打開 App 時讀最近 ${FOCUS.healthDays} 天，只記開啟之後的。</p>
     <div class="row">
-      <label class="field" style="width:110px">自動記錄<select class="in" data-g="health.on"><option value="0" ${g.health.on ? '' : 'selected'}>關</option><option value="1" ${g.health.on ? 'selected' : ''}>開</option></select></label>
+      <label class="field" style="width:80px">自動記錄${sw('data-g="health.on"', g.health.on)}</label>
       ${native && g.health.on ? '<button class="btn btn-ghost" data-act="ghsync">立即同步</button>' : ''}</div>
     <div class="hmap">
       <label>運動 ≥ <input class="in num" type="number" min="5" max="240" data-g="health.exerciseMin" value="${g.health.exerciseMin}"> 分 → <select class="in" data-g="health.exerciseHabit">${hopt(g.health.exerciseHabit)}</select></label>
@@ -3254,7 +3282,7 @@ function guardSettingsHTML() {
 }
 function setGuardField(path, el) {
   const [a, b] = path.split('.');
-  let v = el.type === 'number' ? Number(el.value) : el.tagName === 'SELECT' && /^[01]$/.test(el.value) && ['on', 'strict'].includes(b) ? el.value === '1' : el.value;
+  let v = el.type === 'checkbox' ? el.checked : el.type === 'number' ? Number(el.value) : el.tagName === 'SELECT' && /^[01]$/.test(el.value) && ['on', 'strict'].includes(b) ? el.value === '1' : el.value;
   setG(g => {
     if (b === 'on' && v && !g[a].on) g[a].since = Date.now();   // 開啟宵禁 / 健康記錄的時間：之前的不算
     g[a][b] = v;
@@ -3524,7 +3552,7 @@ document.addEventListener('change', e => {
       } catch (err) { toast('無法匯入：' + esc(err.message)); }
     });
   } else if (t.id === 'dayStart') { state.settings.dayStartHour = Number(t.value); touchMeta(); save(); render(); }
-  else if (t.id === 'sound') { state.settings.sound = t.value === '1'; touchMeta(); save(); }
+  else if (t.id === 'sound') { state.settings.sound = t.checked; touchMeta(); save(); }
   else if (t.id === 'birthday') {
     const v = t.value.trim().replace(/[/.]/g, '-').replace(/^(\d)-/, '0$1-').replace(/-(\d)$/, '-0$1');
     if (v && !validMMDD(v)) { toast('生日請寫成「月-日」，例如 03-14'); t.value = state.settings.birthday || ''; return; }
@@ -3539,7 +3567,7 @@ document.addEventListener('change', e => {
   else if (t.dataset.gpick) togglePick(t.dataset.gpick, t.checked);
   else if (t.id === 'fhabit') { guard.form.habit = t.value; guard.form.minutes = 0; render(); }
   else if (t.name === 'rvday') { guard.reviewDay = Number(t.value) ? 1 : 0; render(); }
-  else if (t.id === 'haptics') { state.settings.haptics = t.value === '1'; touchMeta(); save(); if (state.settings.haptics) haptic('success'); }
+  else if (t.id === 'haptics') { state.settings.haptics = t.checked; touchMeta(); save(); if (state.settings.haptics) haptic('success'); }
   else if (t.dataset.wh !== undefined) { const ids = [...widgetHabitIds()]; while (ids.length < 3) ids.push(DEFAULT_WIDGET_HABITS[ids.length]); ids[Number(t.dataset.wh)] = t.value; state.settings.widgetHabits = ids; touchMeta(); save(); render(); }
   else if (t.dataset.f) {
     const row = t.closest('.hab-row'), h = state.habits[Number(row.dataset.i)]; if (!h) return;

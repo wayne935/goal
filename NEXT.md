@@ -1,6 +1,6 @@
 # 接下來要實作的事
 
-> 更新：2026-11-04　｜　目前網頁 build 10，原生 NATIVE_VERSION 4（`version.json` 的 minNative 4）
+> 更新：2026-11-04　｜　目前網頁 build 11，原生 NATIVE_VERSION 4（`version.json` 的 minNative 4）
 > 先讀 `CLAUDE.md`（架構、發佈規則、測試方法）。設計理由與研究依據在 `PLAN.md` 第 8 節。
 
 ## 目前狀態
@@ -22,6 +22,8 @@
   - 已知取捨：守護服務是無障礙服務，App 被強制停止時鎖不住（所以專注 / 宵禁期間關掉服務 = 視同緊急解鎖）；Health Connect 只在打開 App 時讀；宵禁守住的獎勵在宵禁結束時（或下次打開 App）才入帳；分心 App 放行對全部分心 App 一起生效（跟 ClaryMind 一樣）。
   - 使用者還要做：重新建置 App、開權限、實際用一週回報（特別是鎖定畫面在 Pixel 9a / Android 17 上的行為）。
 - **build 10 手機介面修正（2026-11-04）**：習慣設定卡片排版（980px 以下）、專注面板統計列間距、Health Connect 自動記錄的慶祝畫面（`celebrations` 新類型 `health`，`playHealth()`；`syncHealth()` 用 `compute()` 前後差算總獎勵、`S.per[id]` 算每筆）與 `healthSummary()`。
+- **build 11 字體與選單美化（2026-11-04）**：`--ff-zh` 改成 Nunito → 昭源甜圓（英文字型排第一，中文自動落到甜圓）；`select.in` 在 `@supports (appearance:base-select)` 裡換樣式；開 / 關用 `sw(attrs, on)` 產生的開關（change 用 `t.checked`，`setGuardField()` 也認 checkbox）；Boss 難度用 `.seg.zh`。
+  - 之後的介面候選（使用者看過分析）：「今天」頁把打卡格移到最上面、提示收成一行、網頁版收起鎖機專注；手機往下捲時頁首縮成固定的細條；底部分頁 7 → 5（今天／惡習／題單／商店／我的）；徽章牆依分類摺疊。遊戲設計候選：各領域等級（用現有 `catXp`）、每日寶箱（內容用 `hashStr(事件 id)` 決定）、外觀收藏、4～6 週賽季、斷掉後的回歸獎勵、LeetCode 間隔複習、每月回顧卡。
 
 ## 1. 之後的候選（依建議順序）
 1. **實機回饋修正**：build 9 的鎖定畫面、通知、Health Connect 第一次在 Pixel 9a 上跑，先處理使用者回報的問題。
