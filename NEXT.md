@@ -30,7 +30,7 @@
 - **build 16（2026-11-05）**：賽季 `SEASON`（`anchor` 2026-11-02、28 天、30 階 × 80 XP、`rewards` 只給代幣），`compute()` 在回歸加成之後照日期累積 `d.xp` 算 `S.seasons[n]`（`tier`、`doneDay`），`seasonPanel()` 在「今天」頁（slot 4）。每月回顧 `monthRecap()` / `recapPanel()`（紀錄頁最上面）/ `recapImage()`（canvas 畫圖，先用 `document.fonts.load()` 載入要用的字）。新徽章 `ss_1`、`ss_3`、`ss_13`、`ch_10`、`ch_legend`。
 - **build 17（2026-11-05）**：季節 Boss `SBOSS`（600 血、`roster` 5 隻輪流、各有弱點分類），`compute()` 在賽季通行證之前用 `sbossDayDmg()` 逐日算傷害（只看 `d.catXp` 和 `d.questDone`，所以獎勵的 XP 不會反過來打 Boss），結果在 `S.sboss[n]`；`sbossHTML()` 在賽季面板裡；打倒動畫是 `celebrations` 的 `sboss` 類型（`goal.sbossSeen`）；徽章 `sb_1`、`sb_5`。
 - **build 18 / NATIVE_VERSION 5（2026-11-05）**：晚上提醒（`GuardState.notifyReminder()`）照 summary 的 `streak`、`active`、`freezes`、`comeback` 換文字；`pushWidget()` 送這些欄位。原生端 `GoalStore.currentSummary()` 換日時自己推算（前一天有紀錄就延續、剛好昨天沒紀錄而有保護卡就用一張、否則歸零並在連續 3 天以上時標記回歸加成），小工具打卡和原生的專注完成 / 宵禁守住會 `markActive()`（今天第一次 +1）。網頁打開時會送正確的數字蓋過去。原生程式已在雲端用 android-36.jar 編譯過，**還沒在實機跑過**。
-  - 使用者要做：執行 `build-android.bat` 重新建置（minNative 改成 5，舊 App 在重新建置前不會再下載新網頁）。
+  - 2026-11-05 使用者已拉回檔案並重新建置 App（NATIVE_VERSION 5，含 build 9 的鎖機專注、Health Connect）。接下來等實機回報：晚上提醒文字、鎖定畫面、通知在 Pixel 9a / Android 17 上的行為。
   - 還沒做：回顧卡在 App 裡只能截圖（WebView 不能長按存圖）。
   - 數值都是草案（賽季每階 80 XP、各階代幣、寶箱機率），等使用者用一兩週回報手感再調。
 
