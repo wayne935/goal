@@ -31,6 +31,7 @@
 - **build 17（2026-11-05）**：季節 Boss `SBOSS`（600 血、`roster` 5 隻輪流、各有弱點分類），`compute()` 在賽季通行證之前用 `sbossDayDmg()` 逐日算傷害（只看 `d.catXp` 和 `d.questDone`，所以獎勵的 XP 不會反過來打 Boss），結果在 `S.sboss[n]`；`sbossHTML()` 在賽季面板裡；打倒動畫是 `celebrations` 的 `sboss` 類型（`goal.sbossSeen`）；徽章 `sb_1`、`sb_5`。
 - **build 18 / NATIVE_VERSION 5（2026-11-05）**：晚上提醒（`GuardState.notifyReminder()`）照 summary 的 `streak`、`active`、`freezes`、`comeback` 換文字；`pushWidget()` 送這些欄位。原生端 `GoalStore.currentSummary()` 換日時自己推算（前一天有紀錄就延續、剛好昨天沒紀錄而有保護卡就用一張、否則歸零並在連續 3 天以上時標記回歸加成），小工具打卡和原生的專注完成 / 宵禁守住會 `markActive()`（今天第一次 +1）。網頁打開時會送正確的數字蓋過去。原生程式已在雲端用 android-36.jar 編譯過，**還沒在實機跑過**。
   - 2026-11-05 使用者已拉回檔案並重新建置 App（NATIVE_VERSION 5，含 build 9 的鎖機專注、Health Connect）。接下來等實機回報：晚上提醒文字、鎖定畫面、通知在 Pixel 9a / Android 17 上的行為。
+  - 實機回報 1（2026-11-05）：25 分鐘專注到時有自動入帳、專注鎖會解開；之後打開分心 App 出現「上鎖中、深呼吸」是分心 App 放行（整天都鎖，照設計）。問過使用者要不要改成「專注完送免費放行」或只在專注時鎖，使用者選**不用改**。
   - 還沒做：回顧卡在 App 裡只能截圖（WebView 不能長按存圖）。
   - 數值都是草案（賽季每階 80 XP、各階代幣、寶箱機率），等使用者用一兩週回報手感再調。
 
