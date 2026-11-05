@@ -286,6 +286,19 @@ details.bcat[open] .shelf{display:none}
 .ticket .btn-x:hover{background:rgba(0,0,0,.08);color:#2b2a1c}
 .ticket .short{font-size:14px;color:#7b6a3e}
 .ticket.freeze{background:#d9ebf2}
+.coslist{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}
+.cos{display:grid;gap:6px;justify-items:center;text-align:center;padding:10px;border-radius:14px;background:rgba(0,0,0,.16)}
+.cos.on{box-shadow:inset 0 0 0 2px var(--brass)}
+.swatch{width:100%;aspect-ratio:16/10;border-radius:10px;position:relative;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.12),0 3px 0 rgba(0,0,0,.3)}
+.swatch i{position:absolute;inset:18% 22%;border:1.5px dashed rgba(239,232,214,.25);border-radius:8px}
+.swatch.big{width:180px;margin:14px auto 0}
+.cos b{font-size:15px}
+.cact{min-height:34px;display:flex;align-items:center}
+.cuse{font-size:14px;color:var(--brass-hi);font-weight:700}
+.chestl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 0;font-size:15px}
+.chestbtn{animation:chestpulse 1.6s ease-in-out infinite}
+@keyframes chestpulse{50%{box-shadow:0 3px 0 var(--brass-lo),0 0 0 6px rgba(246,220,147,.18)}}
+.cel-chest .bx{filter:drop-shadow(0 0 18px var(--tc))}
 .ticket .fdesc{grid-column:1/-1;margin:4px 0 0;font-size:13.5px;line-height:1.45;color:#4f5a55}
 .bundles{margin-bottom:14px}
 .bundles li{grid-template-columns:30px minmax(0,1fr) 30px}
@@ -721,7 +734,7 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 14;
+const APP_BUILD = 15;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 /* 手機底部只放 5 個分頁：徽章牆、紀錄、設定收進「我的」，頁面上方有子分頁 */
@@ -814,6 +827,44 @@ const BOSS_PRESETS = [
    習慣、解題的期限是週日再加 1 天緩衝；「不犯」的契約撐到週日結束就算達成。簽約之後的紀錄才算。 */
 const CONTRACT = { perWeek: 2, minStake: 10, mult: { normal: 1.5, hard: 2 }, undoMs: 3600e3 };
 const FREEZE = { cost: 150, max: 2 };
+/* ---------- 寶箱、外觀、回歸獎勵（build 15，PLAN 第 10 節，數值是使用者選的） ----------
+   寶箱：每日任務全部完成那天可以開一個（7 天內要開），內容由 hashStr(日期) 決定，重算永遠一樣。
+   史詩給一個「只有寶箱拿得到」的外觀，都有了就改給代幣。 */
+const CHEST = { since: '2026-11-05', keepDays: 7,
+  tiers: [ { id: 'common', name: '普通', p: 700, color: '#d8d2c0', icon: '📦' }, { id: 'rare', name: '稀有', p: 220, color: '#7ea2ff', icon: '💎' },
+           { id: 'epic', name: '史詩', p: 70, color: '#c99cf0', icon: '🔮' }, { id: 'legend', name: '傳說', p: 10, color: '#f6dc93', icon: '👑' } ],
+  coins: { common: [10, 20], rare: 40, epic: 80, legend: 200 } };
+const COMEBACK = { mult: 1.5, days: 3, minRun: 3 };   // 連續 3 天以上斷掉後，回來的 3 天 XP ×1.5（只加 XP）
+const COSMETICS = [
+  { id: 'felt',     name: '撞球綠',     price: 0,   colors: ['#24473d', '#183129', '#2f5a4d', '#376657'] },
+  { id: 'midnight', name: '深夜藍',     price: 300, colors: ['#1f3550', '#142338', '#2a4566', '#325276'] },
+  { id: 'walnut',   name: '胡桃木棋盤', price: 400, colors: ['#4a3624', '#33251a', '#5a432e', '#664d35'] },
+  { id: 'burgundy', name: '酒紅',       price: 400, colors: ['#4a2330', '#321620', '#5c2d3d', '#6a3546'] },
+  { id: 'plum',     name: '夜紫',       price: 500, colors: ['#352a4a', '#241c33', '#43365c', '#4d3f69'] },
+  { id: 'obsidian', name: '黑曜石',     price: 600, colors: ['#1e2422', '#131716', '#2a3230', '#323b39'] },
+  { id: 'aurora',   name: '極光',       chest: true, colors: ['#1d3b45', '#12262d', '#27505c', '#2e5d6a'] },
+  { id: 'sakura',   name: '櫻花夜',     chest: true, colors: ['#3d2a38', '#2a1c27', '#4b3445', '#563c50'] },
+];
+const COSMETIC_BY_ID = Object.fromEntries(COSMETICS.map(c => [c.id, c]));
+function chestRoll(day, owned) {
+  const h = hashStr('chest:' + day), roll = h % 1000; let acc = 0;
+  const tier = CHEST.tiers.find(t => (acc += t.p) > roll) || CHEST.tiers[0];
+  if (tier.id === 'epic') { const left = COSMETICS.filter(c => c.chest && !owned.has(c.id)); if (left.length) return { tier, coins: 0, cosmetic: left[(h >>> 10) % left.length].id }; }
+  const c = CHEST.coins[tier.id];
+  return { tier, coins: Array.isArray(c) ? c[0] + (h >>> 10) % (c[1] - c[0] + 1) : c, cosmetic: null };
+}
+// 連續天數斷掉（之前至少連續 minRun 天、沒有保護卡補）之後，回來那天起 days 天是回歸加成
+function comebackInfo(anyDays, frozen, tk) {
+  const on = k => anyDays.has(k) || frozen.has(k), boost = new Set(), keys = [...anyDays].sort();
+  let run = 0, broken = false, start = null;
+  const open = k => { for (let i = 0; i < COMEBACK.days; i++) boost.add(addDays(k, i)); start = k; broken = false; };
+  if (keys.length) for (let k = keys[0]; k < tk; k = addDays(k, 1)) {   // 今天還沒過完，不算斷
+    if (on(k)) { if (broken && anyDays.has(k)) open(k); run++; }
+    else { if (run >= COMEBACK.minRun) broken = true; run = 0; }
+  }
+  if (broken && anyDays.has(tk)) open(tk);
+  return { boost, pending: broken, start: start && boost.has(tk) ? start : null };   // pending：斷了、今天還沒回來
+}
 /* ---------- 鎖手機專注、宵禁、分心 App（Android App，原生端在 GuardState.java） ----------
    專注完成、宵禁守住、緊急解鎖、分心 App 放行都是原生端寫進佇列的事件（type focus / gate），獎勵與懲罰在 compute() 推算。
    緊急解鎖扣：這次專注全部代幣 × 50%，同一週每多一次加倍（最多 8 倍），至少 10 代幣。 */
@@ -1085,6 +1136,7 @@ function compute() {
   const hits = { lc: [], habit: {}, relapse: {} }, freezeBuys = [];   // 契約要數的紀錄：{ ms, day }
   const partyWeeks = new Set(); let cheersIn = 0, cheersOut = 0;
   const fo = { done: 0, minutes: 0, run: 0, best: 0, curfewKept: 0, aborts: 0, skips: 0, gates: 0 }, abortWeeks = {};
+  const owned = new Set(['felt']);   // 擁有的外觀
   const skillXp = {};   // 各領域等級：興趣類每個習慣各算一條，其他照分類
   for (const e of evs) {
     const dk = dayKey(e.ts), hit = { ms: tms(e.ts), day: dk };
@@ -1130,6 +1182,10 @@ function compute() {
       r = { xp: 0, coins: -(e.stake || 0), tag: '' }; spent += e.stake || 0;
     } else if (e.type === 'freeze_buy') {
       r = { xp: 0, coins: -(e.cost || 0), tag: '' }; spent += e.cost || 0; freezeBuys.push(dk);
+    } else if (e.type === 'cosmetic_buy') {   // 外觀：只有商店賣的才能買；價格照事件記的（之後調價不影響已經買的）
+      const c = COSMETIC_BY_ID[e.cosmetic];
+      if (!c || c.chest || owned.has(e.cosmetic)) r.tag = '已經有了，沒有扣代幣';
+      else { r = { xp: 0, coins: -e.cost, tag: '' }; spent += e.cost; owned.add(e.cosmetic); }
     } else if (e.type === 'cheer') {           // 收到的加油給代幣（每天有上限）；送出的只記錄
       if (e.from) { const c = d.cheers = (d.cheers || 0) + 1; cheersIn++;
         r = c > PARTY.cheer.dailyMax ? { xp: 0, coins: 0, tag: `今天收到的加油超過 ${PARTY.cheer.dailyMax} 次，只記錄` } : { xp: 0, coins: PARTY.cheer.coins, tag: `+${PARTY.cheer.coins} 代幣` }; }
@@ -1163,6 +1219,7 @@ function compute() {
     }
     if (r.coins > 0) { earned += r.coins; d.coins += r.coins; }
     xp += r.xp; d.xp += r.xp; per[e.id] = r;
+    if (r.xp > 0) d.evXp = (d.evXp || 0) + r.xp;
     if (cat && r.xp > 0) { d.catXp[cat] = (d.catXp[cat] || 0) + r.xp; const sk = skillKey(e, cat); skillXp[sk] = (skillXp[sk] || 0) + r.xp; }
   }
   // daily quests: all three done -> bonus on that day
@@ -1173,6 +1230,18 @@ function compute() {
       d.questDone = true; questDays++;
       xp += QUEST_BONUS.xp; earned += QUEST_BONUS.coins; d.xp += QUEST_BONUS.xp; d.coins += QUEST_BONUS.coins;
     }
+  }
+  // 寶箱：那天每日任務全部完成才算，一天一個，開的那天入帳
+  const chests = {};
+  for (const e of evs) {
+    if (e.type !== 'chest_open') continue;
+    const od = dayKey(e.ts), gap = daysBetween(e.day, od);
+    if (!days[e.day]?.questDone || chests[e.day] || e.day < CHEST.since || gap < 0 || gap > CHEST.keepDays) { per[e.id] = { xp: 0, coins: 0, tag: '這個寶箱不算（任務沒完成、已經開過或過期）' }; continue; }
+    const c = chestRoll(e.day, owned), d = days[od] ||= emptyDay();
+    chests[e.day] = { ...c, id: e.id };
+    if (c.cosmetic) owned.add(c.cosmetic);
+    if (c.coins) { earned += c.coins; d.coins += c.coins; }
+    per[e.id] = { xp: 0, coins: c.coins, tag: `${c.tier.name}寶箱${c.cosmetic ? `：外觀「${COSMETIC_BY_ID[c.cosmetic].name}」` : ''}` };
   }
   // weekly goals: bonus on the day the last goal is reached
   const weeks = {}; let weeksDone = 0; const wg = weekGoals();
@@ -1213,6 +1282,8 @@ function compute() {
   const keysWhere = f => new Set(Object.keys(days).filter(k => f(days[k])));
   const anyDays = keysWhere(d => d.any);
   const fz = planFreezes(anyDays, freezeBuys, todayKey());
+  const cb = comebackInfo(anyDays, fz.frozen, todayKey());
+  for (const k of cb.boost) { const d = days[k]; if (!d || !d.evXp) continue; const extra = Math.round(d.evXp * (COMEBACK.mult - 1)); d.xp += extra; xp += extra; d.comebackXp = extra; }
   const lv = levelFromXp(xp);
   const vals = Object.values(days);
   let bestWeekCats = 0;
@@ -1240,7 +1311,7 @@ function compute() {
     bestQuartet: Math.max(0, ...vals.map(d => (d.lc > 0) + !!d.habits.exercise + !!d.habits.paper + !!d.habits.bass)),
     bestWeekCats, questDays, weeksDone, weeks, solvedKeys: solved, solvedIds,
     bosses, bossKills, bestClean, bossComebacks, crits: critIds.size, saved,
-    skills: skillXp,
+    skills: skillXp, owned, chests, comeback: cb,
     habit: id => habitCount[id] || 0,
     habitStreak: id => longestRun(keysWhere(d => (d.habits[id] || 0) > 0)),
   };
@@ -1359,6 +1430,8 @@ function eventTitle(e) {
   if (e.type === 'restraint' || e.type === 'relapse') return `${e.type === 'restraint' ? '忍住了' : '犯了'}：${state.bosses.find(b => b.id === e.boss)?.name || '已刪除的 Boss'}`;
   if (e.type === 'contract_open') return `契約：${goalText(e.goal)}`;
   if (e.type === 'freeze_buy') return '買了連續天數保護卡';
+  if (e.type === 'chest_open') return `開寶箱（${dayLabel(e.day)}的任務）`;
+  if (e.type === 'cosmetic_buy') return `買了外觀：${COSMETIC_BY_ID[e.cosmetic]?.name || e.cosmetic}`;
   if (e.type === 'cheer') return e.from ? `${e.from} 幫你加油` : `幫 ${e.to} 加油`;
   if (e.type === 'party_reward') return '和隊友打倒了共同 Boss';
   if (e.type === 'focus') {
@@ -1377,6 +1450,8 @@ function eventIcon(e) {
   if (e.type === 'relapse') return '🩹';
   if (e.type === 'contract_open') return '📜';
   if (e.type === 'freeze_buy') return '❄️';
+  if (e.type === 'chest_open') return '🎁';
+  if (e.type === 'cosmetic_buy') return '🎨';
   if (e.type === 'cheer') return '📣';
   if (e.type === 'party_reward') return '🛡️';
   if (e.type === 'focus') return e.result === 'aborted' ? '🔓' : e.result === 'cancelled' ? '↩️' : e.kind === 'curfew' ? '🌙' : state.habits.find(h => h.id === e.habit)?.icon || '🎯';
@@ -1415,6 +1490,9 @@ function validEvent(e) {
       return okGoal ? e : null;
     }
     case 'freeze_buy': return Number.isInteger(e.cost) && e.cost >= 0 && e.cost <= 1e4 ? e : null;
+    // 寶箱、外觀只由網頁自己產生（normalize 不接受），這裡只檢查格式
+    case 'chest_open': return dayOk(e.day) ? e : null;
+    case 'cosmetic_buy': return COSMETIC_BY_ID[e.cosmetic] && Number.isInteger(e.cost) && e.cost >= 0 && e.cost <= 1e4 ? e : null;
     // 專注、宵禁、放行只由 Android App 的原生端產生（normalize 不接受），這裡只檢查格式
     case 'focus': {
       const intIn = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
@@ -1481,6 +1559,7 @@ function validSettings(o) {
   if (Array.isArray(o.widgetHabits)) out.widgetHabits = o.widgetHabits.map(x => safeKey(x)).filter(Boolean).slice(0, 3);
   if (o.birthday === '' || validMMDD(o.birthday)) out.birthday = o.birthday;
   if (o.partyShare === 'basic' || o.partyShare === 'xp') out.partyShare = o.partyShare;
+  if (typeof o.theme === 'string' && COSMETIC_BY_ID[o.theme]) out.theme = o.theme;
   if (o.guard && typeof o.guard === 'object') out.guard = validGuard(o.guard);
   return out;
 }
@@ -1732,7 +1811,7 @@ let historyDays = 21;
 function render() {
   const S = compute();
   if (typeof pushWidget === 'function') { pushWidget(); pushGuard(); }
-  renderHeader(S); renderTabs();
+  applyTheme(S); renderHeader(S); renderTabs();
   const v = $('#view');
   try {
   v.innerHTML = tab === 'today' ? viewToday(S) : tab === 'badges' ? viewBadges(S) : tab === 'shop' ? viewShop(S)
@@ -1760,6 +1839,12 @@ function renderHeader(S) {
     </div>`;
   if (prev && prev.balance !== S.balance) animateCount($('#hdr .counter .num'), prev.balance, S.balance);
 }
+function applyTheme(S) {   // 外觀：換桌面配色（只能用擁有的）
+  const id = S.owned.has(state.settings.theme) ? state.settings.theme : 'felt', c = COSMETIC_BY_ID[id].colors, st = document.documentElement.style;
+  ['--felt', '--felt-deep', '--felt-hi', '--felt-hi2'].forEach((v, i) => st.setProperty(v, c[i]));
+  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = c[0];
+}
+const pendingChests = (S, tk) => { const out = []; for (let i = 0; i <= CHEST.keepDays; i++) { const k = addDays(tk, -i); if (k >= CHEST.since && S.days[k]?.questDone && !S.chests[k]) out.push(k); } return out; };
 function renderTabs() {
   const warn = fs.status === 'needs-permission' || cloud.status === 'error';
   const dot = warn ? '<i class="dot warn" title="資料夾或雲端同步需要處理"></i>' : (fs.status === 'linked' || cloud.status === 'ok') ? '<i class="dot on" title="已連線"></i>' : '';
@@ -1802,7 +1887,11 @@ function viewToday(S) {
     ? `<div class="note"><span>${fs.status === 'needs-permission' ? '📁 再按一次，才能繼續讀取 Goal 資料夾。' : fs.status === 'unsupported' ? '☁️ 登入雲端同步，就能和筆電共用紀錄。' : '📁 連結 Goal 資料夾：AI 判題自動入帳，紀錄存進雲端硬碟。'}</span>
        <span class="btns">${fs.status === 'unsupported' ? '<button class="btn btn-brass btn-sm" data-tab="settings">去登入</button>' : `<button class="btn btn-brass btn-sm" data-act="${fs.status === 'needs-permission' ? 'regrant' : 'link'}">${fs.status === 'needs-permission' ? '繼續讀取' : '連結'}</button>`}<button class="btn-x" data-act="hidetip" aria-label="不用了，不要再提醒" title="不用了">×</button></span></div>` : '';
   /* 上方：只放「現在要處理」的東西（進行中的專注、打開的回顧、開局表單），其他提示一行一條 */
-  const notes = [reviewPanel(S, tk), contractNudge(S, tk), linkTip].filter(x => x.startsWith('<div class="note')).join('');
+  const cb = S.comeback, oldChests = pendingChests(S, tk).filter(k => k !== tk);
+  const cbNote = cb.pending ? `<div class="note"><span>💪 斷了沒關係：今天回來打卡，接下來 ${COMEBACK.days} 天 XP ×${COMEBACK.mult}。</span></div>`
+    : cb.start ? `<div class="note"><span>💪 回歸加成第 ${daysBetween(cb.start, tk) + 1} / ${COMEBACK.days} 天：今天的 XP ×${COMEBACK.mult}${td.comebackXp ? `（已多拿 <b class="num">${fmt(td.comebackXp)}</b>）` : ''}。</span></div>` : '';
+  const chestNote = oldChests.length ? `<div class="note"><span>🎁 還有 ${oldChests.length} 個寶箱沒開（${CHEST.keepDays} 天內要開）。</span><span class="btns"><button class="btn btn-brass btn-sm" data-act="chest" data-day="${oldChests[oldChests.length - 1]}">開</button></span></div>` : '';
+  const notes = [cbNote, chestNote, reviewPanel(S, tk), contractNudge(S, tk), linkTip].filter(x => x.startsWith('<div class="note')).join('');
   const review = guard.review ? reviewPanel(S, tk) : '';
   const ci = contractInfo(S, tk), contract = contractPanel(S, tk);
   const focusLive = IS_NATIVE && !!guard.status?.session, focus = focusPanel(S, tk);
@@ -1889,6 +1978,7 @@ function viewShop(S) {
       <button class="btn-x" data-act="delbundle" data-id="${esc(b.id)}" aria-label="移除這個綁定" title="移除">×</button></li>`; }).join('');
   return `<section class="panel"><h2>獎勵商店</h2><p class="hint">你有 <span class="num" style="color:var(--brass-hi);font-size:18px">${fmt(S.balance)}</span> 代幣。兌換後就真的去享受它。</p>
       <div class="tickets">${freeze}${tickets}</div>${tickets ? '' : '<p class="empty">還沒有自訂獎勵，在下面新增一個。</p>'}</section>
+    ${cosmeticsPanel(S)}
     <div class="grid2"><div><section class="panel"><h2>新增獎勵</h2><p class="hint">訂一個讓你期待的東西，價格決定要努力多久。</p>
       <form id="rewardform" autocomplete="off"><div class="row">
         <label class="field" style="width:70px">圖示<input class="in" name="icon" value="🎁" maxlength="4"></label>
@@ -1903,6 +1993,17 @@ function viewShop(S) {
           <label class="field" style="width:170px">只在做這件事時<select class="in" name="habit">${state.habits.map(h => `<option value="${esc(h.id)}">${esc(h.icon)} ${esc(h.name)}</option>`).join('')}</select></label>
           <button class="btn btn-brass" type="submit">綁定</button></div></form></section></div>
     <div><section class="panel"><h2>兌換紀錄</h2>${history.length ? `<ul class="log">${history.map(e => logItem(e, S)).join('')}</ul>` : '<p class="empty">還沒有兌換過。</p>'}</section></div></div>`;
+}
+function cosmeticsPanel(S) {
+  const cur = S.owned.has(state.settings.theme) ? state.settings.theme : 'felt';
+  const cards = COSMETICS.map(c => {
+    const own = S.owned.has(c.id), short = (c.price || 0) - S.balance;
+    const act = c.id === cur ? '<span class="cuse">使用中</span>' : own ? `<button class="btn btn-ghost btn-sm" data-act="cosuse" data-id="${c.id}">套用</button>`
+      : c.chest ? '<span class="dim">寶箱限定</span>' : `<button class="btn btn-brass btn-sm" data-act="cosbuy" data-id="${c.id}" ${short > 0 ? 'disabled' : ''}>${short > 0 ? `還差 ${fmt(short)}` : `<i class="coin sm"></i> ${fmt(c.price)}`}</button>`;
+    return `<div class="cos${c.id === cur ? ' on' : ''}"><div class="swatch" aria-hidden="true" style="background:linear-gradient(135deg,${c.colors[2]},${c.colors[0]} 55%,${c.colors[1]})"><i></i></div>
+      <b>${esc(c.name)}</b><div class="cact">${act}</div></div>`;
+  }).join('');
+  return `<section class="panel"><h2>外觀</h2><p class="hint">換一張桌面。買過的隨時可以換回來；「寶箱限定」只有開寶箱開得到。</p><div class="coslist">${cards}</div></section>`;
 }
 /* ---------- 惡習 Boss ---------- */
 function bossCard(b, S, tk) {
@@ -2161,6 +2262,13 @@ function nextProblem(S) {
   const open = activeProblems().filter(p => !isSolved(p, S));
   return open.filter(p => p.doing).sort(byId)[0] || open.filter(p => p.starred).sort(byId)[0];
 }
+function chestLine(S, tk) {
+  if (tk < CHEST.since) return '';
+  const c = S.chests[tk];
+  if (c) return `<p class="chestl"><span aria-hidden="true">${c.tier.icon}</span> 今天的寶箱：<b style="color:${c.tier.color}">${c.tier.name}</b>，${c.cosmetic ? `外觀「${esc(COSMETIC_BY_ID[c.cosmetic].name)}」<button class="mini" data-tab="shop">去套用</button>` : `+${fmt(c.coins)} 代幣`}</p>`;
+  return S.days[tk]?.questDone ? `<div class="chestl"><button class="btn btn-brass chestbtn" data-act="chest" data-day="${tk}">🎁 開寶箱</button><span class="dim">任務全部完成的獎勵</span></div>`
+    : `<p class="chestl dim">🎁 三件都完成，還可以開一個寶箱。</p>`;
+}
 function questPanel(S, tk) {
   const d = S.days[tk] || emptyDay(), qs = questsFor(tk), oks = qs.map(q => q.ok(d)), n = oks.filter(Boolean).length;
   const np = nextProblem(S);
@@ -2169,7 +2277,7 @@ function questPanel(S, tk) {
   const goals = weekGoals().map(g => { const v = Math.min(g.v(w), g.goal); return `<div class="wg"><span>${esc(g.text)}</span><span class="num">${v} / ${g.goal}</span><div class="bar"><i style="width:${v / g.goal * 100}%"></i></div></div>`; }).join('');
   return `<section class="panel quests">${n === qs.length && qs.length ? '<div class="stamp" aria-hidden="true">全數完成</div>' : ''}<h2>今日任務</h2>
     <p class="hint">${n === qs.length ? `全部完成，已拿到 +${QUEST_BONUS.xp} XP 和 +${QUEST_BONUS.coins} 代幣。` : `完成這 ${qs.length} 件事，額外得到 +${QUEST_BONUS.xp} XP 和 +${QUEST_BONUS.coins} 代幣。`}</p>
-    <ul class="qlist">${items}</ul>
+    <ul class="qlist">${items}</ul>${chestLine(S, tk)}
     <h3>本週目標 <span class="dim">${w.done ? `已達成，+${WEEK_BONUS.coins} 代幣已入帳` : `全部達成 +${WEEK_BONUS.xp} XP、+${WEEK_BONUS.coins} 代幣`}</span></h3>
     <div class="wgs">${goals}</div></section>`;
 }
@@ -2508,6 +2616,16 @@ function showNextCelebration() {
       <span class="tier reveal d2">隊友副本</span>
       <div class="bonus reveal d2"><i class="coin"></i>+<span class="num" id="cel-coins">0</span><span class="sub">　+${c.xp} XP</span></div>
       <div class="btns reveal d3"><button class="btn btn-brass" id="ul-ok">${next}</button></div></div>`;
+  } else if (c.type === 'chest') {
+    const cos = c.cosmetic && COSMETIC_BY_ID[c.cosmetic];
+    box.innerHTML = `<div class="cel cel-boss cel-chest" style="--tc:${c.tier.color}"><div class="rays"></div>
+      <div class="stage"><div class="shock"></div><div class="shock s2"></div>
+        <div class="boss-xl" aria-hidden="true"><span class="bx">🎁</span><span class="crown">${c.tier.icon}</span></div></div>
+      <h2 id="ul-name" class="reveal d1">${c.tier.name}寶箱</h2>
+      <p class="reveal d1">${cos ? `開到寶箱限定的外觀「${esc(cos.name)}」，到商店就能換上。` : '每日任務全部完成的獎勵。'}</p>
+      <span class="tier reveal d2" style="color:var(--tc)">${c.tier.name}</span>
+      ${cos ? `<div class="swatch big reveal d2" aria-hidden="true" style="background:linear-gradient(135deg,${cos.colors[2]},${cos.colors[0]} 55%,${cos.colors[1]})"><i></i></div>` : `<div class="bonus reveal d2"><i class="coin"></i>+<span class="num" id="cel-coins">0</span></div>`}
+      <div class="btns reveal d3"><button class="btn btn-brass" id="ul-ok">${next}</button></div></div>`;
   } else if (c.type === 'boss') {
     box.innerHTML = `<div class="cel cel-boss"><div class="rays"></div>
       <div class="stage"><div class="shock"></div><div class="shock s2"></div>
@@ -2543,7 +2661,7 @@ function showNextCelebration() {
   $('#ul-ok').focus();
   $('#ul-ok').onclick = () => { closeCelebration(false); };
   const all = $('#ul-all'); if (all) all.onclick = () => closeCelebration(true);
-  if (c.type === 'health') playHealth(c, box); else if (c.type === 'badge') playBadge(c.a, box); else if (c.type === 'boss' || c.type === 'party') playBoss(c, box); else playLevel(c, box);
+  if (c.type === 'health') playHealth(c, box); else if (c.type === 'badge') playBadge(c.a, box); else if (c.type === 'boss' || c.type === 'party' || c.type === 'chest') playBoss(c, box); else playLevel(c, box);
 }
 function playBoss(c, box) {
   const bx = $('.boss-xl', box);
@@ -2551,10 +2669,11 @@ function playBoss(c, box) {
   setTimeout(() => chime('badge'), reducedMotion() ? 0 : 260);
   impactAt(box, 900, 'level', () => {
     burst(bx, 'rare');
-    animateCount($('#cel-coins', box), 0, c.coins, 900);
-    if (reducedMotion()) $('#cel-coins', box).textContent = fmt(c.coins);
+    const cc = $('#cel-coins', box); if (!cc) return;
+    animateCount(cc, 0, c.coins, 900);
+    if (reducedMotion()) cc.textContent = fmt(c.coins);
   });
-  if (reducedMotion()) $('#cel-coins', box).textContent = fmt(c.coins);
+  const cc = $('#cel-coins', box); if (cc && reducedMotion()) cc.textContent = fmt(c.coins);
 }
 // Health Connect：一筆一筆滑進來（每筆「叮」一聲），最後總數跳動、撒彩紙
 function playHealth(c, box) {
@@ -2572,6 +2691,12 @@ function playHealth(c, box) {
     rows.forEach((li, i) => setTimeout(() => { if (!$('#overlay').hidden && li.isConnected) { chime('tick'); if (i < 5) haptic('tap'); } }, 250 + i * 320 + 120));
     setTimeout(finish, 250 + rows.length * 320 + 200);
   });
+}
+function openChest(day) {
+  const S0 = compute(); if (!dayOk(day) || !pendingChests(S0, todayKey()).includes(day)) return;
+  addEvent({ id: uid('ch'), type: 'chest_open', ts: nowISO(), day, source: 'manual' });
+  const c = compute().chests[day]; if (c) celebrations.unshift({ type: 'chest', ...c });
+  commit();
 }
 function closeCelebration(all) {
   const c = celebrations.shift();
@@ -3606,6 +3731,13 @@ document.addEventListener('click', e => {
     addEvent({ id: uid('rd'), type: 'redeem', ts: nowISO(), reward: { id: r.id, name: r.name, icon: r.icon, cost: r.cost }, source: 'manual' });
     commit(); chime('tick'); toast(`已兌換「${esc(r.name)}」，去享受吧。`);
   }
+  else if (act === 'chest') openChest(t.dataset.day);
+  else if (act === 'cosbuy') {
+    const c = COSMETIC_BY_ID[id], S = compute(); if (!c || c.chest || S.owned.has(id) || S.balance < c.price) return;
+    addEvent({ id: uid('cs'), type: 'cosmetic_buy', ts: nowISO(), cosmetic: id, cost: c.price, source: 'manual' });
+    state.settings.theme = id; touchMeta(); commit(); chime('quest'); haptic('success'); toast(`買了外觀「${esc(c.name)}」，已經換上`);
+  }
+  else if (act === 'cosuse') { if (!COSMETIC_BY_ID[id] || !compute().owned.has(id)) return; state.settings.theme = id; touchMeta(); save(); render(); haptic('tap'); }
   else if (act === 'buyfreeze') {
     const S = compute(); if (S.balance < FREEZE.cost || S.freezesHeld >= FREEZE.max) return;
     addEvent({ id: uid('fz'), type: 'freeze_buy', ts: nowISO(), cost: FREEZE.cost, source: 'manual' });
@@ -3787,7 +3919,7 @@ render();
 })();
 setInterval(() => { if (tab === 'today' && !document.hidden) renderHeader(compute()); }, 60000);
 setInterval(() => { if (tab === 'today' && !document.hidden && !guard.review && reviewDue(todayKey()) && !$('.notes [data-act="rvopen"]')) render(); }, 5 * 60000);
-window.__goal = { get state() { return state; }, compute, ingest, extractJSON, render, checkUnlocks, partyApi, party, syncParty, partyBoss, guard, addEvent, validEvent, focusPenalty, G,
+window.__goal = { get state() { return state; }, compute, chestRoll, celebrations, ingest, extractJSON, render, checkUnlocks, partyApi, party, syncParty, partyBoss, guard, addEvent, validEvent, focusPenalty, G,
   celebrate: c => { celebrations.push(c); if ($('#overlay').hidden) showNextCelebration(); } };
 </script>
 </body>

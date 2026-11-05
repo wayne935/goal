@@ -1,5 +1,5 @@
 {
-  "build": 14,
+  "build": 15,
   "minNative": 4,
   "files": [
     "index.html",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "新增各領域等級（程式、研究、健康、生活、貝斯、西洋棋各自升級，有稱號）和 LeetCode 間隔複習清單"
+  "notes": "每日任務全部完成可以開寶箱、商店新增桌面外觀、連續天數斷掉後回來 3 天 XP ×1.5"
 }
