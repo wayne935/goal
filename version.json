@@ -1,6 +1,6 @@
 {
-  "build": 17,
-  "minNative": 4,
+  "build": 18,
+  "minNative": 5,
   "files": [
     "index.html",
     "manifest.json",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "新增季節 Boss：每季一隻、各有弱點領域，每天各領域拿到 20 XP 就打它，打倒 +60 XP、+150 代幣"
+  "notes": "晚上提醒改成保住連續天數：今天還沒紀錄時提醒「再做 1 件就保住 N 天」（要重新建置 App）"
 }

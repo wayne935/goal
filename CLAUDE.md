@@ -13,7 +13,7 @@
 ## 發佈規則（重要）
 - **推到 main = 立刻上線**：Pages 一兩分鐘內更新，手機 App 下次開啟就會下載。開發請在分支上做，測過再合併到 main。
 - 每次修改 `index.html`：`const APP_BUILD = N;` +1，`version.json` 的 `build` 改成同一個數字（App 比對兩者，不一致就不更新）。`android-app/www/` 是建置時才複製的，不用手動同步。
-- 只改網頁時不用重新建置 App。改了 `android-app/` 的原生程式（Java、小工具 XML）時：`GoalUpdater.NATIVE_VERSION`（目前 4）+1，`version.json` 的 `minNative` 改成同一個數字，並告訴使用者要執行 `build-android.bat` 重新建置。
+- 只改網頁時不用重新建置 App。改了 `android-app/` 的原生程式（Java、小工具 XML）時：`GoalUpdater.NATIVE_VERSION`（目前 5）+1，`version.json` 的 `minNative` 改成同一個數字，並告訴使用者要執行 `build-android.bat` 重新建置。
 - 更新 `ROADMAP.md` 的狀態與「執行紀錄」（日期 + build + 一句話）。
 
 ## 架構（全部在單一 `index.html`）

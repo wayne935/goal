@@ -112,12 +112,23 @@ final class GoalStore {
         return o;
     }
 
-    /** 換日（依 dayStartHour）時把今日數字歸零，其他照舊。 */
+    /** 換日（依 dayStartHour）時把今日數字歸零，其他照舊。
+     *  連續天數：網頁送來的 streak 在 active = false 時是「到昨天為止」、active = true 時含今天。
+     *  網頁沒打開就換日時在這裡推算：前一天有紀錄就延續；剛好昨天沒紀錄而手上有保護卡就用一張；否則歸零。 */
     static synchronized JSONObject currentSummary(Context c) {
         JSONObject s = getSummary(c);
         if (s == null) s = defaultSummary();
-        String today = dayKey(s.optInt("dayStartHour", 4));
+        int startHour = s.optInt("dayStartHour", 4);
+        String today = dayKey(startHour);
         if (!today.equals(s.optString("day"))) {
+            String old = s.optString("day");
+            boolean yesterday = old.equals(dayKey(startHour + 24));
+            if (!wasActive(s)) {
+                int fz = s.optInt("freezes", 0);
+                if (yesterday && fz > 0 && s.optInt("streak", 0) > 0) put(s, "freezes", fz - 1);
+                else { if (s.optInt("streak", 0) >= 3) put(s, "comeback", true); put(s, "streak", 0); }   // 連續 3 天以上斷掉 = 有回歸加成（同 COMEBACK.minRun）
+            } else if (!yesterday) { if (s.optInt("streak", 0) >= 3) put(s, "comeback", true); put(s, "streak", 0); }
+            put(s, "active", false);
             put(s, "day", today);
             put(s, "todayXp", 0);
             JSONObject q = s.optJSONObject("quests");
@@ -160,8 +171,30 @@ final class GoalStore {
                 put(s, "coins", s.optInt("coins") + bt.optInt("coins"));
             }
         }
+        markActive(s);
         setSummary(c, s);
         return name;
+    }
+
+    /** 舊版網頁送的 summary 沒有 active，用今天有沒有 XP 判斷（那時的 streak 已經含今天）。 */
+    private static boolean wasActive(JSONObject s) {
+        return s.optBoolean("active", s.optInt("todayXp", 0) > 0);
+    }
+
+    /** 今天第一次有紀錄：連續天數 +1（網頁下次打開會送正確的數字過來）。 */
+    private static void markActive(JSONObject s) {
+        if (wasActive(s) && s.has("active")) return;
+        if (wasActive(s)) { put(s, "active", true); return; }
+        put(s, "active", true);
+        put(s, "streak", s.optInt("streak", 0) + 1);
+        put(s, "comeback", false);
+    }
+
+    /** 原生端的專注完成、宵禁守住也算今天有紀錄。 */
+    static synchronized void markActive(Context c) {
+        JSONObject s = currentSummary(c);
+        markActive(s);
+        setSummary(c, s);
     }
 
     /** 原生端產生的事件（專注、宵禁、分心 App 放行）也走同一個佇列：網頁打開時收回，也會直接上傳雲端。 */
@@ -173,6 +206,8 @@ final class GoalStore {
         }
         q.put(ev);
         setQueue(c, q);
+        String r = ev.optString("result");
+        if ("focus".equals(ev.optString("type")) && ("done".equals(r) || "kept".equals(r))) markActive(c);
     }
 
     static synchronized JSONArray getQueue(Context c) {

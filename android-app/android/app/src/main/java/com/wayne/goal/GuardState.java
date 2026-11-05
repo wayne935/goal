@@ -602,15 +602,29 @@ final class GuardState {
                 .setStyle(new Notification.BigTextStyle().bigText(text)).setContentIntent(openApp(c, null)).build());
     }
 
+    /** 晚上提醒：今天還沒紀錄時強調「保住連續天數」，有紀錄了就提醒補登和每日任務。 */
     static void notifyReminder(Context c) {
         NotificationManager n = nm(c);
         if (n == null || !canNotify(c)) return;
         JSONObject s = GoalStore.currentSummary(c);
-        int xp = s.optInt("todayXp");
+        int xp = s.optInt("todayXp"), streak = s.optInt("streak"), freezes = s.optInt("freezes");
+        boolean active = s.optBoolean("active", false) || xp > 0;
         JSONObject q = s.optJSONObject("quests");
-        String text = xp == 0 ? "今天還沒有任何紀錄。花 1 分鐘補登，順便看看有沒有喝手搖、看電影要兌換。"
-                : "今天 +" + xp + " XP" + (q != null ? "，每日任務 " + q.optInt("done") + " / " + q.optInt("total") : "") + "。有漏記的事或要兌換的獎勵嗎？";
-        n.notify(N_REMIND, builder(c, CH_GOAL).setContentTitle("今日回顧").setContentText(text)
+        int qd = q != null ? q.optInt("done") : 0, qt = q != null ? q.optInt("total") : 0;
+        String title, text;
+        if (!active && streak > 0) {
+            title = "🔥 連續 " + streak + " 天，今天還沒紀錄";
+            text = "再做 1 件就保住，變成 " + (streak + 1) + " 天。喝一杯水也算。"
+                    + (freezes > 0 ? "沒做的話會用掉 1 張保護卡（還有 " + freezes + " 張）。" : "");
+        } else if (!active) {
+            title = "今日回顧";
+            text = s.optBoolean("comeback", false) ? "斷了沒關係：今天回來打卡，接下來 3 天 XP ×1.5。做 1 件就好。"
+                    : "今天還沒有任何紀錄。花 1 分鐘補登，順便看看有沒有喝手搖、看電影要兌換。";
+        } else {
+            title = streak > 0 ? "🔥 連續 " + streak + " 天，今天保住了" : "今日回顧";
+            text = "今天 +" + xp + " XP" + (qt > 0 ? "，每日任務 " + qd + " / " + qt + (qd < qt ? "（全清還能開寶箱）" : "") : "") + "。有漏記的事或要兌換的獎勵嗎？";
+        }
+        n.notify(N_REMIND, builder(c, CH_GOAL).setContentTitle(title).setContentText(text)
                 .setStyle(new Notification.BigTextStyle().bigText(text)).setContentIntent(openApp(c, "review")).build());
     }
 

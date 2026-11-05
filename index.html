@@ -764,7 +764,7 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 17;
+const APP_BUILD = 18;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 /* 手機底部只放 5 個分頁：徽章牆、紀錄、設定收進「我的」，頁面上方有子分頁 */
@@ -3640,7 +3640,8 @@ function reviewDue(tk) {
   return dayKey(nowISO()) === tk && (now.getHours() * 60 + now.getMinutes() >= hh * 60 + mm || now.getHours() < (state.settings.dayStartHour ?? 4));
 }
 function reviewPanel(S, tk) {
-  if (!guard.review) return reviewDue(tk) ? `<div class="note"><span>📝 <b>今日回顧</b>：有忘記記的事、或享受過要兌換的獎勵嗎？</span>
+  const keep = S.streak > 0 && !S.days[tk]?.any;   // 連續天數還在、今天還沒紀錄：先提醒保住
+  if (!guard.review) return reviewDue(tk) ? `<div class="note"><span>${keep ? `🔥 <b>連續 ${S.streak} 天，今天還沒紀錄</b>：再做 1 件就保住${S.freezesHeld ? `（沒做會用掉 1 張保護卡）` : ''}。` : '📝 <b>今日回顧</b>：有忘記記的事、或享受過要兌換的獎勵嗎？'}</span>
     <span class="btns"><button class="btn btn-brass btn-sm" data-act="rvopen">開始</button><button class="btn-x" data-act="rvskip" aria-label="今天不用回顧" title="今天不用">×</button></span></div>` : '';
   const day = guard.reviewDay ? addDays(tk, -1) : tk, d = S.days[day] || emptyDay();
   const hab = state.habits.map(h => {
@@ -3821,7 +3822,7 @@ function pushWidget() {
   widgetTimer = setTimeout(() => {
     const S = compute(), tk = todayKey(), d = S.days[tk] || emptyDay(), qs = questsFor(tk);
     const summary = { day: tk, dayStartHour: state.settings.dayStartHour || 0, level: S.level, into: S.into, need: S.need,
-      todayXp: d.xp, streak: S.streak, coins: S.balance, quests: { done: qs.filter(q => q.ok(d)).length, total: qs.length },
+      todayXp: d.xp, streak: S.streak, active: !!d.any, freezes: S.freezesHeld, comeback: S.comeback.pending, coins: S.balance, quests: { done: qs.filter(q => q.ok(d)).length, total: qs.length },
       buttons: widgetHabitIds().map(id => { const h = state.habits.find(x => x.id === id);
         return { habit: id, icon: h.icon, name: h.name, count: d.habits[id] || 0, max: h.dailyMax, xp: h.xp, coins: h.coins }; }) };
     nat('updateWidget', { summary }).catch(() => {});

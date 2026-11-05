@@ -1,6 +1,6 @@
 # 接下來要實作的事
 
-> 更新：2026-11-04　｜　目前網頁 build 17，原生 NATIVE_VERSION 4（`version.json` 的 minNative 4）
+> 更新：2026-11-04　｜　目前網頁 build 18，原生 NATIVE_VERSION 5（`version.json` 的 minNative 5）
 > 先讀 `CLAUDE.md`（架構、發佈規則、測試方法）。設計理由與研究依據在 `PLAN.md` 第 8 節。
 
 ## 目前狀態
@@ -29,7 +29,9 @@
 - **build 15（2026-11-05）**：`CHEST`、`COMEBACK`、`COSMETICS` 常數。寶箱 = `chest_open` 事件（`day` 是任務完成那天），`compute()` 在每日任務之後用 `chestRoll(day, owned)` 推算內容（`hashStr`），結果在 `S.chests`；外觀 = `cosmetic_buy` 事件，擁有的在 `S.owned`，套用哪一個是 `settings.theme`（`validSettings()` 只收目錄裡的 id），`applyTheme()` 換 `--felt` 系列變數。回歸加成 `comebackInfo()`：每天事件本身的 XP 記在 `d.evXp`，加成記在 `d.comebackXp`；「今天」頁有提示。
 - **build 16（2026-11-05）**：賽季 `SEASON`（`anchor` 2026-11-02、28 天、30 階 × 80 XP、`rewards` 只給代幣），`compute()` 在回歸加成之後照日期累積 `d.xp` 算 `S.seasons[n]`（`tier`、`doneDay`），`seasonPanel()` 在「今天」頁（slot 4）。每月回顧 `monthRecap()` / `recapPanel()`（紀錄頁最上面）/ `recapImage()`（canvas 畫圖，先用 `document.fonts.load()` 載入要用的字）。新徽章 `ss_1`、`ss_3`、`ss_13`、`ch_10`、`ch_legend`。
 - **build 17（2026-11-05）**：季節 Boss `SBOSS`（600 血、`roster` 5 隻輪流、各有弱點分類），`compute()` 在賽季通行證之前用 `sbossDayDmg()` 逐日算傷害（只看 `d.catXp` 和 `d.questDone`，所以獎勵的 XP 不會反過來打 Boss），結果在 `S.sboss[n]`；`sbossHTML()` 在賽季面板裡；打倒動畫是 `celebrations` 的 `sboss` 類型（`goal.sbossSeen`）；徽章 `sb_1`、`sb_5`。
-  - 還沒做：回顧卡在 App 裡只能截圖（WebView 不能長按存圖）；晚上提醒改成「再做 1 件就保住 N 天」要動原生通知文字。
+- **build 18 / NATIVE_VERSION 5（2026-11-05）**：晚上提醒（`GuardState.notifyReminder()`）照 summary 的 `streak`、`active`、`freezes`、`comeback` 換文字；`pushWidget()` 送這些欄位。原生端 `GoalStore.currentSummary()` 換日時自己推算（前一天有紀錄就延續、剛好昨天沒紀錄而有保護卡就用一張、否則歸零並在連續 3 天以上時標記回歸加成），小工具打卡和原生的專注完成 / 宵禁守住會 `markActive()`（今天第一次 +1）。網頁打開時會送正確的數字蓋過去。原生程式已在雲端用 android-36.jar 編譯過，**還沒在實機跑過**。
+  - 使用者要做：執行 `build-android.bat` 重新建置（minNative 改成 5，舊 App 在重新建置前不會再下載新網頁）。
+  - 還沒做：回顧卡在 App 裡只能截圖（WebView 不能長按存圖）。
   - 數值都是草案（賽季每階 80 XP、各階代幣、寶箱機率），等使用者用一兩週回報手感再調。
 
 ## 1. 之後的候選（依建議順序）

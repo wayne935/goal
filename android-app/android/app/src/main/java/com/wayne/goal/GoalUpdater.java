@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 final class GoalUpdater {
     static final String BASE = "https://wayne935.github.io/goal/";
     /** 原生程式（Java、小工具）的版本；改了原生程式才需要 +1。 */
-    static final int NATIVE_VERSION = 4;
+    static final int NATIVE_VERSION = 5;
 
     private static final String PREFS = "goal_update";
     private static final String CAP_PREFS = "CapWebViewSettings";   // = com.getcapacitor.plugin.WebView.WEBVIEW_PREFS_NAME
