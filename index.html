@@ -70,6 +70,10 @@ button{cursor:pointer}
 .tab[aria-current="page"]{color:var(--chalk);font-weight:700}
 .tab[aria-current="page"]::after{content:"";position:absolute;left:12px;right:12px;bottom:-2px;height:3px;border-radius:3px;background:var(--brass)}
 .tab .ti{font-size:17px}
+.tab-me,.subtabs{display:none}
+.subtabs{background:rgba(0,0,0,.24);border-radius:12px;padding:4px;gap:4px;margin:0 0 16px}
+.subtabs button{flex:1;background:none;border:0;border-radius:9px;padding:8px 6px;color:var(--chalk-dim);font-size:15px;font-weight:700;white-space:nowrap}
+.subtabs button[aria-current="page"]{background:var(--chalk);color:#183129}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--pewter);display:inline-block}
 .dot.on{background:var(--health);box-shadow:0 0 0 3px rgba(51,176,158,.25)}
 .dot.warn{background:var(--life)}
@@ -224,6 +228,15 @@ details.fmini[open]>summary{margin-bottom:12px}
 .cathead{display:flex;align-items:baseline;gap:12px;margin-bottom:18px}
 .cathead h2{margin:0}
 .cathead .num{font-size:20px;color:var(--chalk-dim)}
+details.bcat>summary{list-style:none;cursor:pointer;margin:0;flex-wrap:wrap;align-items:center;row-gap:8px}
+details.bcat>summary::-webkit-details-marker{display:none}
+details.bcat>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--brass);border-bottom:2px solid var(--brass);transform:rotate(45deg);margin:0 4px 4px auto;transition:transform .2s}
+details.bcat[open]>summary::after{transform:rotate(225deg);margin-bottom:-4px}
+details.bcat[open]>summary{margin-bottom:18px}
+details.bcat[open] .shelf{display:none}
+.shelf{display:flex;gap:6px;flex:1;justify-content:flex-end;min-width:0;overflow:hidden}
+.shelf .pin{box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.bhint{margin:0 4px 14px}
 .cathead .sw{width:14px;height:14px;border-radius:50%;background:var(--c);align-self:center;box-shadow:0 0 0 3px rgba(0,0,0,.2)}
 .near{display:grid;gap:14px}
 .near .it{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
@@ -528,14 +541,18 @@ code.k{font-family:ui-monospace,Consolas,monospace;font-size:13.5px;background:r
   .tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;margin:0;border:0;background:var(--felt-deep);justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(0,0,0,.35)}
   .tab{flex-direction:column;gap:0;font-size:12.5px;padding:4px 3px;min-width:0}
   .tab .ti{font-size:21px}
+  .tab.tab-sub{display:none}
+  .tab-me,.subtabs{display:flex}
   .tab[aria-current="page"]::after{bottom:-6px;left:30%;right:30%}
   main{padding-bottom:110px}
   .panel{padding:20px 18px 18px}
   #toasts{bottom:92px}
   .log li{grid-template-columns:40px 26px minmax(0,1fr) auto 28px;gap:6px}
   .stats{grid-template-columns:repeat(3,1fr)}
-  .board{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}
-  .badge .pin{--s:76px}
+  .board{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 8px}
+  .badge .pin{--s:66px;margin:6px 0 8px}
+  .badge b{font-size:15px}
+  .badge p{font-size:12.5px}
 }
 /* ---------- celebrations: overlay ---------- */
 #overlay{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:24px;overflow:hidden;
@@ -687,9 +704,12 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 12;
+const APP_BUILD = 13;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
+/* 手機底部只放 5 個分頁：徽章牆、紀錄、設定收進「我的」，頁面上方有子分頁 */
+const ME_TABS = ['badges', 'history', 'settings'], ME_KEY = 'goal.meTab';
+const meTab = () => { const t = lsGet(ME_KEY); return ME_TABS.includes(t) ? t : 'badges'; };
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt = n => Number(n || 0).toLocaleString('en-US');
@@ -1661,6 +1681,7 @@ function render() {
   try {
   v.innerHTML = tab === 'today' ? viewToday(S) : tab === 'badges' ? viewBadges(S) : tab === 'shop' ? viewShop(S)
               : tab === 'history' ? viewHistory(S) : tab === 'problems' ? viewProblems(S) : tab === 'boss' ? viewBoss(S) : viewSettings(S);
+  if (ME_TABS.includes(tab)) v.insertAdjacentHTML('afterbegin', `<nav class="subtabs" aria-label="我的">${TABS.filter(t => ME_TABS.includes(t.id)).map(t => `<button data-tab="${t.id}" ${t.id === tab ? 'aria-current="page"' : ''}><span aria-hidden="true">${t.icon}</span> ${t.name}</button>`).join('')}</nav>`);
   } catch (err) {
     console.error(err);
     v.innerHTML = `<section class="panel"><h2>這一頁顯示不出來</h2><p class="hint">發生錯誤：${esc(err.message)}。其他分頁和資料不受影響，請把這段訊息告訴 Claude。</p></section>`;
@@ -1686,7 +1707,8 @@ function renderHeader(S) {
 function renderTabs() {
   const warn = fs.status === 'needs-permission' || cloud.status === 'error';
   const dot = warn ? '<i class="dot warn" title="資料夾或雲端同步需要處理"></i>' : (fs.status === 'linked' || cloud.status === 'ok') ? '<i class="dot on" title="已連線"></i>' : '';
-  $('#tabs').innerHTML = TABS.map(t => `<button class="tab" data-tab="${t.id}" ${t.id === tab ? 'aria-current="page"' : ''}><span class="ti" aria-hidden="true">${t.icon}</span><span>${t.name}</span>${t.id === 'settings' ? dot : ''}</button>`).join('');
+  $('#tabs').innerHTML = TABS.map(t => `<button class="tab${ME_TABS.includes(t.id) ? ' tab-sub' : ''}" data-tab="${t.id}" ${t.id === tab ? 'aria-current="page"' : ''}><span class="ti" aria-hidden="true">${t.icon}</span><span>${t.name}</span>${t.id === 'settings' ? dot : ''}</button>`).join('')
+    + `<button class="tab tab-me" data-tab="${ME_TABS.includes(tab) ? tab : meTab()}" ${ME_TABS.includes(tab) ? 'aria-current="page"' : ''}><span class="ti" aria-hidden="true">👤</span><span>我的</span>${dot}</button>`;
 }
 
 function logItem(e, S, withDay) {
@@ -1771,8 +1793,12 @@ function heatmap(S) {
   return `<div class="heat" role="img" aria-label="最近 20 週每天的 XP">${cells}</div>
     <div class="legend">${S.frozen.size ? '<i class="frz"></i> 保護卡　' : ''}少 <i style="background:rgba(0,0,0,.24)"></i><i class="l1" style="background:rgba(214,162,67,.32)"></i><i style="background:rgba(214,162,67,.55)"></i><i style="background:rgba(214,162,67,.8)"></i><i style="background:var(--brass-hi)"></i> 多</div>`;
 }
+/* 徽章牆：每個分類可以收起來，收起時只顯示已拿到的小徽章；展開的分類記在這台裝置 */
+const BADGE_OPEN = 'goal.badgeOpen';
+const badgeOpen = () => { try { const v = JSON.parse(lsGet(BADGE_OPEN)); return new Set(Array.isArray(v) ? v.filter(x => typeof x === 'string') : []); } catch (e) { return new Set(); } };
 function viewBadges(S) {
-  return Object.entries(CATS).map(([cid, c]) => {
+  const open = badgeOpen(), got = ACH.filter(a => state.unlocked[a.id]).length;
+  return `<p class="hint bhint">已拿到 <b class="num">${got} / ${ACH.length}</b> 個徽章。點分類展開，看還差多少。</p>` + Object.entries(CATS).map(([cid, c]) => {
     const list = ACH.filter(a => a.cat === cid);
     const got = list.filter(a => state.unlocked[a.id]).length;
     const items = list.map(a => {
@@ -1780,7 +1806,9 @@ function viewBadges(S) {
       const when = u ? `${new Date(tms(u)).getMonth() + 1}/${new Date(tms(u)).getDate()} 取得` : `${fmt(v)} / ${fmt(a.goal)}`;
       return `<div class="badge${u ? '' : ' locked'}">${pinHTML(a, !!u, v / a.goal)}<b>${esc(a.name)}</b><p>${esc(a.desc)}</p><span class="pg">${when}${u ? '' : ''}</span></div>`;
     }).join('');
-    return `<section class="panel" style="--c:${c.color}"><div class="cathead"><span class="sw" aria-hidden="true"></span><h2>${c.name}</h2><span class="num">${got} / ${list.length}</span></div><div class="board">${items}</div></section>`;
+    const shelf = list.filter(a => state.unlocked[a.id]).slice(-8).map(a => pinHTML(a, true, null, 30)).join('');
+    return `<details class="panel bcat" data-cat="${cid}" style="--c:${c.color}" ${open.has(cid) ? 'open' : ''}><summary class="cathead"><span class="sw" aria-hidden="true"></span><h2>${c.name}</h2><span class="num">${got} / ${list.length}</span>
+      <span class="shelf" aria-hidden="true">${shelf}</span></summary><div class="board">${items}</div></details>`;
   }).join('');
 }
 function viewShop(S) {
@@ -3448,7 +3476,7 @@ document.addEventListener('click', e => {
 /* ---------- events ---------- */
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-tab],[data-act]'); if (!t) return;
-  if (t.dataset.tab) { tab = t.dataset.tab; try { localStorage.setItem(TAB_KEY, tab); } catch (x) { /* ignore */ } render(); scrollTo({ top: 0 }); return; }
+  if (t.dataset.tab) { tab = t.dataset.tab; try { localStorage.setItem(TAB_KEY, tab); } catch (x) { /* ignore */ } if (ME_TABS.includes(tab)) lsSet(ME_KEY, tab); render(); scrollTo({ top: 0 }); return; }
   const act = t.dataset.act, id = t.dataset.id;
   if (act === 'habit') logHabit(id, t);
   else if (act === 'fstart') startFocus();
@@ -3623,6 +3651,10 @@ document.addEventListener('change', e => {
   }
 });
 
+document.addEventListener('toggle', e => {
+  const d = e.target; if (!d.classList || !d.classList.contains('bcat')) return;
+  const open = badgeOpen(); d.open ? open.add(d.dataset.cat) : open.delete(d.dataset.cat); lsSet(BADGE_OPEN, JSON.stringify([...open]));
+}, true);
 document.addEventListener('input', e => {
   const cf = e.target.closest && e.target.closest('#cform');
   if (cf) { updateContractForm(cf, e.target.name === 'goal'); return; }

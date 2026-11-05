@@ -1,5 +1,5 @@
 {
-  "build": 12,
+  "build": 13,
   "minNative": 4,
   "files": [
     "index.html",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "「今天」頁整理：打卡格移到最上面、提示收成一行一條、手機頁首縮成固定在上方的細條"
+  "notes": "手機底部分頁改成 5 個（徽章牆、紀錄、設定收進「我的」），徽章牆每個分類可以收起來"
 }

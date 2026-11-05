@@ -1,6 +1,6 @@
 # 接下來要實作的事
 
-> 更新：2026-11-04　｜　目前網頁 build 12，原生 NATIVE_VERSION 4（`version.json` 的 minNative 4）
+> 更新：2026-11-04　｜　目前網頁 build 13，原生 NATIVE_VERSION 4（`version.json` 的 minNative 4）
 > 先讀 `CLAUDE.md`（架構、發佈規則、測試方法）。設計理由與研究依據在 `PLAN.md` 第 8 節。
 
 ## 目前狀態
@@ -24,7 +24,7 @@
 - **build 10 手機介面修正（2026-11-04）**：習慣設定卡片排版（980px 以下）、專注面板統計列間距、Health Connect 自動記錄的慶祝畫面（`celebrations` 新類型 `health`，`playHealth()`；`syncHealth()` 用 `compute()` 前後差算總獎勵、`S.per[id]` 算每筆）與 `healthSummary()`。
 - **build 11 字體與選單美化（2026-11-04）**：`--ff-zh` 改成 Nunito → 昭源甜圓（英文字型排第一，中文自動落到甜圓）；`select.in` 在 `@supports (appearance:base-select)` 裡換樣式；開 / 關用 `sw(attrs, on)` 產生的開關（change 用 `t.checked`，`setGuardField()` 也認 checkbox）；Boss 難度用 `.seg.zh`。
 - **build 12「今天」頁整理（2026-11-04）**：`viewToday()` 上方是 `.notes`（一行一條的提示：`reviewPanel()` 沒打開時、`contractNudge()`、連結資料夾），再來是「現在要處理」的東西（打開的回顧、進行中的專注、開局表單），下面是 `.tgrid` 兩欄；每個面板包在 `slot(順序, html)` 裡，960px 以下兩欄變成一欄、照 `--o` 排序。`contractInfo()` 給契約面板和提示共用。網頁版 `focusPanel()` 是可以展開的 `details.fmini`。手機頁首在 720px 以下是固定在上方的一行。
-  - 之後的介面候選（使用者看過分析）：底部分頁 7 → 5（今天／惡習／題單／商店／我的）；徽章牆依分類摺疊。遊戲設計候選：各領域等級（用現有 `catXp`）、每日寶箱（內容用 `hashStr(事件 id)` 決定）、外觀收藏、4～6 週賽季、斷掉後的回歸獎勵、LeetCode 間隔複習、每月回顧卡。
+- **build 13（2026-11-05）**：手機底部 5 個分頁，`ME_TABS`（徽章牆、紀錄、設定）收進「我的」（`.tab-me`，720px 以下才出現；子分頁 `.subtabs` 在 `render()` 加在頁面最上面；上次看的記在 localStorage `goal.meTab`）。徽章牆每個分類是 `details.bcat`，展開的分類記在 `goal.badgeOpen`。遊戲設計候選：各領域等級（用現有 `catXp`）、每日寶箱（內容用 `hashStr(事件 id)` 決定）、外觀收藏、4～6 週賽季、斷掉後的回歸獎勵、LeetCode 間隔複習、每月回顧卡。
 
 ## 1. 之後的候選（依建議順序）
 1. **實機回饋修正**：build 9 的鎖定畫面、通知、Health Connect 第一次在 Pixel 9a 上跑，先處理使用者回報的問題。
