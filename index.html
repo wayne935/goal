@@ -237,6 +237,16 @@ details.bcat[open] .shelf{display:none}
 .shelf{display:flex;gap:6px;flex:1;justify-content:flex-end;min-width:0;overflow:hidden}
 .shelf .pin{box-shadow:0 2px 0 rgba(0,0,0,.3)}
 .bhint{margin:0 4px 14px}
+.sklist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px 22px}
+.sk{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center}
+.skl{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:24px;font-weight:700;color:#10241e;
+  background:linear-gradient(color-mix(in srgb,var(--c) 70%,#fff),var(--c));box-shadow:0 3px 0 rgba(0,0,0,.3)}
+.skn{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.skn b{font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.skt{font-size:13px;color:var(--brass-hi)}
+.sk .bar{height:7px;border-radius:9px;background:rgba(0,0,0,.28);margin:5px 0 1px;overflow:hidden}
+.sk .bar i{display:block;height:100%;background:var(--c);border-radius:9px}
+.sk small{font-size:12.5px}
 .cathead .sw{width:14px;height:14px;border-radius:50%;background:var(--c);align-self:center;box-shadow:0 0 0 3px rgba(0,0,0,.2)}
 .near{display:grid;gap:14px}
 .near .it{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
@@ -393,6 +403,13 @@ details.bcat[open] .shelf{display:none}
 .segb{background:none;border:0;border-radius:8px;padding:6px 12px;color:var(--chalk-dim);font-size:15px;white-space:nowrap}
 .segb.on{background:var(--chalk);color:#183129;font-weight:700}
 .segb .num{font-size:15px}
+.rq{list-style:none;margin:0;padding:0}
+.rq li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:8px 0;border-bottom:1px dashed var(--chalk-faint);font-size:15px}
+.rq li:last-child{border-bottom:0}
+.rq a{font-weight:700;margin-right:auto}
+.rq .tagd{margin-right:0}
+.rq.soon a{font-weight:400;color:var(--chalk-dim)}
+.rqp h3{font-size:15px;margin:14px 0 2px;color:var(--chalk-dim)}
 .plist{list-style:none;margin:0;padding:0}
 .plist .empty{padding:10px 0}
 .prob{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:10px;padding:10px 0;border-bottom:1px dashed var(--chalk-faint);align-items:start}
@@ -704,10 +721,11 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 13;
+const APP_BUILD = 14;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 /* 手機底部只放 5 個分頁：徽章牆、紀錄、設定收進「我的」，頁面上方有子分頁 */
+const SKILL_SEEN = 'goal.skillSeen';
 const ME_TABS = ['badges', 'history', 'settings'], ME_KEY = 'goal.meTab';
 const meTab = () => { const t = lsGet(ME_KEY); return ME_TABS.includes(t) ? t : 'badges'; };
 const $ = (s, r = document) => r.querySelector(s);
@@ -989,6 +1007,42 @@ function save() {
 
 /* ---------- ledger: everything derived from events ---------- */
 function probKey(p) { return p.slug || (p.id != null ? 'lc-' + p.id : p.title); }
+/* ---------- 各領域等級（只看紀錄的 XP，不給額外獎勵；每日任務、Boss 等加成不算） ---------- */
+const skillKey = (e, cat) => cat === 'hobby' && e.habit ? 'h:' + e.habit : cat;
+function skillLevel(xp) {   // 比總等級快一倍：Lv2 要 60、之後每級多 20
+  let L = 1, rem = xp;
+  while (rem >= 40 + 20 * L) { rem -= 40 + 20 * L; L++; }
+  return { level: L, into: rem, need: 40 + 20 * L };
+}
+const SKILL_TITLES = {
+  code:     ['寫下第一行', '刷題新手', '模式辨識者', '雙指針熟手', 'DP 馴獸師', '圖論行者', '競程選手', '演算法大師'],
+  research: ['好奇的讀者', '筆記控', '引用追蹤者', '實驗員', '論文寫手', '審稿人', '領域專家', '首席研究員'],
+  health:   ['起身了', '規律作息', '自律者', '耐力型', '鐵人', '健將', '身體是本錢', '不倒翁'],
+  life:     ['開始整理', '生活有序', '忍得住', '自制力', '生活達人', '心如止水', '修行者', '人生贏家'],
+  'h:bass': ['撥弦新手', '找到拍子', '穩拍手', '律動手', '低音支柱', 'Groove 職人', '樂團靈魂', '低音大師'],
+  'h:chess':['棋盤新手', '認得戰術', '戰術獵人', '開局研究者', '中局指揮官', '殘局行者', '大師候選', '棋盤之王'],
+  hobby:    ['剛入門', '上手了', '熟練', '進階', '高手', '職人', '大師', '傳奇'],
+};
+const skillTitle = (key, L) => { const t = SKILL_TITLES[key] || SKILL_TITLES[key.startsWith('h:') ? 'hobby' : 'life'] || SKILL_TITLES.hobby; return t[Math.min(t.length - 1, Math.floor((L - 1) / 3))]; };
+function skillList(S) {
+  const keys = [...Object.keys(CATS).filter(c => c !== 'hobby'), ...state.habits.filter(h => h.cat === 'hobby').map(h => 'h:' + h.id)];
+  for (const k of Object.keys(S.skills)) if (!keys.includes(k)) keys.push(k);
+  return keys.map(k => {
+    const h = k.startsWith('h:') ? state.habits.find(x => x.id === k.slice(2)) : null;
+    const name = h ? h.name.replace(/\s*\d+\s*分$/, '') : k.startsWith('h:') ? '已刪除的習慣' : CATS[k]?.name || k;
+    const xp = S.skills[k] || 0, lv = skillLevel(xp);
+    return { key: k, name, icon: h ? h.icon : '', color: CATS[h ? 'hobby' : k]?.color || 'var(--hobby)', xp, ...lv, title: skillTitle(k, lv.level) };
+  }).filter(x => x.xp > 0 || !x.key.startsWith('h:') || state.habits.some(h => 'h:' + h.id === x.key)).sort((a, b) => b.xp - a.xp);
+}
+function skillsPanel(S) {
+  const list = skillList(S);
+  return `<section class="panel skills"><h2>能力</h2><p class="hint">每個領域各自升級：打卡和解題的 XP 會算進對應的能力（每日任務、Boss 的加成不算）。</p>
+    <div class="sklist">${list.map(k => `<div class="sk" style="--c:${k.color}"><span class="skl num">${k.level}</span>
+      <div class="skm"><div class="skn"><b>${k.icon ? `<span aria-hidden="true">${esc(k.icon)}</span> ` : ''}${esc(k.name)}</b><span class="skt">${esc(k.title)}</span></div>
+      <div class="bar" role="progressbar" aria-label="${esc(k.name)} 到下一級" aria-valuenow="${Math.round(k.into / k.need * 100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${k.into / k.need * 100}%"></i></div>
+      <small class="dim"><span class="num">${fmt(k.into)} / ${fmt(k.need)}</span> XP 到 Lv ${k.level + 1}</small></div></div>`).join('')}</div></section>`;
+}
+
 function levelFromXp(xp) {
   let L = 1, rem = xp;
   while (rem >= 80 + 40 * L) { rem -= 80 + 40 * L; L++; }
@@ -1031,6 +1085,7 @@ function compute() {
   const hits = { lc: [], habit: {}, relapse: {} }, freezeBuys = [];   // 契約要數的紀錄：{ ms, day }
   const partyWeeks = new Set(); let cheersIn = 0, cheersOut = 0;
   const fo = { done: 0, minutes: 0, run: 0, best: 0, curfewKept: 0, aborts: 0, skips: 0, gates: 0 }, abortWeeks = {};
+  const skillXp = {};   // 各領域等級：興趣類每個習慣各算一條，其他照分類
   for (const e of evs) {
     const dk = dayKey(e.ts), hit = { ms: tms(e.ts), day: dk };
     const d = days[dk] ||= emptyDay();
@@ -1108,7 +1163,7 @@ function compute() {
     }
     if (r.coins > 0) { earned += r.coins; d.coins += r.coins; }
     xp += r.xp; d.xp += r.xp; per[e.id] = r;
-    if (cat && r.xp > 0) d.catXp[cat] = (d.catXp[cat] || 0) + r.xp;
+    if (cat && r.xp > 0) { d.catXp[cat] = (d.catXp[cat] || 0) + r.xp; const sk = skillKey(e, cat); skillXp[sk] = (skillXp[sk] || 0) + r.xp; }
   }
   // daily quests: all three done -> bonus on that day
   let questDays = 0;
@@ -1185,6 +1240,7 @@ function compute() {
     bestQuartet: Math.max(0, ...vals.map(d => (d.lc > 0) + !!d.habits.exercise + !!d.habits.paper + !!d.habits.bass)),
     bestWeekCats, questDays, weeksDone, weeks, solvedKeys: solved, solvedIds,
     bosses, bossKills, bestClean, bossComebacks, crits: critIds.size, saved,
+    skills: skillXp,
     habit: id => habitCount[id] || 0,
     habitStreak: id => longestRun(keysWhere(d => (d.habits[id] || 0) > 0)),
   };
@@ -1751,11 +1807,12 @@ function viewToday(S) {
   const ci = contractInfo(S, tk), contract = contractPanel(S, tk);
   const focusLive = IS_NATIVE && !!guard.status?.session, focus = focusPanel(S, tk);
   /* 手機上是一欄，用 --o 決定順序：打卡 → 專注 → 任務 → 契約 → 今天的紀錄 → 解題 → 隊伍 → 熱力圖 → 徽章 */
+  const rqDue = reviewQueue().filter(x => x.late >= 0).length;
   const slot = (o, html) => html ? `<div class="slot" style="--o:${o}">${html}</div>` : '';
   return `${notes ? `<div class="notes">${notes}</div>` : ''}${review}${focusLive ? focus : ''}${ci.showForm ? contract : ''}<div class="grid2 tgrid"><div>
     ${slot(1, `<section class="panel"><h2>今天做了什麼？</h2><p class="hint">點一下記一次，圓點是今天的次數和上限。🔒 的任務只能用鎖機專注記錄。</p><div class="habits">${habits}</div></section>`)}
     ${focusLive ? '' : slot(IS_NATIVE ? 2 : 8, focus)}
-    ${slot(6, `<section class="panel"><h2>記錄解題</h2><p class="hint">用 AI 判題會自動入帳；這裡是手動補登。</p>
+    ${slot(6, `<section class="panel"><h2>記錄解題</h2><p class="hint">用 AI 判題會自動入帳；這裡是手動補登。${rqDue ? `<br>🔁 今天有 <b class="num">${rqDue}</b> 題該複習 <button class="mini" data-tab="problems">看是哪幾題</button>` : ''}</p>
       <form id="lcform" autocomplete="off">
         <div class="row"><label class="field" style="width:96px">題號<input class="in num" name="pid" inputmode="numeric" placeholder="1"></label>
           <label class="field grow">題目名稱<input class="in" name="title" placeholder="Two Sum" required></label></div>
@@ -1798,7 +1855,7 @@ const BADGE_OPEN = 'goal.badgeOpen';
 const badgeOpen = () => { try { const v = JSON.parse(lsGet(BADGE_OPEN)); return new Set(Array.isArray(v) ? v.filter(x => typeof x === 'string') : []); } catch (e) { return new Set(); } };
 function viewBadges(S) {
   const open = badgeOpen(), got = ACH.filter(a => state.unlocked[a.id]).length;
-  return `<p class="hint bhint">已拿到 <b class="num">${got} / ${ACH.length}</b> 個徽章。點分類展開，看還差多少。</p>` + Object.entries(CATS).map(([cid, c]) => {
+  return skillsPanel(S) + `<p class="hint bhint">已拿到 <b class="num">${got} / ${ACH.length}</b> 個徽章。點分類展開，看還差多少。</p>` + Object.entries(CATS).map(([cid, c]) => {
     const list = ACH.filter(a => a.cat === cid);
     const got = list.filter(a => state.unlocked[a.id]).length;
     const items = list.map(a => {
@@ -2147,6 +2204,31 @@ function problemRows(S) {
         <button class="btn-x" data-act="pdel" data-slug="${esc(p.slug)}" aria-label="從題單移除" title="移除">×</button></div></li>`;
   }).join('');
 }
+/* ---------- 間隔複習：解過的題隔 3、7、21、60 天再寫一次（只看紀錄推算，不另外存） ---------- */
+const REVIEW_GAPS = [3, 7, 21, 60];   // 第 n 次通過之後隔幾天；通過滿 5 天就算熟了
+function reviewQueue() {
+  const tk = todayKey(), m = {};
+  for (const e of state.events) {
+    if (e.type !== 'leetcode' || e.verdict !== 'accepted') continue;
+    const k = probKey(e.problem), x = m[k] ||= { k, days: new Set(), p: e.problem, last: '' }, dk = dayKey(e.ts);
+    x.days.add(dk); if (dk >= x.last) { x.last = dk; x.p = e.problem; }
+  }
+  return Object.values(m).map(x => {
+    const n = x.days.size; if (n > REVIEW_GAPS.length) return null;
+    const due = addDays(x.last, REVIEW_GAPS[n - 1]); return { ...x, n, due, late: daysBetween(due, tk) };
+  }).filter(Boolean).sort((a, b) => b.late - a.late);
+}
+const probLink = p => p.slug ? `https://leetcode.com/problems/${encodeURIComponent(p.slug)}/` : `https://leetcode.com/problemset/?search=${encodeURIComponent(p.title || '')}`;
+function reviewQueuePanel() {
+  const q = reviewQueue(), due = q.filter(x => x.late >= 0), soon = q.filter(x => x.late < 0 && x.late >= -7).reverse();
+  if (!due.length && !soon.length) return '';
+  const row = x => { const d = DIFF[x.p.difficulty];
+    return `<li><a href="${esc(probLink(x.p))}" target="_blank" rel="noopener">${x.p.id ? esc(x.p.id) + '. ' : ''}${esc(x.p.title)}</a>
+      ${d ? `<span class="tagd" style="background:${d.color}">${d.name}</span>` : ''}<span class="dim">第 ${x.n + 1} 次・${x.late > 0 ? `過了 ${x.late} 天` : x.late === 0 ? '今天' : `${-x.late} 天後`}</span></li>`; };
+  return `<section class="panel rqp"><h2>🔁 該複習了</h2><p class="hint">解過的題隔 ${REVIEW_GAPS.join('、')} 天再寫一次，會記得比較久。複習通過一樣有 XP（新題的 ${Math.round(REVIEW_FACTOR * 100)}%）。</p>
+    ${due.length ? `<ul class="rq">${due.slice(0, 8).map(row).join('')}</ul>${due.length > 8 ? `<p class="hint" style="margin:6px 0 0">還有 ${due.length - 8} 題</p>` : ''}` : '<p class="empty">今天沒有到期的題目。</p>'}
+    ${soon.length ? `<h3>這週快到期</h3><ul class="rq soon">${soon.slice(0, 5).map(row).join('')}</ul>` : ''}</section>`;
+}
 function viewProblems(S) {
   const all = activeProblems();
   const c = { doing: all.filter(p => p.doing && !isSolved(p, S)).length, starred: all.filter(p => p.starred && !isSolved(p, S)).length,
@@ -2155,7 +2237,7 @@ function viewProblems(S) {
   const tags = Object.entries(tagFreq).sort((a, b) => b[1] - a[1]).slice(0, 30);
   const np = nextProblem(S);
   const views = [['doing', '進行中', c.doing], ['starred', '收藏未解', c.starred], ['solved', '已解', c.solved], ['all', '全部', c.all]];
-  return `<section class="panel"><h2>題單</h2>
+  return `${reviewQueuePanel()}<section class="panel"><h2>題單</h2>
     <p class="hint">${np ? `下一題：<a href="https://leetcode.com/problems/${esc(np.slug)}/" target="_blank" rel="noopener">${np.id ? esc(np.id) + '. ' : ''}${esc(np.title)}</a>。寫完用 <code class="k">/judge</code> 判題，通過後會自動移到「已解」。` : '用 /judge 判題通過的題目會自動標成已解。'}</p>
     <div class="pfilters">
       <div class="pseg" role="group" aria-label="篩選">${views.map(([k, n, cnt]) => `<button class="segb${pf.view === k ? ' on' : ''}" data-act="pview" data-v="${k}" aria-pressed="${pf.view === k}">${n} <span class="num">${cnt}</span></button>`).join('')}</div>
@@ -2288,6 +2370,17 @@ const lsSet = (k, v) => { try { localStorage.setItem(k, String(v)); } catch (e) 
 function markLevelSeen() { lsSet(LV_SEEN, compute().level); levelReady = true; }
 function checkMilestones(S) {
   if (!levelReady) return;
+  // 各領域升級：只跳提示，不給獎勵；這台裝置第一次看到的只記下來
+  let ks = {}; try { ks = JSON.parse(lsGet(SKILL_SEEN)) || {}; } catch (e) { /* ignore */ }
+  const ksFirst = !Object.keys(ks).length; let kchanged = false;
+  for (const k of skillList(S)) {
+    if (ks[k.key] === undefined || ksFirst || k.level < ks[k.key]) { if (ks[k.key] !== k.level) { ks[k.key] = k.level; kchanged = true; } }
+    else if (k.level > ks[k.key]) {
+      toast(`<b>${k.icon ? esc(k.icon) + ' ' : ''}${esc(k.name)} 升到 Lv ${k.level}</b>${skillTitle(k.key, k.level) !== skillTitle(k.key, ks[k.key]) ? `<br><span class="dim">新稱號：${esc(k.title)}</span>` : ''}`, null, 'ac');
+      chime('quest'); ks[k.key] = k.level; kchanged = true;
+    }
+  }
+  if (kchanged) lsSet(SKILL_SEEN, JSON.stringify(ks));
   // 打倒 Boss：這台裝置第一次看到的 Boss 只記下目前次數，之後增加才播動畫；排在徽章前面
   let bseen = {}; try { bseen = JSON.parse(lsGet(BOSS_SEEN)) || {}; } catch (e) { /* ignore */ }
   let bchanged = false;
