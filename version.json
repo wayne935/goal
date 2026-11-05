@@ -1,5 +1,5 @@
 {
-  "build": 15,
+  "build": 16,
   "minNative": 4,
   "files": [
     "index.html",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "每日任務全部完成可以開寶箱、商店新增桌面外觀、連續天數斷掉後回來 3 天 XP ×1.5"
+  "notes": "新增 4 週一季的賽季通行證（30 階，每 5 階給代幣）和每月回顧卡（可以做成圖片），5 個新徽章"
 }

@@ -286,6 +286,28 @@ details.bcat[open] .shelf{display:none}
 .ticket .btn-x:hover{background:rgba(0,0,0,.08);color:#2b2a1c}
 .ticket .short{font-size:14px;color:#7b6a3e}
 .ticket.freeze{background:#d9ebf2}
+.rhead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.rhead h2{margin:0}
+.rstats{grid-template-columns:repeat(3,1fr);margin-top:0}
+.recap .wbar{display:flex;height:12px;border-radius:9px;overflow:hidden;margin-top:14px;background:rgba(0,0,0,.24)}
+.imgview{position:fixed;inset:0;z-index:40;background:rgba(5,15,12,.82);display:grid;place-items:center;padding:16px}
+.imgview .iv{max-width:min(440px,100%);text-align:center}
+.imgview img{width:100%;border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.6)}
+.imgview p{color:var(--chalk-dim);font-size:14px;margin:10px 0}
+.imgview .btns{justify-content:center}
+.season h2{display:flex;align-items:baseline;gap:10px}
+.sdays{font-size:15px;font-weight:400}
+.shead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;font-size:14.5px;margin:6px 0 6px}
+.stier{font-size:34px;line-height:1;color:var(--brass-hi)}
+.stier small{font-size:16px;color:var(--chalk-dim)}
+.season .bar{height:8px;border-radius:9px;background:rgba(0,0,0,.28);overflow:hidden}
+.season .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brass),var(--brass-hi));border-radius:9px}
+.strack{display:grid;grid-template-columns:repeat(30,1fr);gap:3px;margin-top:10px}
+.strack i{height:12px;border-radius:3px;background:rgba(0,0,0,.26)}
+.strack i.rw{box-shadow:inset 0 0 0 1.5px rgba(246,220,147,.55)}
+.strack i.on{background:var(--brass)}
+.strack i.fin{background:rgba(0,0,0,.26);box-shadow:inset 0 0 0 2px var(--brass-hi)}
+.strack i.fin.on{background:var(--brass-hi)}
 .coslist{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}
 .cos{display:grid;gap:6px;justify-items:center;text-align:center;padding:10px;border-radius:14px;background:rgba(0,0,0,.16)}
 .cos.on{box-shadow:inset 0 0 0 2px var(--brass)}
@@ -734,7 +756,7 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 15;
+const APP_BUILD = 16;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 /* 手機底部只放 5 個分頁：徽章牆、紀錄、設定收進「我的」，頁面上方有子分頁 */
@@ -834,6 +856,11 @@ const CHEST = { since: '2026-11-05', keepDays: 7,
   tiers: [ { id: 'common', name: '普通', p: 700, color: '#d8d2c0', icon: '📦' }, { id: 'rare', name: '稀有', p: 220, color: '#7ea2ff', icon: '💎' },
            { id: 'epic', name: '史詩', p: 70, color: '#c99cf0', icon: '🔮' }, { id: 'legend', name: '傳說', p: 10, color: '#f6dc93', icon: '👑' } ],
   coins: { common: [10, 20], rare: 40, epic: 80, legend: 200 } };
+/* 賽季：從 2026-11-02（週一）起每 4 週一季。賽季內拿到的所有 XP 推進 30 階通行證，每 5 階給代幣，30 階 = 通關。
+   獎勵只給代幣、不給 XP（XP 會反過來推進通行證）。 */
+const SEASON = { anchor: '2026-11-02', days: 28, tiers: 30, tierXp: 80, rewards: { 5: 40, 10: 60, 15: 80, 20: 100, 25: 120, 30: 150 } };
+const seasonNo = k => k < SEASON.anchor ? 0 : Math.floor(daysBetween(SEASON.anchor, k) / SEASON.days) + 1;
+const seasonStart = n => addDays(SEASON.anchor, SEASON.days * (n - 1));
 const COMEBACK = { mult: 1.5, days: 3, minRun: 3 };   // 連續 3 天以上斷掉後，回來的 3 天 XP ×1.5（只加 XP）
 const COSMETICS = [
   { id: 'felt',     name: '撞球綠',     price: 0,   colors: ['#24473d', '#183129', '#2f5a4d', '#376657'] },
@@ -986,6 +1013,12 @@ const ACH = [
   { id:'gt_skip10',  cat:'life', icon:'🫁', name:'深呼吸',     desc:'在分心 App 的放行畫面選「算了」10 次', goal:10, coins:60, v:s=>s.focus.skips },
   { id:'cf_7',       cat:'health', icon:'🌙', name:'守夜人',   desc:'宵禁守住 7 晚',                    goal:7,   coins:100, v:s=>s.focus.curfewKept },
   { id:'cf_30',      cat:'health', icon:'🌌', name:'夜貓馴服', desc:'宵禁守住 30 晚',                   goal:30,  coins:300, v:s=>s.focus.curfewKept, legend:true },
+  // 賽季與寶箱（build 16）
+  { id:'ss_1',       cat:'life', icon:'🏁', name:'第一季通關', desc:'一季內把通行證推到第 30 階',        goal:1,   coins:100, v:s=>s.seasonsDone },
+  { id:'ss_3',       cat:'life', icon:'🎖️', name:'老玩家',     desc:'通關 3 季',                         goal:3,   coins:250, v:s=>s.seasonsDone },
+  { id:'ss_13',      cat:'life', icon:'🗓️', name:'一整年',     desc:'通關 13 季（差不多一年）',          goal:13,  coins:800, v:s=>s.seasonsDone, legend:true },
+  { id:'ch_10',      cat:'life', icon:'🎁', name:'開箱達人',   desc:'開 10 個寶箱',                      goal:10,  coins:50,  v:s=>s.chestsOpened },
+  { id:'ch_legend',  cat:'life', icon:'👑', name:'歐皇',       desc:'開到一次傳說寶箱',                  goal:1,   coins:50,  v:s=>s.chestLegend },
 ];
 const ACH_BY_ID = Object.fromEntries(ACH.map(a => [a.id, a]));
 
@@ -1284,6 +1317,16 @@ function compute() {
   const fz = planFreezes(anyDays, freezeBuys, todayKey());
   const cb = comebackInfo(anyDays, fz.frozen, todayKey());
   for (const k of cb.boost) { const d = days[k]; if (!d || !d.evXp) continue; const extra = Math.round(d.evXp * (COMEBACK.mult - 1)); d.xp += extra; xp += extra; d.comebackXp = extra; }
+  // 賽季：照日期順序累積這季的 XP，跨過有獎勵的階數那天入帳
+  const seasons = {};
+  for (const k of Object.keys(days).sort()) {
+    const n = seasonNo(k); if (!n) continue;
+    const z = seasons[n] ||= { n, xp: 0, tier: 0, coins: 0, doneDay: null }, d = days[k];
+    z.xp += d.xp; const t = Math.min(SEASON.tiers, Math.floor(z.xp / SEASON.tierXp));
+    for (let i = z.tier + 1; i <= t; i++) { const c = SEASON.rewards[i]; if (c) { earned += c; d.coins += c; z.coins += c; } if (i === SEASON.tiers) z.doneDay = k; }
+    z.tier = t;
+  }
+  const seasonsDone = Object.values(seasons).filter(z => z.doneDay).length;
   const lv = levelFromXp(xp);
   const vals = Object.values(days);
   let bestWeekCats = 0;
@@ -1311,7 +1354,8 @@ function compute() {
     bestQuartet: Math.max(0, ...vals.map(d => (d.lc > 0) + !!d.habits.exercise + !!d.habits.paper + !!d.habits.bass)),
     bestWeekCats, questDays, weeksDone, weeks, solvedKeys: solved, solvedIds,
     bosses, bossKills, bestClean, bossComebacks, crits: critIds.size, saved,
-    skills: skillXp, owned, chests, comeback: cb,
+    skills: skillXp, owned, chests, comeback: cb, seasons, seasonsDone,
+    chestsOpened: Object.keys(chests).length, chestLegend: Object.values(chests).filter(c => c.tier.id === 'legend').length,
     habit: id => habitCount[id] || 0,
     habitStreak: id => longestRun(keysWhere(d => (d.habits[id] || 0) > 0)),
   };
@@ -1916,6 +1960,7 @@ function viewToday(S) {
         <div class="stat"><span class="num">${S.bestStreak}</span><small>最長連續天數</small></div></div></section>`)}
   </div><div>
     ${slot(3, questPanel(S, tk))}
+    ${slot(4, seasonPanel(S, tk))}
     ${ci.showForm ? '' : slot(4, contract)}
     ${slot(5, `<section class="panel"><h2>${dayLabel(tk)}</h2>
       <div class="sumline"><span><b>${fmt(td.xp)}</b> XP</span><span><b>${fmt(td.coins)}</b> 代幣</span><span><b>${todays.length}</b> 筆</span>${guard.review ? '' : '<button class="mini" data-act="rvopen">今日回顧</button>'}</div>
@@ -2262,6 +2307,20 @@ function nextProblem(S) {
   const open = activeProblems().filter(p => !isSolved(p, S));
   return open.filter(p => p.doing).sort(byId)[0] || open.filter(p => p.starred).sort(byId)[0];
 }
+function seasonPanel(S, tk) {
+  const n = seasonNo(tk); if (!n) return '';
+  const z = S.seasons[n] || { xp: 0, tier: 0, doneDay: null }, left = daysBetween(tk, addDays(seasonStart(n), SEASON.days - 1)) + 1;
+  const into = z.tier >= SEASON.tiers ? SEASON.tierXp : z.xp - z.tier * SEASON.tierXp;
+  const nextR = Object.keys(SEASON.rewards).map(Number).find(t => t > z.tier);
+  const cells = Array.from({ length: SEASON.tiers }, (_, i) => { const t = i + 1, r = SEASON.rewards[t];
+    return `<i class="${t <= z.tier ? 'on' : ''}${r ? ' rw' : ''}${t === SEASON.tiers ? ' fin' : ''}" title="第 ${t} 階${r ? `：+${r} 代幣` : ''}"></i>`; }).join('');
+  return `<section class="panel season"><h2>第 ${n} 季 <span class="dim sdays">${z.doneDay ? '已通關 🏁' : `還剩 ${left} 天`}</span></h2>
+    <div class="shead"><span class="num stier">${z.tier}<small> / ${SEASON.tiers} 階</small></span>
+      <span class="dim">${z.tier >= SEASON.tiers ? `這季拿了 ${fmt(z.coins)} 代幣` : `下一階還要 <b class="num">${fmt(SEASON.tierXp - into)}</b> XP${nextR ? `・第 ${nextR} 階 +${SEASON.rewards[nextR]} 代幣` : ''}`}</span></div>
+    <div class="bar"><i style="width:${into / SEASON.tierXp * 100}%"></i></div>
+    <div class="strack" aria-hidden="true">${cells}</div>
+    <p class="hint" style="margin:8px 0 0">這季拿到的所有 XP 都會推進通行證，每 ${SEASON.days / 7} 週換一季。</p></section>`;
+}
 function chestLine(S, tk) {
   if (tk < CHEST.since) return '';
   const c = S.chests[tk];
@@ -2369,6 +2428,57 @@ function setProblem(slug, patch) {
 
 /* ---------- 每週回顧 ---------- */
 let reviewOffset = 0;
+/* ---------- 每月回顧卡（只讀紀錄，不影響數值；可以畫成圖片存下來） ---------- */
+let recapOffset = 1;   // 1 = 上個月，0 = 這個月
+function monthKey(offset) { const [y, m] = todayKey().split('-').map(Number), d = new Date(y, m - 1 - offset, 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; }
+function monthRecap(S, mk) {
+  const keys = Object.keys(S.days).filter(k => k.startsWith(mk)).sort(), o = { mk, xp: 0, coins: 0, lc: 0, newLc: 0, active: 0, quests: 0, focusMin: 0, catXp: {}, habits: {}, badges: [], chests: 0 };
+  for (const k of keys) { const d = S.days[k]; o.xp += d.xp; o.coins += Math.max(0, d.coins); o.lc += d.lc; o.newLc += d.newLc; o.active += d.any ? 1 : 0; o.quests += d.questDone ? 1 : 0; o.focusMin += d.focusMin || 0;
+    for (const [c, x] of Object.entries(d.catXp)) o.catXp[c] = (o.catXp[c] || 0) + x; for (const [h, n] of Object.entries(d.habits)) o.habits[h] = (o.habits[h] || 0) + n; }
+  o.bestRun = longestRun(new Set(keys.filter(k => S.days[k].any)), new Set([...S.frozen].filter(k => k.startsWith(mk))));
+  o.badges = ACH.filter(a => state.unlocked[a.id] && dayKey(state.unlocked[a.id]).startsWith(mk));
+  o.chests = Object.keys(S.chests).filter(k => k.startsWith(mk)).length;
+  const top = Object.entries(o.habits).sort((a, b) => b[1] - a[1])[0]; o.topHabit = top ? { h: state.habits.find(h => h.id === top[0]), n: top[1] } : null;
+  return o;
+}
+const recapLabel = mk => { const [y, m] = mk.split('-').map(Number); return `${y} 年 ${m} 月`; };
+function recapPanel(S) {
+  const o = monthRecap(S, monthKey(recapOffset)), used = Object.entries(CATS).filter(([c]) => o.catXp[c]), tot = Object.values(o.catXp).reduce((a, b) => a + b, 0);
+  const stat = (v, l) => `<div class="stat"><span class="num">${v}</span><small>${l}</small></div>`;
+  return `<section class="panel recap"><div class="rhead"><h2>${recapLabel(o.mk)}回顧</h2>
+      <div class="seg zh" role="radiogroup" aria-label="哪個月">${['這個月', '上個月'].map((n, i) => `<label style="--dc:var(--chalk)"><input type="radio" name="recapm" value="${i}" ${recapOffset === i ? 'checked' : ''}><span>${n}</span></label>`).join('')}</div></div>
+    ${o.active ? `<div class="stats rstats">${stat(fmt(o.xp), 'XP')}${stat(o.active, '有紀錄的天數')}${stat(o.bestRun, '最長連續')}${stat(o.newLc, '新解的題')}${stat(o.quests, '任務全清的天')}${stat(o.badges.length, '新徽章')}</div>
+    ${tot ? `<div class="wbar">${used.map(([c, m]) => `<i style="width:${o.catXp[c] / tot * 100}%;background:${m.color}" title="${m.name}"></i>`).join('')}</div>` : ''}
+    <p class="hint" style="margin:10px 0 0">${o.topHabit?.h ? `最常做：${esc(o.topHabit.h.icon)} ${esc(o.topHabit.h.name)} ${o.topHabit.n} 次。` : ''}${o.badges.length ? `拿到 ${o.badges.slice(0, 6).map(a => esc(a.icon)).join('')}${o.badges.length > 6 ? '…' : ''}` : ''}</p>
+    <div class="btns" style="margin-top:12px"><button class="btn btn-brass" data-act="recapimg">做成圖片</button></div>` : '<p class="empty">這個月還沒有紀錄。</p>'}</section>`;
+}
+async function recapImage() {
+  const S = compute(), o = monthRecap(S, monthKey(recapOffset)), W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const x = cv.getContext('2d'), css = getComputedStyle(document.documentElement), v = n => css.getPropertyValue(n).trim();
+  const zh = '"Nunito","Chiron GoRound TC",sans-serif', nm = '"Barlow Condensed","Chiron GoRound TC",sans-serif';
+  const texts = `${recapLabel(o.mk)}回顧 XP 有紀錄的天數 最長連續 新解的題 任務全清的天 新徽章 最常做 次 Goal 成就板 天 ${o.topHabit?.h?.name || ''} 0123456789,`;
+  try { await Promise.all([`700 64px ${zh}`, `400 34px ${zh}`, `700 120px ${nm}`].map(f => document.fonts.load(f, texts))); } catch (e) { /* 用系統字 */ }
+  const g = x.createRadialGradient(W / 2, 0, 100, W / 2, H / 2, H); g.addColorStop(0, v('--felt-hi2') || '#376657'); g.addColorStop(1, v('--felt-deep') || '#183129');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.strokeStyle = 'rgba(239,232,214,.18)'; x.setLineDash([14, 10]); x.lineWidth = 3; x.strokeRect(40, 40, W - 80, H - 80); x.setLineDash([]);
+  x.fillStyle = '#efe8d6'; x.textAlign = 'center'; x.font = `700 64px ${zh}`; x.fillText(`${recapLabel(o.mk)}回顧`, W / 2, 170);
+  x.fillStyle = '#f6dc93'; x.font = `700 150px ${nm}`; x.fillText(fmt(o.xp), W / 2, 360); x.fillStyle = '#aebdaf'; x.font = `400 36px ${zh}`; x.fillText('這個月拿到的 XP', W / 2, 415);
+  const cells = [[o.active, '有紀錄的天數'], [o.bestRun, '最長連續'], [o.newLc, '新解的題'], [o.quests, '任務全清的天'], [o.badges.length, '新徽章'], [Math.round(o.focusMin / 60 * 10) / 10, '鎖機專注（時）']];
+  cells.forEach(([n, l], i) => { const cx = 210 + (i % 3) * 330, cy = 560 + Math.floor(i / 3) * 210;
+    x.fillStyle = 'rgba(0,0,0,.22)'; x.beginPath(); x.roundRect(cx - 145, cy - 95, 290, 175, 24); x.fill();
+    x.fillStyle = '#efe8d6'; x.font = `700 92px ${nm}`; x.fillText(String(n), cx, cy + 10); x.fillStyle = '#aebdaf'; x.font = `400 30px ${zh}`; x.fillText(l, cx, cy + 58); });
+  const tot = Object.values(o.catXp).reduce((a, b) => a + b, 0); let bx = 120;
+  if (tot) for (const [c, m] of Object.entries(CATS)) { if (!o.catXp[c]) continue; const w = (W - 240) * o.catXp[c] / tot; x.fillStyle = v(m.color.slice(4, -1)) || '#d6a243'; x.fillRect(bx, 935, w, 26); x.fillStyle = '#efe8d6'; x.font = `400 26px ${zh}`; if (w > 90) x.fillText(m.name, bx + w / 2, 1000); bx += w; }
+  x.font = `400 40px ${zh}`; x.fillStyle = '#efe8d6';
+  if (o.topHabit?.h) x.fillText(`最常做：${o.topHabit.h.icon} ${o.topHabit.h.name}  ${o.topHabit.n} 次`, W / 2, 1090);
+  if (o.badges.length) { x.font = '64px sans-serif'; x.fillText(o.badges.slice(0, 8).map(a => a.icon).join(' '), W / 2, 1185); }
+  x.fillStyle = '#d6a243'; x.font = `700 34px ${zh}`; x.fillText('Goal 成就板', W / 2, H - 80);
+  const url = cv.toDataURL('image/png');
+  const ov = document.createElement('div'); ov.className = 'imgview'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', '回顧卡圖片');
+  ov.innerHTML = `<div class="iv"><img alt="${esc(recapLabel(o.mk))}回顧卡" src="${url}"><p>App 裡直接截圖就好；瀏覽器可以長按圖片或按下載。</p><div class="btns"><a class="btn btn-brass" download="goal-${o.mk}.png" href="${url}">下載</a><button class="btn btn-ghost" data-close>關閉</button></div></div>`;
+  ov.addEventListener('click', e => { if (e.target === ov || e.target.closest('[data-close]')) ov.remove(); });
+  document.body.append(ov);
+}
 function weekReview(S) {
   const cur = addDays(weekStart(todayKey()), -7 * reviewOffset), prev = addDays(cur, -7), end = addDays(cur, 6);
   const sum = start => {
@@ -2416,7 +2526,7 @@ function viewHistory(S) {
     const list = groups[k].sort((a, b) => tms(b.ts) - tms(a.ts));
     return `<div class="day"><div class="dayhead"><b>${dayLabel(k)}</b><span>${k}　+${fmt(S.days[k]?.xp || 0)} XP</span></div><ul class="log">${list.map(e => logItem(e, S)).join('')}</ul></div>`;
   }).join('');
-  return `${weekReview(S)}<section class="panel"><h2>全部紀錄</h2><p class="hint">一天從凌晨 ${state.settings.dayStartHour} 點開始算。刪掉的紀錄會讓數字重新計算，但已拿到的徽章不會收回。</p>
+  return `${recapPanel(S)}${weekReview(S)}<section class="panel"><h2>全部紀錄</h2><p class="hint">一天從凌晨 ${state.settings.dayStartHour} 點開始算。刪掉的紀錄會讓數字重新計算，但已拿到的徽章不會收回。</p>
     ${body || '<p class="empty">還沒有任何紀錄。</p>'}
     ${keys.length > historyDays ? `<div style="margin-top:16px"><button class="btn btn-ghost" data-act="more">顯示更早的紀錄</button></div>` : ''}</section>`;
 }
@@ -3732,6 +3842,7 @@ document.addEventListener('click', e => {
     commit(); chime('tick'); toast(`已兌換「${esc(r.name)}」，去享受吧。`);
   }
   else if (act === 'chest') openChest(t.dataset.day);
+  else if (act === 'recapimg') recapImage().catch(err => toast('圖片做不出來：' + esc(err.message)));
   else if (act === 'cosbuy') {
     const c = COSMETIC_BY_ID[id], S = compute(); if (!c || c.chest || S.owned.has(id) || S.balance < c.price) return;
     addEvent({ id: uid('cs'), type: 'cosmetic_buy', ts: nowISO(), cosmetic: id, cost: c.price, source: 'manual' });
@@ -3863,6 +3974,7 @@ document.addEventListener('change', e => {
   else if (t.dataset.g) setGuardField(t.dataset.g, t);
   else if (t.dataset.gpick) togglePick(t.dataset.gpick, t.checked);
   else if (t.id === 'fhabit') { guard.form.habit = t.value; guard.form.minutes = 0; render(); }
+  else if (t.name === 'recapm') { recapOffset = Number(t.value) ? 1 : 0; render(); }
   else if (t.name === 'rvday') { guard.reviewDay = Number(t.value) ? 1 : 0; render(); }
   else if (t.id === 'haptics') { state.settings.haptics = t.checked; touchMeta(); save(); if (state.settings.haptics) haptic('success'); }
   else if (t.dataset.wh !== undefined) { const ids = [...widgetHabitIds()]; while (ids.length < 3) ids.push(DEFAULT_WIDGET_HABITS[ids.length]); ids[Number(t.dataset.wh)] = t.value; state.settings.widgetHabits = ids; touchMeta(); save(); render(); }

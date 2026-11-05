@@ -1,6 +1,6 @@
 # 接下來要實作的事
 
-> 更新：2026-11-04　｜　目前網頁 build 15，原生 NATIVE_VERSION 4（`version.json` 的 minNative 4）
+> 更新：2026-11-04　｜　目前網頁 build 16，原生 NATIVE_VERSION 4（`version.json` 的 minNative 4）
 > 先讀 `CLAUDE.md`（架構、發佈規則、測試方法）。設計理由與研究依據在 `PLAN.md` 第 8 節。
 
 ## 目前狀態
@@ -27,6 +27,9 @@
 - **build 13（2026-11-05）**：手機底部 5 個分頁，`ME_TABS`（徽章牆、紀錄、設定）收進「我的」（`.tab-me`，720px 以下才出現；子分頁 `.subtabs` 在 `render()` 加在頁面最上面；上次看的記在 localStorage `goal.meTab`）。徽章牆每個分類是 `details.bcat`，展開的分類記在 `goal.badgeOpen`。遊戲設計候選：各領域等級（用現有 `catXp`）、每日寶箱（內容用 `hashStr(事件 id)` 決定）、外觀收藏、4～6 週賽季、斷掉後的回歸獎勵、LeetCode 間隔複習、每月回顧卡。
 - **build 14（2026-11-05）**：各領域等級：`compute()` 多一個 `S.skills`（`skillKey()`：興趣類每個習慣一條 `h:<id>`，其他照分類；只算事件本身的 XP，加成不算），`skillLevel()` 曲線是 40 + 20×L，稱號在 `SKILL_TITLES`（每 3 級換一個），`skillsPanel()` 放在徽章牆最上面，升級提示在 `checkMilestones()`（這台裝置第一次看到的只記在 `goal.skillSeen`）。間隔複習：`reviewQueue()` 從 leetcode 事件推算（`REVIEW_GAPS` = 3/7/21/60 天，通過滿 5 天就不再提醒），`reviewQueuePanel()` 在題單頁最上面，「今天」頁記錄解題的說明會顯示到期題數。
 - **build 15（2026-11-05）**：`CHEST`、`COMEBACK`、`COSMETICS` 常數。寶箱 = `chest_open` 事件（`day` 是任務完成那天），`compute()` 在每日任務之後用 `chestRoll(day, owned)` 推算內容（`hashStr`），結果在 `S.chests`；外觀 = `cosmetic_buy` 事件，擁有的在 `S.owned`，套用哪一個是 `settings.theme`（`validSettings()` 只收目錄裡的 id），`applyTheme()` 換 `--felt` 系列變數。回歸加成 `comebackInfo()`：每天事件本身的 XP 記在 `d.evXp`，加成記在 `d.comebackXp`；「今天」頁有提示。
+- **build 16（2026-11-05）**：賽季 `SEASON`（`anchor` 2026-11-02、28 天、30 階 × 80 XP、`rewards` 只給代幣），`compute()` 在回歸加成之後照日期累積 `d.xp` 算 `S.seasons[n]`（`tier`、`doneDay`），`seasonPanel()` 在「今天」頁（slot 4）。每月回顧 `monthRecap()` / `recapPanel()`（紀錄頁最上面）/ `recapImage()`（canvas 畫圖，先用 `document.fonts.load()` 載入要用的字）。新徽章 `ss_1`、`ss_3`、`ss_13`、`ch_10`、`ch_legend`。
+  - 還沒做：季節 Boss（PLAN 10.3）；回顧卡在 App 裡只能截圖（WebView 不能長按存圖）；晚上提醒改成「再做 1 件就保住 N 天」要動原生通知文字。
+  - 數值都是草案（賽季每階 80 XP、各階代幣、寶箱機率），等使用者用一兩週回報手感再調。
 
 ## 1. 之後的候選（依建議順序）
 1. **實機回饋修正**：build 9 的鎖定畫面、通知、Health Connect 第一次在 Pixel 9a 上跑，先處理使用者回報的問題。
