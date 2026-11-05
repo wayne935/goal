@@ -21,7 +21,7 @@
 - 事件類型：`leetcode`、`habit`、`custom`、`redeem`、`restraint`（忍住）、`relapse`（犯了）、`contract_open`（承諾契約）、`freeze_buy`（保護卡）、`cheer`（加油：收到的有 `from`、送出的有 `to`）、`party_reward`（共同 Boss 獎勵）、`focus`（鎖機專注 / 宵禁，`kind` + `result`）、`gate`（分心 App 放行）、`chest_open`（寶箱，`day`）、`cosmetic_buy`（外觀）。新增類型要同時改：`compute()`、`validEvent()`、`normalize()`（給 inbox / AI 用）、`eventTitle()` / `eventIcon()`。`cheer`、`party_reward`、`chest_open`、`cosmetic_buy` 只由網頁自己產生，`focus`、`gate` 只由原生端產生（`drainWidgetQueue()` 直接用 `validEvent()` 收），`normalize()` 故意都不接受。
 - 設定類資料（`habits`、`rewards`、`bosses`、`settings`、`problems`、`unlocked`）放在 `goal_meta` 同步：新增欄位要加進 `metaPayload()`、`syncNow()` 的拉取合併、`mergeState()`（備份匯入）、`migrate()`，並寫一個 `validXxx()` 檢查函式。舊版 App 推上來的設定可能缺欄位，缺的時候保留本機的。
 - 一天從凌晨 `dayStartHour`（預設 4）點開始：日期一律用 `dayKey(ts)` / `todayKey()`，不要用原生 Date 的日期。
-- 慶祝動畫：`celebrations` 佇列 + `showNextCelebration()`（徽章 `badge`、升級 `level`、打倒 Boss `boss`）。每台裝置「看過了沒」記在 localStorage（`goal.levelSeen`、`goal.bossSeen`…），第一次看到的東西只記錄不播放。
+- 慶祝動畫：`celebrations` 佇列 + `showNextCelebration()`（徽章 `badge`、升級 `level`、打倒 Boss `boss`、季節 Boss `sboss`、寶箱 `chest`、Health Connect `health`、共同 Boss `party`）。每台裝置「看過了沒」記在 localStorage（`goal.levelSeen`、`goal.bossSeen`…），第一次看到的東西只記錄不播放。
 - 每日任務、每週目標、Boss 打倒獎勵都是在 `compute()` 裡加到當天的 bonus。
 - 主要常數在檔案開頭：`DEFAULT_HABITS`、`DIFF`、`QUEST_POOL`、`WEEK_GOALS`、`BOSS`、`ACH`（徽章，`v: s => ...` 從 `compute()` 的結果取值，`legend: true` 是傳說級）。
 - Android 橋接：`IS_NATIVE`、`nat(method, opts)` 呼叫 `GoalWidgetPlugin.java`；小工具資料由 `pushWidget()` 送出，小工具的打卡由 `drainWidgetQueue()` 收回。

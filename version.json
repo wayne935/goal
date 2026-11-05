@@ -1,5 +1,5 @@
 {
-  "build": 16,
+  "build": 17,
   "minNative": 4,
   "files": [
     "index.html",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "新增 4 週一季的賽季通行證（30 階，每 5 階給代幣）和每月回顧卡（可以做成圖片），5 個新徽章"
+  "notes": "新增季節 Boss：每季一隻、各有弱點領域，每天各領域拿到 20 XP 就打它，打倒 +60 XP、+150 代幣"
 }

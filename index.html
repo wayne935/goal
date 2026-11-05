@@ -295,6 +295,14 @@ details.bcat[open] .shelf{display:none}
 .imgview img{width:100%;border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.6)}
 .imgview p{color:var(--chalk-dim);font-size:14px;margin:10px 0}
 .imgview .btns{justify-content:center}
+.sboss{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;margin-top:16px;padding-top:14px;border-top:1.5px dashed var(--chalk-faint)}
+.sbi{font-size:40px;line-height:1;filter:drop-shadow(0 3px 2px rgba(0,0,0,.35))}
+.sboss.dead .sbi{filter:grayscale(1);opacity:.5}
+.sbn{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.weak{font-size:12.5px;padding:1px 8px;border-radius:99px;background:color-mix(in srgb,var(--c) 30%,transparent);border:1px solid var(--c)}
+.sboss .hp{margin-top:6px;height:12px}
+.sboss small{font-size:13px}
+.sbh{margin:8px 0 0;font-size:13.5px}
 .season h2{display:flex;align-items:baseline;gap:10px}
 .sdays{font-size:15px;font-weight:400}
 .shead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;font-size:14.5px;margin:6px 0 6px}
@@ -756,11 +764,11 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 16;
+const APP_BUILD = 17;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 /* 手機底部只放 5 個分頁：徽章牆、紀錄、設定收進「我的」，頁面上方有子分頁 */
-const SKILL_SEEN = 'goal.skillSeen';
+const SKILL_SEEN = 'goal.skillSeen', SBOSS_SEEN = 'goal.sbossSeen';
 const ME_TABS = ['badges', 'history', 'settings'], ME_KEY = 'goal.meTab';
 const meTab = () => { const t = lsGet(ME_KEY); return ME_TABS.includes(t) ? t : 'badges'; };
 const $ = (s, r = document) => r.querySelector(s);
@@ -859,6 +867,13 @@ const CHEST = { since: '2026-11-05', keepDays: 7,
 /* 賽季：從 2026-11-02（週一）起每 4 週一季。賽季內拿到的所有 XP 推進 30 階通行證，每 5 階給代幣，30 階 = 通關。
    獎勵只給代幣、不給 XP（XP 會反過來推進通行證）。 */
 const SEASON = { anchor: '2026-11-02', days: 28, tiers: 30, tierXp: 80, rewards: { 5: 40, 10: 60, 15: 80, 20: 100, 25: 120, 30: 150 } };
+/* 季節 Boss：每季一隻，輪流出現，各有一個弱點領域。
+   每天每個領域拿到 20 XP（只算事件本身的 XP）打 10 點，弱點領域打 20 點；每日任務全清再加 10 點。打倒那天 +60 XP、+150 代幣。 */
+const SBOSS = { hp: 600, catMin: 20, dmg: 10, weakDmg: 20, questDmg: 10, reward: { xp: 60, coins: 150 },
+  roster: [ { name: '拖延巨像', icon: '🗿', weak: 'code' }, { name: '迷霧書魔', icon: '📚', weak: 'research' }, { name: '沙發史萊姆', icon: '🛋️', weak: 'health' },
+            { name: '無聊幽靈', icon: '👻', weak: 'hobby' }, { name: '混亂魔王', icon: '🌀', weak: 'life' } ] };
+const sbossOf = n => SBOSS.roster[(n - 1) % SBOSS.roster.length];
+const sbossDayDmg = (d, weak) => Object.entries(d.catXp).reduce((t, [c, x]) => t + (x >= SBOSS.catMin ? (c === weak ? SBOSS.weakDmg : SBOSS.dmg) : 0), 0) + (d.questDone ? SBOSS.questDmg : 0);
 const seasonNo = k => k < SEASON.anchor ? 0 : Math.floor(daysBetween(SEASON.anchor, k) / SEASON.days) + 1;
 const seasonStart = n => addDays(SEASON.anchor, SEASON.days * (n - 1));
 const COMEBACK = { mult: 1.5, days: 3, minRun: 3 };   // 連續 3 天以上斷掉後，回來的 3 天 XP ×1.5（只加 XP）
@@ -1017,6 +1032,8 @@ const ACH = [
   { id:'ss_1',       cat:'life', icon:'🏁', name:'第一季通關', desc:'一季內把通行證推到第 30 階',        goal:1,   coins:100, v:s=>s.seasonsDone },
   { id:'ss_3',       cat:'life', icon:'🎖️', name:'老玩家',     desc:'通關 3 季',                         goal:3,   coins:250, v:s=>s.seasonsDone },
   { id:'ss_13',      cat:'life', icon:'🗓️', name:'一整年',     desc:'通關 13 季（差不多一年）',          goal:13,  coins:800, v:s=>s.seasonsDone, legend:true },
+  { id:'sb_1',       cat:'life', icon:'🗡️', name:'季節獵人',   desc:'打倒一隻季節 Boss',                 goal:1,   coins:60,  v:s=>s.sbossKills },
+  { id:'sb_5',       cat:'life', icon:'🌈', name:'五魔全破',   desc:'打倒 5 隻季節 Boss（每一種弱點都打過）', goal:5, coins:300, v:s=>s.sbossKills, legend:true },
   { id:'ch_10',      cat:'life', icon:'🎁', name:'開箱達人',   desc:'開 10 個寶箱',                      goal:10,  coins:50,  v:s=>s.chestsOpened },
   { id:'ch_legend',  cat:'life', icon:'👑', name:'歐皇',       desc:'開到一次傳說寶箱',                  goal:1,   coins:50,  v:s=>s.chestLegend },
 ];
@@ -1317,6 +1334,17 @@ function compute() {
   const fz = planFreezes(anyDays, freezeBuys, todayKey());
   const cb = comebackInfo(anyDays, fz.frozen, todayKey());
   for (const k of cb.boost) { const d = days[k]; if (!d || !d.evXp) continue; const extra = Math.round(d.evXp * (COMEBACK.mult - 1)); d.xp += extra; xp += extra; d.comebackXp = extra; }
+  // 季節 Boss：傷害只看每天各領域的事件 XP 和每日任務，打倒的獎勵記在倒下那天（也會推進通行證）
+  const sboss = {};
+  for (const k of Object.keys(days).sort()) {
+    const n = seasonNo(k); if (!n) continue;
+    const z = sboss[n] ||= { n, boss: sbossOf(n), hp: SBOSS.hp, dmg: 0, killDay: null, days: {} }, d = days[k];
+    if (z.killDay) continue;
+    const hit = sbossDayDmg(d, z.boss.weak); if (!hit) continue;
+    z.days[k] = hit; z.dmg = Math.min(z.hp, z.dmg + hit);
+    if (z.dmg >= z.hp) { z.killDay = k; xp += SBOSS.reward.xp; d.xp += SBOSS.reward.xp; earned += SBOSS.reward.coins; d.coins += SBOSS.reward.coins; d.sbossKill = true; }
+  }
+  const sbossKills = Object.values(sboss).filter(z => z.killDay).length;
   // 賽季：照日期順序累積這季的 XP，跨過有獎勵的階數那天入帳
   const seasons = {};
   for (const k of Object.keys(days).sort()) {
@@ -1354,7 +1382,7 @@ function compute() {
     bestQuartet: Math.max(0, ...vals.map(d => (d.lc > 0) + !!d.habits.exercise + !!d.habits.paper + !!d.habits.bass)),
     bestWeekCats, questDays, weeksDone, weeks, solvedKeys: solved, solvedIds,
     bosses, bossKills, bestClean, bossComebacks, crits: critIds.size, saved,
-    skills: skillXp, owned, chests, comeback: cb, seasons, seasonsDone,
+    skills: skillXp, owned, chests, comeback: cb, seasons, seasonsDone, sboss, sbossKills,
     chestsOpened: Object.keys(chests).length, chestLegend: Object.values(chests).filter(c => c.tier.id === 'legend').length,
     habit: id => habitCount[id] || 0,
     habitStreak: id => longestRun(keysWhere(d => (d.habits[id] || 0) > 0)),
@@ -2307,6 +2335,15 @@ function nextProblem(S) {
   const open = activeProblems().filter(p => !isSolved(p, S));
   return open.filter(p => p.doing).sort(byId)[0] || open.filter(p => p.starred).sort(byId)[0];
 }
+function sbossHTML(S, n, tk) {
+  const z = S.sboss[n] || { boss: sbossOf(n), hp: SBOSS.hp, dmg: 0, killDay: null, days: {} }, b = z.boss, w = CATS[b.weak];
+  const todayHit = z.days[tk] || 0, td = S.days[tk] || emptyDay(), done = Object.keys(CATS).filter(c => (td.catXp[c] || 0) >= SBOSS.catMin);
+  return `<div class="sboss${z.killDay ? ' dead' : ''}"><span class="sbi" aria-hidden="true">${b.icon}</span>
+    <div class="sbm"><div class="sbn"><b>季節 Boss：${esc(b.name)}</b><span class="weak" style="--c:${w.color}">弱點：${w.name}</span></div>
+      <div class="hp" role="progressbar" aria-label="${esc(b.name)} 剩下的血" aria-valuenow="${z.hp - z.dmg}" aria-valuemin="0" aria-valuemax="${z.hp}"><i style="width:${(1 - z.dmg / z.hp) * 100}%"></i></div>
+      <small class="dim">${z.killDay ? `${dayLabel(z.killDay)}打倒了！+${SBOSS.reward.xp} XP、+${SBOSS.reward.coins} 代幣已入帳` : `剩 <b class="num">${fmt(z.hp - z.dmg)}</b> / ${fmt(z.hp)} 血・今天打了 <b class="num">${todayHit}</b> 點`}</small></div></div>
+    ${z.killDay ? '' : `<p class="hint sbh">每個領域一天拿到 ${SBOSS.catMin} XP 打 ${SBOSS.dmg} 點（${w.name} ${SBOSS.weakDmg} 點），任務全清再加 ${SBOSS.questDmg}。今天打到的：${done.length ? done.map(c => CATS[c].name).join('、') : '還沒有'}。</p>`}`;
+}
 function seasonPanel(S, tk) {
   const n = seasonNo(tk); if (!n) return '';
   const z = S.seasons[n] || { xp: 0, tier: 0, doneDay: null }, left = daysBetween(tk, addDays(seasonStart(n), SEASON.days - 1)) + 1;
@@ -2319,7 +2356,7 @@ function seasonPanel(S, tk) {
       <span class="dim">${z.tier >= SEASON.tiers ? `這季拿了 ${fmt(z.coins)} 代幣` : `下一階還要 <b class="num">${fmt(SEASON.tierXp - into)}</b> XP${nextR ? `・第 ${nextR} 階 +${SEASON.rewards[nextR]} 代幣` : ''}`}</span></div>
     <div class="bar"><i style="width:${into / SEASON.tierXp * 100}%"></i></div>
     <div class="strack" aria-hidden="true">${cells}</div>
-    <p class="hint" style="margin:8px 0 0">這季拿到的所有 XP 都會推進通行證，每 ${SEASON.days / 7} 週換一季。</p></section>`;
+    <p class="hint" style="margin:8px 0 0">這季拿到的所有 XP 都會推進通行證，每 ${SEASON.days / 7} 週換一季。</p>${sbossHTML(S, n, tk)}</section>`;
 }
 function chestLine(S, tk) {
   if (tk < CHEST.since) return '';
@@ -2612,6 +2649,12 @@ function checkMilestones(S) {
     }
   }
   if (bchanged) lsSet(BOSS_SEEN, JSON.stringify(bseen));
+  // 季節 Boss：這台裝置第一次看到的只記錄
+  const sbRaw = lsGet(SBOSS_SEEN); let sbseen = []; try { sbseen = JSON.parse(sbRaw) || []; } catch (e) { /* ignore */ }
+  const sbKilled = Object.values(S.sboss).filter(z => z.killDay).map(z => z.n);
+  if (sbRaw === null) lsSet(SBOSS_SEEN, JSON.stringify(sbKilled));
+  else { for (const n of sbKilled) if (!sbseen.includes(n)) { const z = S.sboss[n]; celebrations.unshift({ type: 'sboss', n, b: z.boss }); }
+    if (sbKilled.some(n => !sbseen.includes(n)) || sbseen.some(n => !sbKilled.includes(n))) lsSet(SBOSS_SEEN, JSON.stringify(sbKilled)); }
   // 契約結算：這台裝置第一次看到的契約只記下狀態，從進行中變成達成或沒達成時才提示
   let cseen = {}; try { cseen = JSON.parse(lsGet(CONTRACT_SEEN)) || {}; } catch (e) { /* ignore */ }
   const cnext = {};
@@ -2726,6 +2769,16 @@ function showNextCelebration() {
       <span class="tier reveal d2">隊友副本</span>
       <div class="bonus reveal d2"><i class="coin"></i>+<span class="num" id="cel-coins">0</span><span class="sub">　+${c.xp} XP</span></div>
       <div class="btns reveal d3"><button class="btn btn-brass" id="ul-ok">${next}</button></div></div>`;
+  } else if (c.type === 'sboss') {
+    box.innerHTML = `<div class="cel cel-boss"><div class="rays"></div>
+      <div class="stage"><div class="shock"></div><div class="shock s2"></div>
+        <div class="boss-xl" aria-hidden="true"><span class="bx">${c.b.icon}</span><span class="crown">🗡️</span></div></div>
+      <h2 id="ul-name" class="reveal d1">打倒了「${esc(c.b.name)}」</h2>
+      <p class="reveal d1">第 ${c.n} 季的季節 Boss 倒下了。下一季會換一隻、弱點也不一樣。</p>
+      <span class="tier reveal d2">季節 Boss</span>
+      <div class="bonus reveal d2"><i class="coin"></i>+<span class="num" id="cel-coins">0</span><span class="sub">　+${SBOSS.reward.xp} XP</span></div>
+      <div class="btns reveal d3"><button class="btn btn-brass" id="ul-ok">${next}</button></div></div>`;
+    c.coins = SBOSS.reward.coins;
   } else if (c.type === 'chest') {
     const cos = c.cosmetic && COSMETIC_BY_ID[c.cosmetic];
     box.innerHTML = `<div class="cel cel-boss cel-chest" style="--tc:${c.tier.color}"><div class="rays"></div>
@@ -2771,7 +2824,7 @@ function showNextCelebration() {
   $('#ul-ok').focus();
   $('#ul-ok').onclick = () => { closeCelebration(false); };
   const all = $('#ul-all'); if (all) all.onclick = () => closeCelebration(true);
-  if (c.type === 'health') playHealth(c, box); else if (c.type === 'badge') playBadge(c.a, box); else if (c.type === 'boss' || c.type === 'party' || c.type === 'chest') playBoss(c, box); else playLevel(c, box);
+  if (c.type === 'health') playHealth(c, box); else if (c.type === 'badge') playBadge(c.a, box); else if (c.type === 'boss' || c.type === 'party' || c.type === 'chest' || c.type === 'sboss') playBoss(c, box); else playLevel(c, box);
 }
 function playBoss(c, box) {
   const bx = $('.boss-xl', box);
