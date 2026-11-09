@@ -44,7 +44,7 @@
 - `python serve.py` → http://localhost:8765/（只提供網頁檔案）。用瀏覽器開，不要登入雲端同步（那是使用者的真實資料）。
 - Console 裡有 `window.__goal`（`state`、`compute()`、`ingest()`、`render()`、`checkUnlocks()`、`celebrate()`、`partyApi`、`party`、`syncParty()`、`partyBoss()`、`guard`、`addEvent()`、`validEvent()`、`focusPenalty()`、`G()`）。
 - 測鎖機功能：在 `addInitScript` 裡放一個假的 `window.Capacitor`（`isNativePlatform: () => true`、`nativePromise` 依方法名稱回傳假資料：`guardStatus`、`focusStart`、`drainQueue`、`healthRead`…），就能在瀏覽器裡測專注面板、緊急解鎖、Health Connect 轉換。
-- 原生程式在雲端可以做編譯檢查：從 GitHub raw 下載 `Reginer/aosp-android-jar` 的 `android-36/android.jar`，Capacitor 類別寫幾個空殼，`javac -cp android.jar` 編譯 `com/wayne/goal/*.java`（Google Maven 連不到，不能跑 Gradle）。
+- 原生程式在雲端可以做編譯檢查：從 GitHub raw 下載 `Reginer/aosp-android-jar` 的 `android-36/android.jar`，Capacitor 類別寫幾個空殼，`javac -cp android.jar` 編譯 `com/wayne/goal/*.java`（Google Maven 連不到，不能跑 Gradle）。空殼要跟真的 Capacitor 一樣：`JSObject.fromJSONObject()` 會丟 checked `JSONException`，呼叫的地方都要包 try-catch（build 9 的 `guardStatus()` 漏了，空殼又沒丟例外，所以一直沒抓到）。
 - 測隊伍時把 `__goal.partyApi` 的方法換成回傳假資料的函式，再呼叫 `__goal.syncParty()`。
 - 改了 SQL 可以在本機測：雲端環境有 PostgreSQL 16，建一個假的 `auth` schema（`auth.users`、用 `request.jwt.claim.sub` 實作 `auth.uid()`）和 `anon` / `authenticated` 角色，再 `set role authenticated` 模擬不同使用者。
 - 測多天的邏輯：改 localStorage 的 `goal.v1`（例如把 Boss 的 `createdAt` 或事件的 `ts` 往前調）後重新整理。測完 `localStorage.clear()`。

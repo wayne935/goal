@@ -144,7 +144,13 @@ public class GoalWidgetPlugin extends Plugin {
     // ---------- 鎖手機（GuardState） ----------
     @PluginMethod
     public void guardStatus(PluginCall call) {
-        new Thread(() -> call.resolve(JSObject.fromJSONObject(GuardState.status(getContext())))).start();
+        new Thread(() -> {
+            try {
+                call.resolve(JSObject.fromJSONObject(GuardState.status(getContext())));
+            } catch (Exception e) {
+                call.reject(String.valueOf(e.getMessage()));
+            }
+        }).start();
     }
 
     @PluginMethod
