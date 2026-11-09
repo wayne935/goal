@@ -39,8 +39,12 @@ public class LockActivity extends Activity {
     private static final int BG = 0xFF1B3A31, CARD = 0xFF24473D, BRASS = 0xFFD6A243, CHALK = 0xFFF3EFE6, DIM = 0xB3F3EFE6, RED = 0xFFE07A5F;
     private static final String[] REASONS = {"回訊息", "查資料", "放鬆一下", "無聊", "習慣性打開"};
 
+    /** 鎖定畫面現在是不是蓋在最上面（守護服務用來判斷要不要重開、要不要走備援回主畫面）。 */
+    static volatile boolean shown = false;
+
     private final Handler handler = new Handler(Looper.getMainLooper());
     private String mode = FOCUS, pkg = "", label = "";
+    private boolean expired = false;
     private LinearLayout root;
     private TextView countdown;
     private Runnable ticker;
@@ -69,7 +73,14 @@ public class LockActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        shown = true;
         if (!stillNeeded()) finish();
+    }
+
+    @Override
+    protected void onPause() {
+        shown = false;
+        super.onPause();
     }
 
     @Override
@@ -86,6 +97,7 @@ public class LockActivity extends Activity {
         mode = i.getStringExtra("mode"); if (mode == null) mode = FOCUS;
         pkg = i.getStringExtra("pkg"); if (pkg == null) pkg = "";
         label = i.getStringExtra("label"); if (label == null) label = pkg;
+        expired = i.getBooleanExtra("expired", false);
     }
 
     private boolean stillNeeded() {
@@ -266,8 +278,8 @@ public class LockActivity extends Activity {
         int left = GuardState.gateLeft(this);
         boolean strict = g.optBoolean("strict", false);
         int cost = g.optInt("extraCost", 30), coins = GuardState.coins(this);
-        add(text("🫁", 56, CHALK, false), 0);
-        add(text("「" + label + "」上鎖中", 24, CHALK, true), 10);
+        add(text(expired ? "⏰" : "🫁", 56, CHALK, false), 0);
+        add(text(expired ? "「" + label + "」的放行時間到了" : "「" + label + "」上鎖中", 24, CHALK, true), 10);
         if (left > 0) {
             add(text("今天還可以放行 " + left + " 次。先深呼吸，再決定要不要打開。", 16, DIM, false), 10);
             add(button("深呼吸 " + g.optInt("breath", 10) + " 秒，然後解鎖", true, v -> buildBreath(0)), 32);
@@ -347,9 +359,19 @@ public class LockActivity extends Activity {
         for (int m : opts) {
             if (m > max) continue;
             any = true;
-            add(button(m + " 分鐘", m == Math.min(5, max), v -> { GuardState.openGate(this, m, reason, label, paid); finish(); }), 10);
+            add(button(m + " 分鐘", m == Math.min(5, max), v -> { GuardState.openGate(this, m, reason, label, paid); backToApp(); }), 10);
         }
-        if (!any) add(button(max + " 分鐘", true, v -> { GuardState.openGate(this, max, reason, label, paid); finish(); }), 10);
+        if (!any) add(button(max + " 分鐘", true, v -> { GuardState.openGate(this, max, reason, label, paid); backToApp(); }), 10);
+    }
+
+    /** 放行之後直接帶回原本要開的 App（不靠系統「關掉鎖定畫面後回到哪裡」，那有時候會回主畫面）。 */
+    private void backToApp() {
+        Intent li = pkg.isEmpty() ? null : getPackageManager().getLaunchIntentForPackage(pkg);
+        if (li != null) {
+            li.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);   // 已經開著的話是叫回原本的畫面，不會重新開
+            try { startActivity(li); } catch (Exception ignored) { }
+        }
+        finish();
     }
 
     // ---------- 導覽 ----------

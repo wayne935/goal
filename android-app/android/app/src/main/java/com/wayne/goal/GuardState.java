@@ -195,6 +195,7 @@ final class GuardState {
         setSession(c, s);
         markUp(c);
         scheduleAll(c);
+        GuardService.poke();
         postFocusOngoing(c, s);
         return s;
     }
@@ -407,6 +408,12 @@ final class GuardState {
 
     static void resetCaches() { imeCache = null; homeCache = null; }
 
+    /** 這個套件是不是已啟用的輸入法（鍵盤）。 */
+    static boolean isIme(Context c, String pkg) {
+        if (imeCache == null) systemAllowed(c, "");
+        return imeCache != null && imeCache.contains(pkg);
+    }
+
     /** 專注或宵禁時這個 App 能不能用。 */
     static boolean allowed(Context c, String pkg, Mode m) {
         if (systemAllowed(c, pkg)) return true;
@@ -446,6 +453,7 @@ final class GuardState {
         if (paid > 0) e.putInt("coins_adj", prefs(c).getInt("coins_adj", 0) + paid);
         else e.putInt("gate_used", prefs(c).getInt("gate_used", 0) + 1);
         e.apply();
+        GuardService.poke();   // 讓守護服務排到放行到期的那一刻檢查
         JSONObject ev = new JSONObject();
         GoalStore.put(ev, "id", "gt-" + stamp(now) + "-" + Integer.toHexString(new Random().nextInt(0x10000)));
         GoalStore.put(ev, "type", "gate");

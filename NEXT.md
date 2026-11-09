@@ -1,6 +1,6 @@
 # 接下來要實作的事
 
-> 更新：2026-11-04　｜　目前網頁 build 18，原生 NATIVE_VERSION 5（`version.json` 的 minNative 5）
+> 更新：2026-11-04　｜　目前網頁 build 18，原生 NATIVE_VERSION 6（`version.json` 的 minNative 6）
 > 先讀 `CLAUDE.md`（架構、發佈規則、測試方法）。設計理由與研究依據在 `PLAN.md` 第 8 節。
 
 ## 目前狀態
@@ -32,6 +32,7 @@
 - **build 18 / NATIVE_VERSION 5（2026-11-05）**：晚上提醒（`GuardState.notifyReminder()`）照 summary 的 `streak`、`active`、`freezes`、`comeback` 換文字；`pushWidget()` 送這些欄位。原生端 `GoalStore.currentSummary()` 換日時自己推算（前一天有紀錄就延續、剛好昨天沒紀錄而有保護卡就用一張、否則歸零並在連續 3 天以上時標記回歸加成），小工具打卡和原生的專注完成 / 宵禁守住會 `markActive()`（今天第一次 +1）。網頁打開時會送正確的數字蓋過去。原生程式已在雲端用 android-36.jar 編譯過，**還沒在實機跑過**。
   - 2026-11-05 使用者已拉回檔案並重新建置 App（NATIVE_VERSION 5，含 build 9 的鎖機專注、Health Connect）。接下來等實機回報：晚上提醒文字、鎖定畫面、通知在 Pixel 9a / Android 17 上的行為。
   - 實機回報 1（2026-11-05）：25 分鐘專注到時有自動入帳、專注鎖會解開；之後打開分心 App 出現「上鎖中、深呼吸」是分心 App 放行（整天都鎖，照設計）。問過使用者要不要改成「專注完送免費放行」或只在專注時鎖，使用者選**不用改**。
+- **NATIVE_VERSION 6（2026-11-09，網頁仍是 build 18）**：實機回報 2：放行設 3 分鐘，①選完時間有時沒回到原本的 App ②到期沒鎖回。原因：①`LockActivity.finish()` 後回哪個任務由系統決定（從服務開的新任務有時被標成回主畫面）②`GuardService` 每 15 秒補查用的 `lastPkg` 會被輸入法、systemui、對話框事件蓋掉，而且一直滑同一個 App 不會有新事件。修法：`LockActivity.backToApp()` 用 launch intent 叫回原 App；`GuardService` 的 `fgPkg` 只在真正的 Activity（`getActivityInfo` 查得到，或主畫面、看不到的系統 App）時更新；`scheduleNext()` 排到放行到期 / 專注結束的那一刻（`GuardService.poke()` 在 `openGate()`、`start()` 時呼叫），螢幕打開也檢查；`LockActivity.shown` + 1.5 秒驗證，鎖定畫面沒出現就 `GLOBAL_ACTION_HOME` 並發通知。雲端編譯過，**還沒實機測**。使用者要重新建置 App。
   - 還沒做：回顧卡在 App 裡只能截圖（WebView 不能長按存圖）。
   - 數值都是草案（賽季每階 80 XP、各階代幣、寶箱機率），等使用者用一兩週回報手感再調。
 

@@ -1,6 +1,6 @@
 {
   "build": 18,
-  "minNative": 5,
+  "minNative": 6,
   "files": [
     "index.html",
     "manifest.json",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "晚上提醒改成保住連續天數：今天還沒紀錄時提醒「再做 1 件就保住 N 天」（要重新建置 App）"
+  "notes": "分心 App 放行修正：選完時間直接回到原本的 App、放行到期準時鎖回（要重新建置 App）"
 }
