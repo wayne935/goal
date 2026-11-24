@@ -450,6 +450,19 @@ details.bcat[open] .shelf{display:none}
 .cmeta b{font-size:13px;color:var(--brass-hi)}
 .cmeta .btn-x{margin-left:auto;font-size:14px;padding:0 4px}
 .cbody{font-size:15px;line-height:1.45;overflow-wrap:anywhere;white-space:pre-wrap}
+.pgroup{margin-top:14px;padding:12px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(46,110,80,.35),rgba(0,0,0,.2))}
+.pgroup .pqh{display:flex;justify-content:space-between;gap:10px;font-size:14px;color:var(--chalk-dim)}
+.pgroup .pqh .num{color:var(--brass-hi);font-size:16px}
+.gline{font-size:15px;margin:6px 0 8px;line-height:1.5}
+.gline.ok{color:#8fe0cf}.gline.bad{color:#f3b4a5}
+.glist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.glist li{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr) auto;gap:8px;align-items:baseline;font-size:15px}
+.glist li small{font-weight:400;color:var(--chalk-dim);font-size:12.5px;margin-left:3px}
+.glist .dim{font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.glist .gst{font-size:14px;white-space:nowrap}
+.glist .g-done .gst{color:#8fe0cf}.glist .g-aborted .gst{color:#f3b4a5}.glist .g-running .gst{color:var(--brass-hi)}
+.gform{margin-top:10px}
+.gform .chipbtn{cursor:pointer}
 .qextra{margin-top:13px;padding-top:11px;border-top:1px dashed var(--chalk-faint)}
 .qtag{display:inline-block;font-size:12px;padding:0 7px;border-radius:99px;background:rgba(214,162,67,.22);color:var(--brass-hi);margin-right:6px;vertical-align:1px}
 @media (max-width:720px){
@@ -834,7 +847,7 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 20;
+const APP_BUILD = 21;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 /* 手機底部只放 5 個分頁：徽章牆、紀錄、設定收進「我的」，頁面上方有子分頁 */
@@ -1017,6 +1030,11 @@ const GIFTS = [
 const GIFT_BY = Object.fromEntries(GIFTS.map(g => [g.id, g]));
 const BOOST_TYPES = new Set(['leetcode', 'habit', 'custom', 'focus']);   // 雙倍 XP 只加在「做了事」的紀錄上，獎勵類不加
 const CHAT = { max: 200, pull: 50, pollMs: 20000, keepDays: 60 };
+/* build 21（要先執行 sync/party-v3.sql）：一起專注。開房 → 隊友用手機加入 → 開房的人按開始 → 每支手機各自開始平常的鎖機專注。
+   大家都撐完（至少 2 人、沒有人緊急解鎖）→ 每人 +xp × 人數、+coins × 人數（group_focus 事件）。開始 3 分鐘內沒鎖上的人算沒趕上 */
+const GROUP = { mins: [25, 50, 75, 100], lobbyMs: 15 * 60e3, lateMs: 3 * 60e3, graceMs: 12 * 3600e3, xp: 10, coins: 15, pollMs: 4000 };
+const GROUP_FINAL = new Set(['done', 'aborted', 'cancelled', 'missed']);
+const GROUP_STATE = { joined: ['⏳', '等開始'], running: ['🔒', '專注中'], done: ['✅', '撐完了'], aborted: ['💥', '緊急解鎖'], cancelled: ['↩️', '2 分鐘內取消'], missed: ['⏰', '沒趕上'] };
 const pqTier = id => { const roll = hashStr('pq:' + id) % 1000; let acc = 0; return CHEST.tiers.find(t => (acc += t.p) > roll) || CHEST.tiers[0]; };
 // 隊伍資料是別人的：只放在記憶體與 localStorage，不進 state、也不進 goal_meta
 const partyUI = { pick: null, rejectFor: '', chatOpen: false, draft: '', poll: null };   // 隊伍面板的暫時狀態；pick：{ uid, mode: 'cheer' | 'gift' }
@@ -1118,6 +1136,8 @@ const ACH = [
   { id:'p_quest5',   cat:'life', icon:'🧭', name:'默契十足',   desc:'完成 5 次每週隊伍任務',            goal:5,   coins:120, v:s=>s.partyQuests },
   { id:'p_gift5',    cat:'life', icon:'🎁', name:'大方',       desc:'送隊友 5 份禮物',                  goal:5,   coins:60,  v:s=>s.giftsOut },
   { id:'c_witness3', cat:'life', icon:'🧑‍⚖️', name:'有人作證',   desc:'3 份有見證人的契約達成，而且見證人確認了', goal:3, coins:150, v:s=>s.witnessedDone },
+  { id:'gf_1',       cat:'life', icon:'🌳', name:'一起撐住',   desc:'第一次和隊友一起鎖機專注，大家都撐完', goal:1, coins:60, v:s=>s.groupFocus },
+  { id:'gf_10',      cat:'life', icon:'🌲', name:'專注小隊',   desc:'和隊友一起撐完 10 次鎖機專注',     goal:10,  coins:250, v:s=>s.groupFocus, legend:true },
   // 鎖機專注、宵禁、分心 App
   { id:'fo_first',   cat:'life', icon:'🎯', name:'放下手機',   desc:'完成第一次鎖機專注',               goal:1,   coins:20,  v:s=>s.focus.done },
   { id:'fo_10h',     cat:'life', icon:'⏳', name:'十小時心流', desc:'鎖機專注累計 10 小時',             goal:10,  coins:120, v:s=>Math.floor(s.focus.minutes / 60) },
@@ -1283,7 +1303,7 @@ function compute() {
   const tagSolved = {}, checked = new Set(), submittedSet = new Set(), graphSet = new Set(), solvedIds = new Set();
   const bossIds = new Set(state.bosses.map(b => b.id)), critIds = new Set(); let saved = 0;
   const hits = { lc: [], habit: {}, relapse: {} }, freezeBuys = [];   // 契約要數的紀錄：{ ms, day }
-  const partyWeeks = new Set(), pqWeeks = new Set(); let cheersIn = 0, cheersOut = 0, giftsIn = 0, giftsOut = 0, boostUntil = 0;
+  const partyWeeks = new Set(), pqWeeks = new Set(); let cheersIn = 0, cheersOut = 0, giftsIn = 0, giftsOut = 0, boostUntil = 0, groupFocus = 0;
   const fo = { done: 0, minutes: 0, run: 0, best: 0, curfewKept: 0, aborts: 0, skips: 0, gates: 0 }, abortWeeks = {};
   const owned = new Set(['felt']);   // 擁有的外觀
   const skillXp = {};   // 各領域等級：興趣類每個習慣各算一條，其他照分類
@@ -1348,6 +1368,8 @@ function compute() {
       if (g.coins) r = { xp: 0, coins: g.coins, tag: `+${g.coins} 代幣` };
       else if (g.id === 'freeze') { freezeBuys.push(dk); r.tag = '多一張保護卡'; }
       else { boostUntil = Math.max(boostUntil, tms(e.ts) + g.ms); r.tag = '接下來 1 小時 XP ×2'; }
+    } else if (e.type === 'group_focus') {     // 一起專注：大家都撐完的團隊獎勵（自己的鎖機獎勵照平常算）
+      r = { xp: GROUP.xp * e.n, coins: GROUP.coins * e.n, tag: `${e.n} 人一起撐完` }; groupFocus++;
     } else if (e.type === 'witness_verdict') {
       r.tag = e.verdict === 'ok' ? '見證人確認了' : '見證人說不算';
     } else if (e.type === 'party_quest') {     // 每週隊伍任務：一週只算一次（換隊伍也一樣）；寶箱等級由事件 id 決定
@@ -1489,7 +1511,7 @@ function compute() {
     contracts, contractsOpened: contracts.length, contractsDone, bigWins, contractWeekRun, hits,
     focus: { ...fo, weekAborts: abortWeeks[weekStart(todayKey())] || 0, bestDay: Math.max(0, ...vals.map(d => d.focusMin || 0)) },
     inParty: party.info ? 1 : 0, partyKills: partyWeeks.size, partyWeekRun: longestWeeks(partyWeeks), cheersIn, cheersOut,
-    partyQuests: pqWeeks.size, pstreak: partyStreak(days), giftsIn, giftsOut, boostUntil,
+    partyQuests: pqWeeks.size, pstreak: partyStreak(days), giftsIn, giftsOut, boostUntil, groupFocus,
     witnessedDone: contracts.filter(c => c.status === 'done' && c.verdict === 'ok').length,
     waterStreak: longestRun(keysWhere(d => (d.habits.water || 0) >= 8)),
     crosschecked: checked.size, submitted: submittedSet.size, graphSolved: graphSet.size,
@@ -1629,6 +1651,7 @@ function eventTitle(e) {
   if (e.type === 'cheer') { const k = CHEER_BY[e.kind]; return e.from ? `${e.from} 幫你加油${k ? `：${k[2]}` : ''}` : `幫 ${e.to} 加油${k ? `：${k[2]}` : ''}`; }
   if (e.type === 'gift_send') return `送給 ${e.to}：${GIFT_BY[e.item]?.name || '禮物'}`;
   if (e.type === 'gift') return `${e.from} 送你：${GIFT_BY[e.item]?.name || '禮物'}`;
+  if (e.type === 'group_focus') return `和隊友一起鎖機 ${e.minutes} 分鐘，${e.n} 人都撐完`;
   if (e.type === 'witness_verdict') return `${e.by} ${e.verdict === 'ok' ? '確認了你的契約' : '說你的契約不算'}${e.note ? `：${e.note}` : ''}`;
   if (e.type === 'party_reward') return '和隊友打倒了共同 Boss';
   if (e.type === 'party_quest') return `完成隊伍任務：${PARTY_QUESTS.find(q => q.id === e.quest)?.text(e.members.length) || '每週任務'}`;
@@ -1653,6 +1676,7 @@ function eventIcon(e) {
   if (e.type === 'cheer') return CHEER_BY[e.kind]?.[1] || '📣';
   if (e.type === 'gift_send' || e.type === 'gift') return GIFT_BY[e.item]?.icon || '🎁';
   if (e.type === 'witness_verdict') return e.verdict === 'ok' ? '👍' : '👎';
+  if (e.type === 'group_focus') return '🌳';
   if (e.type === 'party_reward') return '🛡️';
   if (e.type === 'party_quest') return '🧭';
   if (e.type === 'focus') return e.result === 'aborted' ? '🔓' : e.result === 'cancelled' ? '↩️' : e.kind === 'curfew' ? '🌙' : state.habits.find(h => h.id === e.habit)?.icon || '🎯';
@@ -1709,6 +1733,8 @@ function validEvent(e) {
     case 'cheer': { const n = e.from ?? e.to; return (e.from == null) !== (e.to == null) && typeof n === 'string' && n && cut(n, 20) === n && (e.kind == null || Object.hasOwn(CHEER_BY, e.kind)) ? e : null; }
     case 'gift_send': { const g = GIFT_BY[e.item]; return g && e.cost === g.cost && typeof e.to === 'string' && e.to && cut(e.to, 20) === e.to ? e : null; }
     case 'gift': return Object.hasOwn(GIFT_BY, e.item) && typeof e.from === 'string' && e.from && cut(e.from, 20) === e.from ? e : null;
+    case 'group_focus': return uuidOk(e.room) && Number.isInteger(e.n) && e.n >= 2 && e.n <= PARTY.size && Number.isInteger(e.minutes) && e.minutes >= 15 && e.minutes <= 120
+      && Array.isArray(e.members) && e.members.length <= PARTY.size && e.members.every(m => typeof m === 'string' && cut(m, 20) === m) ? e : null;
     case 'witness_verdict': return safeKey(e.contract) && ['ok', 'reject'].includes(e.verdict) && typeof e.by === 'string' && e.by && cut(e.by, 20) === e.by
       && (e.note == null || (typeof e.note === 'string' && cut(e.note, 100) === e.note)) ? e : null;
     case 'party_reward': return safeKey(e.party) && dayOk(e.week) && Array.isArray(e.members) && e.members.length <= PARTY.size
@@ -2468,6 +2494,7 @@ function partyPanel(S, tk) {
     <ul class="pmembers">${rows}</ul>
     ${partyQuestHTML(B)}
     ${witnessHTML(tk)}
+    ${groupHTML(S)}
     <div class="btns" style="margin-top:12px"><button class="btn btn-ghost" data-act="preport" aria-expanded="${partyRep.open}">${partyRep.open ? '收起週報' : '📊 隊伍週報'}</button>
       ${party.v2 ? `<button class="btn btn-ghost" id="pchatbtn" data-act="pchat" aria-expanded="${partyUI.chatOpen}">${chatBtnLabel()}</button>` : ''}</div>
     ${partyRep.open ? partyReportHTML(S, tk) : ''}
@@ -2475,6 +2502,7 @@ function partyPanel(S, tk) {
       <form id="partychat" autocomplete="off"><div class="row"><label class="field grow"><span class="sr">留言</span><input class="in" id="pchatin" name="body" maxlength="${CHAT.max}" placeholder="說點什麼…（最多 ${CHAT.max} 字）" value="${esc(partyUI.draft)}" required></label>
         <button class="btn btn-brass" type="submit">送出</button></div></form></div>` : ''}
     ${!party.v2 && party.status === 'in' ? '<p class="dim" style="font-size:13.5px;margin:10px 0 0">聊天、送禮、戳一下、契約見證人要先在 Supabase 執行 <code class="k">sync/party-v2.sql</code>。</p>' : ''}
+    ${!party.v3 && party.status === 'in' ? '<p class="dim" style="font-size:13.5px;margin:6px 0 0">一起專注（全隊同時鎖機）要先在 Supabase 執行 <code class="k">sync/party-v3.sql</code>。</p>' : ''}
     ${party.error ? `<p class="dim" style="font-size:13.5px;margin:8px 0 0">隊伍同步失敗，顯示的是上次的資料。</p>` : ''}</section>`;
 }
 function pickerHTML(m, S) {
@@ -2500,6 +2528,44 @@ function witnessHTML(tk) {
   }).join('');
   return `<div class="pwit"><div class="pqh"><span>🧑‍⚖️ 你是見證人</span></div><p class="hint" style="margin:4px 0 8px">隊友請你作證：達成後按「確認」，他多拿押金 × ${CONTRACT.witnessBonus}；覺得不算就按「不算」，他的押金會被沒收。每份只能按一次，週一起 10 天內有效。</p><ul>${rows}</ul></div>`;
 }
+// 一起專注：沒有房間 → 開房；等人中 → 加入 / 開始；開始後 → 每個人的狀態；結束 → 結果
+function groupHTML(S) {
+  if (!party.v3) return '';
+  const r = currentRoom(), me = myUid(), names = Object.fromEntries(party.members.map(m => [m.uid, m.name])), fh = focusHabits();
+  const canLock = IS_NATIVE && guard.supported && fh.length;
+  const head = `<div class="pqh"><span>🌳 一起專注</span>${r?.status === 'started' && Date.now() < roomEnd(r) ? `<span class="num">還剩 ${Math.max(1, Math.ceil((roomEnd(r) - Date.now()) / 60e3))} 分</span>` : ''}</div>`;
+  const habitSel = name => `<select class="in" name="${name}">${fh.map(h => `<option value="${esc(h.id)}" ${h.id === guard.form.habit ? 'selected' : ''}>${esc(h.icon)} ${esc(h.name)}</option>`).join('')}</select>`;
+  const why = !IS_NATIVE ? '要用手機的 Goal App 才能加入（要能鎖機）。' : !guard.supported ? '要重新建置一次 App 才有鎖機功能。' : !fh.length ? '先到設定 → 習慣，把某個任務的「紀錄方式」改成「只能鎖機」或「都可以」。' : '';
+  if (!r) {
+    const form = group.form && canLock ? groupHTMLForm(habitSel) : '';
+    return `<div class="pgroup">${head}<p class="hint" style="margin:4px 0 0">全隊同時鎖手機，各做各的事。大家都撐完，每人多拿 +${GROUP.xp} XP、+${GROUP.coins} 代幣 × 人數；有人中途緊急解鎖，大家的團隊獎勵一起泡湯。${why ? `<br>${why}` : ''}</p>
+      ${canLock ? (group.form ? form : `<div class="btns" style="margin-top:10px"><button class="btn btn-ghost" data-act="gform">開一間專注房</button></div>`) : ''}</div>`;
+  }
+  const ms = roomMembersOf(r), mine = ms.find(m => m.uid === me), host = r.host === me, res = roomResult(r);
+  const list = `<ul class="glist">${ms.map(m => { const [ic, tx] = GROUP_STATE[m.state], late = m.state === 'running' && r.started && Date.now() >= roomEnd(r);
+    return `<li class="g-${m.state}"><b>${esc(names[m.uid] || '前隊友')}${m.uid === me ? '<small>（你）</small>' : ''}</b><span class="dim">${esc(m.habit)}</span><span class="gst">${ic} ${late ? '還沒回報' : tx}</span></li>`; }).join('')}</ul>`;
+  let body = '';
+  if (r.status === 'open') {
+    const left = Math.max(1, Math.ceil((GROUP.lobbyMs - (Date.now() - tms(r.created))) / 60e3));
+    const act = host ? `<button class="btn btn-brass" data-act="gstart" data-id="${r.id}" ${ms.length < 2 ? 'disabled' : ''}>🔒 開始（${ms.length} 人）</button><button class="btn btn-ghost" data-act="gcancel" data-id="${r.id}">取消</button>`
+      : mine ? `<button class="btn btn-ghost" data-act="gleave" data-id="${r.id}">退出</button>`
+      : canLock ? '' : `<span class="dim">${why}</span>`;
+    const join = !mine && canLock ? `<form id="groupjoin" class="row" autocomplete="off" style="margin-top:8px"><label class="field grow">你要做什麼${habitSel('habit')}</label><button class="btn btn-brass" type="submit">加入</button></form>` : '';
+    body = `<p class="gline"><b>${esc(names[r.host] || '隊友')}</b> 開了一間 <b class="num">${r.minutes}</b> 分鐘的專注房，${left} 分鐘內沒開始會自動關閉。開始時大家的 Goal 要開著，手機會一起鎖起來。</p>${list}${join}<div class="btns" style="margin-top:10px">${act}</div>`;
+  } else if (Date.now() < roomEnd(r)) {
+    body = `<p class="gline">${ms.length} 個人一起鎖機中，${hhmm(nowISO(new Date(roomEnd(r))))} 結束。${mine?.state === 'joined' && !IS_NATIVE ? '請打開手機上的 Goal，才會一起鎖起來。' : ''}</p>${list}`;
+  } else {
+    const nm = ms2 => ms2.map(m => esc(names[m.uid] || '前隊友')).join('、');
+    const out = !res.settled ? '等隊友打開 Goal 回報結果（最晚 12 小時後結算）…'
+      : res.success ? `🎉 ${res.done.length} 個人都撐完了！每人團隊獎勵 +${GROUP.xp * res.done.length} XP、+${GROUP.coins * res.done.length} 代幣。`
+      : res.broke.length ? `💥 ${nm(res.broke)} 中途緊急解鎖，這次的團隊獎勵泡湯了。` : '撐完的人不到 2 個，這次沒有團隊獎勵。';
+    body = `<p class="gline ${res.success ? 'ok' : res.settled ? 'bad' : ''}">${out}</p>${list}${canLock ? `<div class="btns" style="margin-top:10px"><button class="btn btn-ghost" data-act="gform">再開一間</button></div>${group.form ? groupHTMLForm(habitSel) : ''}` : ''}`;
+  }
+  return `<div class="pgroup">${head}${body}</div>`;
+}
+const groupHTMLForm = habitSel => `<form id="groupopen" class="gform" autocomplete="off">
+  <div class="fmins" role="radiogroup" aria-label="時間">${GROUP.mins.map(m => `<label class="chipbtn${m === group.min ? ' on' : ''}"><input class="sr" type="radio" name="minutes" value="${m}" ${m === group.min ? 'checked' : ''}>${m} 分</label>`).join('')}</div>
+  <div class="row" style="margin-top:8px"><label class="field grow">你要做什麼${habitSel('habit')}</label><button class="btn btn-brass" type="submit">開房</button></div></form>`;
 function partyQuestHTML(B) {
   const st = partyQuestState(B); if (!st) return '';
   const id = `pq-${party.info.id}-${B.wk}`, got = state.events.some(e => e.id === id), r = got ? compute().per[id] : null;
@@ -3623,11 +3689,21 @@ const partyApi = {   // 測試時可以在 Console 換成假資料：window.__go
   pullMessages: () => sbRest(`goal_party_messages?select=id,from_user,body,created_at&order=created_at.desc&limit=${CHAT.pull}`),
   post: (pid, body) => sbRest('goal_party_messages', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ party_id: pid, body }) }),
   delMessage: id => sbRest(`goal_party_messages?id=eq.${id}`, { method: 'DELETE' }),
+  // build 21（sync/party-v3.sql）一起專注
+  rooms: since => sbRest(`goal_focus_rooms?select=id,host,minutes,created_at,started_at,status&created_at=gte.${encodeURIComponent(since)}&order=created_at.desc&limit=5`),
+  roomMembers: ids => sbRest(`goal_focus_members?select=room_id,user_id,habit,state,updated_at&room_id=in.(${ids.join(',')})`),
+  roomOpen: (minutes, habit) => sbRest('rpc/goal_focus_open', { method: 'POST', body: JSON.stringify({ p_minutes: minutes, p_habit: habit }) }),
+  roomStart: id => sbRest('rpc/goal_focus_start', { method: 'POST', body: JSON.stringify({ p_room: id }) }),
+  roomCancel: id => sbRest('rpc/goal_focus_cancel', { method: 'POST', body: JSON.stringify({ p_room: id }) }),
+  roomJoin: (id, habit) => sbRest('goal_focus_members', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ room_id: id, habit }) }),
+  roomLeave: (id, me) => sbRest(`goal_focus_members?room_id=eq.${id}&user_id=eq.${me}`, { method: 'DELETE' }),
+  roomState: (id, me, st) => sbRest(`goal_focus_members?room_id=eq.${id}&user_id=eq.${me}`, { method: 'PATCH', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ state: st }) }),
   pruneMessages: (me, before) => sbRest(`goal_party_messages?from_user=eq.${me}&created_at=lt.${encodeURIComponent(before)}`, { method: 'DELETE' }),
 };
 const PARTY_ERR = { already_in_party: '你已經在一個隊伍裡了', party_not_found: '找不到這個邀請碼', party_full: `這個隊伍已經滿 ${PARTY.size} 人了`,
   bad_name: '隊名要 1～30 個字', bad_display_name: '顯示名稱要 1～20 個字', not_logged_in: '請先登入雲端同步', 23505: '今天已經幫他加油過了', 42501: '對方已經不在隊伍裡了',
-  verdict_closed: '已經按過了，或是超過可以見證的時間', bad_verdict: '見證結果不對' };
+  verdict_closed: '已經按過了，或是超過可以見證的時間', bad_verdict: '見證結果不對',
+  room_busy: '隊伍裡已經有一間專注房了', room_closed: '這間專注房已經開始、取消或過期了', need_two: '至少要 2 個人才能開始', not_in_party: '你還沒有隊伍', bad_minutes: '時間要 15～120 分鐘', bad_habit: '請選要做的事' };
 const partyMissing = e => e && (e.status === 404 || ['PGRST202', 'PGRST205', '42P01', '42883'].includes(e.code));
 const partyErr = e => PARTY_ERR[e.sbMsg] || PARTY_ERR[e.code] || (partyMissing(e) ? '隊伍功能還沒啟用：需要先在 Supabase 執行 sync/party-setup.sql' : e.message || String(e));
 const myUid = () => sessionUid(cloud.session);
@@ -3646,6 +3722,10 @@ const validWitness = w => w && typeof w === 'object' && uuidOk(w.owner) && uuidO
       at: isoOk(w.verdict_at) ? w.verdict_at : '', note: cut(w.note, 100) } : null;
 const validMessage = m => m && typeof m === 'object' && uuidOk(m.id) && uuidOk(m.from_user) && isoOk(m.created_at) && cut(m.body, CHAT.max)
   ? { id: m.id.toLowerCase(), from: m.from_user, body: cut(m.body, CHAT.max), at: m.created_at } : null;
+const validRoom = r => r && typeof r === 'object' && uuidOk(r.id) && uuidOk(r.host) && Number.isInteger(r.minutes) && r.minutes >= 15 && r.minutes <= 120 && isoOk(r.created_at)
+  && ['open', 'started', 'cancelled'].includes(r.status) ? { id: r.id.toLowerCase(), host: r.host, minutes: r.minutes, created: r.created_at, started: r.status === 'started' && isoOk(r.started_at) ? r.started_at : '', status: r.status } : null;
+const validRoomMember = m => m && typeof m === 'object' && uuidOk(m.room_id) && uuidOk(m.user_id) && Object.hasOwn(GROUP_STATE, m.state)
+  ? { room: m.room_id.toLowerCase(), uid: m.user_id, habit: cut(m.habit, 60) || '專注', state: m.state } : null;
 const listOf = (a, f) => (Array.isArray(a) ? a : []).map(f).filter(Boolean);
 function applyParty(raw) {   // raw 是雲端原樣的資料（也存在 localStorage），每次都重新檢查
   raw ||= {};
@@ -3656,6 +3736,7 @@ function applyParty(raw) {   // raw 是雲端原樣的資料（也存在 localSt
   party.cheers = listOf(raw.cheers, validCheer);
   party.v2 = raw.v2 === true;
   party.nudges = listOf(raw.nudges, validNudge); party.gifts = listOf(raw.gifts, validGift);
+  party.v3 = raw.v3 === true; party.rooms = listOf(raw.rooms, validRoom); party.roomMembers = listOf(raw.roomMembers, validRoomMember);
   party.witness = listOf(raw.witness, validWitness); party.msgs = listOf(raw.msgs, validMessage).sort((a, b) => tms(a.at) - tms(b.at));
   party.raw = raw;
 }
@@ -3665,7 +3746,7 @@ function loadParty() {
   if (!o || !myUid() || o.owner !== myUid()) return;
   applyParty(o.raw); if (o.status === 'in' || o.status === 'none' || o.status === 'nosetup') party.status = party.info ? 'in' : o.status;
 }
-function resetParty() { applyParty(null); clearInterval(partyUI.poll); Object.assign(partyUI, { pick: null, rejectFor: '', chatOpen: false, draft: '' }); party.status = 'off'; party.error = ''; party.pushed = ''; try { localStorage.removeItem(PARTY_LS); } catch (e) { /* ignore */ } }
+function resetParty() { applyParty(null); clearInterval(partyUI.poll); clearInterval(group.poll); group.poll = null; group.form = false; Object.assign(partyUI, { pick: null, rejectFor: '', chatOpen: false, draft: '' }); party.status = 'off'; party.error = ''; party.pushed = ''; try { localStorage.removeItem(PARTY_LS); } catch (e) { /* ignore */ } }
 // 自己最近 8 天的摘要；保護卡補上的日子 d.any 是 false，隊友不會誤以為有紀錄
 function partyDayRows(S) {
   const tk = todayKey(), share = state.settings.partyShare === 'xp';
@@ -3698,11 +3779,12 @@ async function syncParty() {
         lsSet(PARTY_PRUNE, tk);
       }
       [raw.days, raw.cheers] = await Promise.all([partyApi.pullDays(addDays(tk, -PARTY.pull)), partyApi.pullCheers(wk, raw.v2)]);
+      await pullRooms(raw);
     }
     applyParty(raw); party.status = party.info ? 'in' : 'none'; party.error = '';
     if (party.info && party.v2 && await syncWitness(me)) { raw.witness = await partyApi.pullWitness(addDays(tk, -21)); applyParty(raw); }
     saveParty();
-    if (party.info) { ingestCheers(me); grantPartyReward(me); grantPartyQuest(me); if (party.v2) { ingestGifts(me); ingestVerdicts(me); noticeNudges(me); } }
+    if (party.info) { ingestCheers(me); grantPartyReward(me); grantPartyQuest(me); if (party.v2) { ingestGifts(me); ingestVerdicts(me); noticeNudges(me); } if (party.v3) { groupTick(); groupPollSet(); } }
   } catch (e) {
     if (partyMissing(e)) { party.status = 'nosetup'; party.error = ''; }
     else { party.error = partyErr(e); if (party.status === 'off') party.status = 'error'; }
@@ -3924,6 +4006,114 @@ async function postChat(f) {
 async function delChat(id) {
   try { await partyApi.delMessage(id); party.msgs = party.msgs.filter(m => m.id !== id); party.raw.msgs = (party.raw.msgs || []).filter(m => String(m.id).toLowerCase() !== id); saveParty(); refreshChatList(); }
   catch (e) { toast(esc(partyErr(e))); }
+}
+/* ---------- build 21：一起專注（資料表見 sync/party-v3.sql） ----------
+   雲端只有房間和每個人的狀態；鎖機用平常的 nat('focusStart')，結束時原生端寫的 focus 事件 id 就是 session id，用它對照結果回報。 */
+const GROUP_LS = 'goal.group';   // 這支手機在哪一間房、選了哪個任務、鎖機的 session id
+const group = { busy: false, poll: null, form: false, min: 25 };
+const groupLink = () => { try { const o = JSON.parse(lsGet(GROUP_LS)); return o && uuidOk(o.room) ? o : null; } catch (e) { return null; } };
+const saveGroupLink = o => o ? lsSet(GROUP_LS, JSON.stringify(o)) : (() => { try { localStorage.removeItem(GROUP_LS); } catch (e) { /* ignore */ } })();
+const roomEnd = r => r.started ? tms(r.started) + r.minutes * 60e3 : 0;
+const roomMembersOf = r => party.roomMembers.filter(m => m.room === r.id);
+function currentRoom() {
+  if (!party.v3 || !party.info) return null; const now = Date.now();
+  return party.rooms.find(r => (r.status === 'open' && now - tms(r.created) < GROUP.lobbyMs) || (r.status === 'started' && now < roomEnd(r) + GROUP.graceMs)) || null;
+}
+// 結算：時間到了、而且每個人都回報了（或超過 12 小時）。至少 2 人撐完、沒有人緊急解鎖才有團隊獎勵
+function roomResult(r) {
+  if (!r.started) return null;
+  const ms = roomMembersOf(r), now = Date.now(), end = roomEnd(r);
+  const done = ms.filter(m => m.state === 'done'), broke = ms.filter(m => m.state === 'aborted');
+  const settled = now >= end && (ms.every(m => GROUP_FINAL.has(m.state)) || now >= end + GROUP.graceMs || broke.length > 0);
+  return { settled, done, broke, success: settled && !broke.length && done.length >= 2 };
+}
+async function pullRooms(raw) {
+  try {
+    raw.rooms = await partyApi.rooms(new Date(Date.now() - 2 * 864e5).toISOString());
+    const ids = listOf(raw.rooms, validRoom).map(r => r.id);
+    raw.roomMembers = ids.length ? await partyApi.roomMembers(ids) : []; raw.v3 = true;
+  } catch (e) { if (!partyMissing(e)) throw e; raw.v3 = false; raw.rooms = []; raw.roomMembers = []; }
+}
+async function refreshRooms() {
+  if (!party.info || !party.raw) return false;
+  const before = h32([party.raw.rooms, party.raw.roomMembers]);
+  try { await pullRooms(party.raw); } catch (e) { console.warn('room', e); return false; }
+  applyParty(party.raw); saveParty();
+  return h32([party.raw.rooms, party.raw.roomMembers]) !== before;
+}
+async function setRoomState(r, st) {
+  const me = myUid();
+  try { await partyApi.roomState(r.id, me, st); } catch (e) { console.warn('room', e); return; }
+  for (const m of party.raw.roomMembers || []) if (String(m.room_id).toLowerCase() === r.id && m.user_id === me) m.state = st;
+  applyParty(party.raw); saveParty();
+}
+// 每次輪詢都跑一次：房間開始了就幫這支手機鎖起來；鎖機結束就回報結果；結算了就入帳團隊獎勵
+async function groupTick() {
+  const me = myUid(); if (!party.v3 || !party.info || group.busy || !me) return;
+  group.busy = true;
+  try {
+    const link = groupLink(), r = link && party.rooms.find(x => x.id === link.room), mine = r && roomMembersOf(r).find(m => m.uid === me);
+    if (r && mine && r.status === 'started' && mine.state === 'joined' && IS_NATIVE) {
+      if (Date.now() - tms(r.started) > GROUP.lateMs) { await setRoomState(r, 'missed'); toast('⏰ 一起專注已經開始超過 3 分鐘，這次沒趕上'); }
+      else await groupStartFocus(r, link);
+    } else if (r && mine && mine.state === 'running') {
+      let ev = groupFocusEvent(r, link);
+      if (!ev && IS_NATIVE && (Date.now() >= roomEnd(r) || !guard.status?.session)) { await drainWidgetQueue(); ev = groupFocusEvent(r, link); }
+      if (ev) await setRoomState(r, ev.result === 'done' ? 'done' : ev.result === 'aborted' ? 'aborted' : 'cancelled');
+    }
+    for (const x of party.rooms) if (x.status === 'started') grantGroupFocus(x);   // 結算可能在隊友晚一點回報之後
+  } finally { group.busy = false; }
+}
+// 這次一起專注對應的鎖機紀錄：先用 session id 找；沒記到 id 就找同一個任務、在房間時間內開始的
+const groupFocusEvent = (r, link) => state.events.find(e => link.session && e.id === link.session)
+  || state.events.find(e => e.type === 'focus' && e.kind === 'session' && e.habit === link.habit && isoOk(e.start) && Math.abs(tms(e.start) - tms(r.started)) <= GROUP.lateMs + 60e3);
+async function groupStartFocus(r, link) {
+  const h = state.habits.find(x => x.id === link.habit);
+  await refreshGuard(false);
+  if (!h || guard.status?.session) { await setRoomState(r, 'missed'); toast(h ? '你已經在專注中，這次沒辦法一起鎖機' : '找不到你選的任務'); return; }
+  const minutes = Math.max(1, Math.round((roomEnd(r) - Date.now()) / 60e3)), p = focusPlan(h, minutes, compute());   // 晚幾秒開始的人，跟大家同時結束
+  try {
+    await nat('focusStart', { habit: h.id, name: `${h.name}・和隊友一起`, icon: h.icon, minutes, units: p.units, apps: h.apps || [], penalty: p.penalty, xp: p.xp, coins: p.coins });
+  } catch (e) { toast(/guard_off/.test(String(e?.message || e)) ? '先開啟「Goal 專注守護」無障礙服務，手機才鎖得起來。' : `沒辦法開始：${esc(String(e?.message || e))}`); await setRoomState(r, 'missed'); return; }
+  await refreshGuard(false);
+  saveGroupLink({ ...link, session: guard.status?.session?.id || '' });
+  await setRoomState(r, 'running'); haptic('success'); chime('tick');
+  toast(`🌳 大家一起開始了：${r.minutes} 分鐘，手機鎖起來囉`, null, 'ac'); render();
+}
+function grantGroupFocus(r) {
+  const res = roomResult(r), me = myUid(), id = `gfo-${r.id}`;
+  if (!res?.success || !res.done.some(m => m.uid === me) || state.events.some(e => e.id === id) || state.deleted.includes(id)) return;
+  const names = Object.fromEntries(party.members.map(m => [m.uid, m.name])), n = Math.min(res.done.length, PARTY.size);
+  addEvent({ id, type: 'group_focus', ts: nowISO(), room: r.id, n, minutes: r.minutes, members: res.done.slice(0, PARTY.size).map(m => names[m.uid] || '前隊友') });
+  save(); checkUnlocks(); chime('quest'); haptic('success');
+  toast(`<b>🌳 ${n} 人都撐完了！</b><br><span class="dim">團隊獎勵 +${GROUP.xp * n} XP、+${GROUP.coins * n} 代幣</span>`, null, 'ac');
+}
+// 有進行中的房間、而且「今天」頁開著時，每 4 秒更新一次
+function groupPollSet() {
+  const r = currentRoom(), live = r && (r.status === 'open' || !roomResult(r)?.settled);
+  if (!live) { clearInterval(group.poll); group.poll = null; return; }
+  if (group.poll) return;
+  group.poll = setInterval(async () => {
+    if (document.hidden || tab !== 'today' || !cloud.session) return;
+    const changed = await refreshRooms(); const n = state.events.length;
+    await groupTick();
+    if (changed || state.events.length !== n) render();
+    groupPollSet();
+  }, GROUP.pollMs);
+}
+async function groupAction(fn, ok) {
+  try { await fn(); if (ok) toast(ok); } catch (e) { toast(esc(partyErr(e))); }
+  await refreshRooms(); await groupTick(); groupPollSet(); render();
+}
+function groupOpen(fd) {
+  const h = focusHabits().find(x => x.id === fd.get('habit')), minutes = Number(fd.get('minutes')) || group.min;
+  if (!h) { toast('請選要做的事'); return; }
+  groupAction(async () => { const id = await partyApi.roomOpen(minutes, h.name); if (uuidOk(id)) saveGroupLink({ room: id.toLowerCase(), habit: h.id }); group.form = false; }, '🌳 開好了，等隊友加入後按「開始」');
+}
+function groupJoin(fd) {
+  const r = currentRoom(), h = focusHabits().find(x => x.id === fd.get('habit')); if (!r) return;
+  if (!h) { toast('請選要做的事'); return; }
+  groupAction(async () => { await partyApi.roomJoin(r.id, h.name); saveGroupLink({ room: r.id, habit: h.id }); }, '加入了，開始的時候 Goal 要開著');
 }
 async function partyAction(fn, ok) {
   try { await fn(); party.pushed = ''; if (ok) toast(ok); await syncParty(); render(); }
@@ -4376,6 +4566,10 @@ document.addEventListener('click', e => {
   else if (act === 'wno') { partyUI.rejectFor = `${t.dataset.owner}|${id}`; render(); const f = $('.wreject input'); if (f) f.focus(); }
   else if (act === 'wcancel') { partyUI.rejectFor = ''; render(); }
   else if (act === 'pchat') toggleChat();
+  else if (act === 'gform') { group.form = !group.form; render(); }
+  else if (act === 'gstart') { t.disabled = true; groupAction(() => partyApi.roomStart(id)); }
+  else if (act === 'gcancel') groupAction(() => partyApi.roomCancel(id), '已取消這間專注房');
+  else if (act === 'gleave') groupAction(async () => { await partyApi.roomLeave(id, myUid()); saveGroupLink(null); }, '退出了');
   else if (act === 'msgdel') delChat(id);
   else if (act === 'preport') { partyRep.open = !partyRep.open; render(); }
   else if (act === 'preportimg') partyReportImage().catch(err => toast('圖片做不出來：' + esc(err.message)));
@@ -4430,6 +4624,8 @@ document.addEventListener('submit', e => {
   e.preventDefault();
   const f = e.target, fd = new FormData(f);
   if (f.id === 'partychat') { postChat(f); return; }
+  if (f.id === 'groupopen') { groupOpen(fd); return; }
+  if (f.id === 'groupjoin') { groupJoin(fd); return; }
   if (f.classList.contains('wreject')) { sendVerdict(f.dataset.owner, f.dataset.cid, 'reject', String(fd.get('note') || ''), f.querySelector('button[type="submit"]')); return; }
   if (f.id === 'lcform') {
     const title = String(fd.get('title') || '').trim(); if (!title) return;
@@ -4501,6 +4697,7 @@ document.addEventListener('change', e => {
   else if (t.dataset.gpick) togglePick(t.dataset.gpick, t.checked);
   else if (t.id === 'fhabit') { guard.form.habit = t.value; guard.form.minutes = 0; render(); }
   else if (t.name === 'recapm') { recapOffset = Number(t.value) ? 1 : 0; render(); }
+  else if (t.name === 'minutes' && t.closest('#groupopen')) { group.min = Number(t.value) || 25; t.closest('.fmins').querySelectorAll('.chipbtn').forEach(l => l.classList.toggle('on', l.contains(t))); }
   else if (t.name === 'prepw') { partyRep.off = Number(t.value) ? 1 : 0; render(); }
   else if (t.name === 'rvday') { guard.reviewDay = Number(t.value) ? 1 : 0; render(); }
   else if (t.id === 'haptics') { state.settings.haptics = t.checked; touchMeta(); save(); if (state.settings.haptics) haptic('success'); }

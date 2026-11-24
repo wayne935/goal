@@ -1,5 +1,5 @@
 {
-  "build": 20,
+  "build": 21,
   "minNative": 6,
   "files": [
     "index.html",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "隊伍功能第二輪：加油選表情、戳一下、送禮、契約見證人、隊伍聊天（要先執行 sync/party-v2.sql）"
+  "notes": "一起專注：全隊同時鎖機，大家都撐完有團隊獎勵（要先執行 sync/party-v3.sql）"
 }
