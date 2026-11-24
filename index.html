@@ -366,10 +366,10 @@ details.bcat[open] .shelf{display:none}
 .pboss.dead .bico{filter:grayscale(.8);opacity:.6}
 .pboss.dead .hpline span:last-child{color:#8fe0cf;font-weight:700}
 .pmembers{list-style:none;margin:0;padding:0}
-.pm{display:grid;grid-template-columns:minmax(0,1fr) auto 44px 92px;grid-template-areas:"n w d c";gap:6px 10px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--chalk-faint)}
+.pm{display:grid;grid-template-columns:minmax(0,1fr) auto 44px minmax(92px,auto);grid-template-areas:"n w d c";gap:6px 10px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--chalk-faint)}
 .pm:last-child{border-bottom:0}
 .pmn{grid-area:n;min-width:0}
-.pm>:last-child{grid-area:c}
+.pm>.pact,.pm>.pnone{grid-area:c}
 .pmn b{display:block;font-size:16px;line-height:1.3;overflow-wrap:anywhere}
 .pmn small{font-weight:400;color:var(--chalk-dim);font-size:13px;margin-left:4px}
 .pst{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:center;font-size:13px;color:var(--chalk-dim)}
@@ -422,6 +422,34 @@ details.bcat[open] .shelf{display:none}
 .prc>span{display:inline-flex;align-items:center;gap:3px}
 .prc i{width:9px;height:9px;border-radius:50%}
 .prg{text-align:right;font-size:17px;color:#ff8f78}
+.pact{display:inline-flex;gap:5px;justify-content:flex-end;flex-wrap:wrap}
+.picon{padding:6px 9px;font-size:15px;line-height:1}
+.picon:disabled{opacity:.4;cursor:default}
+.pm .ppick{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 10px;border-radius:12px;background:rgba(0,0,0,.22)}
+.ppick .btn{padding:6px 11px;font-size:14px}
+.ppick .btn small{margin-left:6px;color:var(--brass-hi);font-size:13px}
+.ppick .btn:disabled{opacity:.45;cursor:default}
+.ppick .ptip{font-size:13px;flex-basis:100%}
+.ppick .btn-x{margin-left:auto}
+.pwit{margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(0,0,0,.2)}
+.pwit .pqh{font-size:14px;color:var(--chalk-dim)}
+.pwit ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.pwit li{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 12px;font-size:15px}
+.pwit li .dim{font-size:13.5px;margin-left:4px}
+.wact{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.wv{font-size:14px}.wv.ok{color:#8fe0cf}.wv.reject{color:#f3b4a5}
+.wreject{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.wreject .in{width:180px;padding:6px 10px}
+.cwit{margin-top:6px;font-size:13.5px;color:var(--chalk-dim)}
+.ubadge{display:inline-block;min-width:20px;margin-left:6px;padding:0 6px;border-radius:99px;background:var(--code);color:#fff;font-size:13px;line-height:20px;text-align:center}
+.pchat{margin-top:12px;padding-top:12px;border-top:1px dashed var(--chalk-faint)}
+.pchatlist{list-style:none;margin:0 0 10px;padding:4px 2px;max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.pchatlist li{max-width:85%;align-self:flex-start;padding:7px 11px;border-radius:12px 12px 12px 4px;background:rgba(0,0,0,.24)}
+.pchatlist li.mine{align-self:flex-end;border-radius:12px 12px 4px 12px;background:rgba(214,162,67,.2)}
+.cmeta{display:flex;gap:8px;align-items:baseline;font-size:12.5px}
+.cmeta b{font-size:13px;color:var(--brass-hi)}
+.cmeta .btn-x{margin-left:auto;font-size:14px;padding:0 4px}
+.cbody{font-size:15px;line-height:1.45;overflow-wrap:anywhere;white-space:pre-wrap}
 .qextra{margin-top:13px;padding-top:11px;border-top:1px dashed var(--chalk-faint)}
 .qtag{display:inline-block;font-size:12px;padding:0 7px;border-radius:99px;background:rgba(214,162,67,.22);color:var(--brass-hi);margin-right:6px;vertical-align:1px}
 @media (max-width:720px){
@@ -806,7 +834,7 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 19;
+const APP_BUILD = 20;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 /* 手機底部只放 5 個分頁：徽章牆、紀錄、設定收進「我的」，頁面上方有子分頁 */
@@ -897,7 +925,7 @@ const BOSS_PRESETS = [
 /* ---------- 承諾契約、保護卡 ----------
    押代幣在本週目標上：開約時押金先扣，達成那天拿回 押金 × 倍率；目標比最近 4 週平均更難是「挑戰」2 倍，否則 1.5 倍。
    習慣、解題的期限是週日再加 1 天緩衝；「不犯」的契約撐到週日結束就算達成。簽約之後的紀錄才算。 */
-const CONTRACT = { perWeek: 2, minStake: 10, mult: { normal: 1.5, hard: 2 }, undoMs: 3600e3 };
+const CONTRACT = { perWeek: 2, minStake: 10, mult: { normal: 1.5, hard: 2 }, undoMs: 3600e3, witnessBonus: 0.2 };   // 見證人確認達成，再多拿押金 × 0.2
 const FREEZE = { cost: 150, max: 2 };
 /* ---------- 寶箱、外觀、回歸獎勵（build 15，PLAN 第 10 節，數值是使用者選的） ----------
    寶箱：每日任務全部完成那天可以開一個（7 天內要開），內容由 hashStr(日期) 決定，重算永遠一樣。
@@ -979,8 +1007,19 @@ const PARTY_QUESTS = [
   { id: 'pq_var', text: () => '每個人本週都碰過 3 個分類', goal: n => n, unit: '人', v: B => B.rows.filter(r => new Set(r.days.flatMap(d => d.cats)).size >= 3).length },
   ...Object.keys(CATS).map(c => ({ id: 'pq_' + c, text: n => `全隊合計 ${2 * n} 天有「${CATS[c].name}」紀錄`, goal: n => 2 * n, v: B => B.rows.reduce((a, r) => a + r.days.filter(d => d.cats.includes(c)).length, 0) })),
 ];
+/* build 20（要先執行 sync/party-v2.sql，沒執行時這些功能自動隱藏）：加油表情、戳一下、送禮、契約見證人、隊伍聊天 */
+const CHEER_KINDS = [['cheer', '📣', '加油！'], ['fire', '🔥', '今天也很猛'], ['clap', '👏', '做得好'], ['hug', '🤗', '辛苦了，抱一個'], ['coffee', '☕', '一起撐下去'], ['flex', '💪', '衝啊']];
+const CHEER_BY = Object.fromEntries(CHEER_KINDS.map(k => [k[0], k]));
+const GIFTS = [
+  { id: 'coins20', icon: '🪙', name: '20 代幣紅包', cost: 20, coins: 20 }, { id: 'coins50', icon: '💰', name: '50 代幣紅包', cost: 50, coins: 50 },
+  { id: 'coins100', icon: '🧧', name: '100 代幣紅包', cost: 100, coins: 100 }, { id: 'freeze', icon: '❄️', name: '一張保護卡', cost: 150 },
+  { id: 'boost', icon: '⚡', name: '1 小時雙倍 XP', cost: 80, ms: 3600e3 } ];
+const GIFT_BY = Object.fromEntries(GIFTS.map(g => [g.id, g]));
+const BOOST_TYPES = new Set(['leetcode', 'habit', 'custom', 'focus']);   // 雙倍 XP 只加在「做了事」的紀錄上，獎勵類不加
+const CHAT = { max: 200, pull: 50, pollMs: 20000, keepDays: 60 };
 const pqTier = id => { const roll = hashStr('pq:' + id) % 1000; let acc = 0; return CHEST.tiers.find(t => (acc += t.p) > roll) || CHEST.tiers[0]; };
 // 隊伍資料是別人的：只放在記憶體與 localStorage，不進 state、也不進 goal_meta
+const partyUI = { pick: null, rejectFor: '', chatOpen: false, draft: '', poll: null };   // 隊伍面板的暫時狀態；pick：{ uid, mode: 'cheer' | 'gift' }
 const party = { status: 'off', info: null, members: [], days: {}, cheers: [], raw: null, error: '', busy: false, pushed: '', leaveArm: 0 };
 const bossMaxHp = (b, L) => Math.round(b.days * BOSS.dayDmg * (1 + 0.5 * (L - 1)));
 function hashStr(str) { let h = 2166136261; for (const ch of str) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -1077,6 +1116,8 @@ const ACH = [
   { id:'p_streak7',  cat:'life', icon:'🔗', name:'同進同退',   desc:'隊伍連續 7 天全員都有紀錄',        goal:7,   coins:100, v:s=>s.pstreak.best },
   { id:'p_streak30', cat:'life', icon:'🏯', name:'形影不離',   desc:'隊伍連續 30 天全員都有紀錄',       goal:30,  coins:300, v:s=>s.pstreak.best, legend:true },
   { id:'p_quest5',   cat:'life', icon:'🧭', name:'默契十足',   desc:'完成 5 次每週隊伍任務',            goal:5,   coins:120, v:s=>s.partyQuests },
+  { id:'p_gift5',    cat:'life', icon:'🎁', name:'大方',       desc:'送隊友 5 份禮物',                  goal:5,   coins:60,  v:s=>s.giftsOut },
+  { id:'c_witness3', cat:'life', icon:'🧑‍⚖️', name:'有人作證',   desc:'3 份有見證人的契約達成，而且見證人確認了', goal:3, coins:150, v:s=>s.witnessedDone },
   // 鎖機專注、宵禁、分心 App
   { id:'fo_first',   cat:'life', icon:'🎯', name:'放下手機',   desc:'完成第一次鎖機專注',               goal:1,   coins:20,  v:s=>s.focus.done },
   { id:'fo_10h',     cat:'life', icon:'⏳', name:'十小時心流', desc:'鎖機專注累計 10 小時',             goal:10,  coins:120, v:s=>Math.floor(s.focus.minutes / 60) },
@@ -1242,7 +1283,7 @@ function compute() {
   const tagSolved = {}, checked = new Set(), submittedSet = new Set(), graphSet = new Set(), solvedIds = new Set();
   const bossIds = new Set(state.bosses.map(b => b.id)), critIds = new Set(); let saved = 0;
   const hits = { lc: [], habit: {}, relapse: {} }, freezeBuys = [];   // 契約要數的紀錄：{ ms, day }
-  const partyWeeks = new Set(), pqWeeks = new Set(); let cheersIn = 0, cheersOut = 0;
+  const partyWeeks = new Set(), pqWeeks = new Set(); let cheersIn = 0, cheersOut = 0, giftsIn = 0, giftsOut = 0, boostUntil = 0;
   const fo = { done: 0, minutes: 0, run: 0, best: 0, curfewKept: 0, aborts: 0, skips: 0, gates: 0 }, abortWeeks = {};
   const owned = new Set(['felt']);   // 擁有的外觀
   const skillXp = {};   // 各領域等級：興趣類每個習慣各算一條，其他照分類
@@ -1300,6 +1341,15 @@ function compute() {
       else { cheersOut++; d.cheersOut = (d.cheersOut || 0) + 1; }
     } else if (e.type === 'party_reward') {
       r = { xp: PARTY.reward.xp, coins: PARTY.reward.coins, tag: '' }; partyWeeks.add(e.week);
+    } else if (e.type === 'gift_send') {       // 送禮：代幣在送出的人這邊扣（紀錄不能刪）
+      r = { xp: 0, coins: -e.cost, tag: '' }; spent += e.cost; giftsOut++;
+    } else if (e.type === 'gift') {            // 收到禮物：代幣入帳、保護卡算一張、雙倍 XP 從收到那一刻起 1 小時
+      const g = GIFT_BY[e.item]; giftsIn++;
+      if (g.coins) r = { xp: 0, coins: g.coins, tag: `+${g.coins} 代幣` };
+      else if (g.id === 'freeze') { freezeBuys.push(dk); r.tag = '多一張保護卡'; }
+      else { boostUntil = Math.max(boostUntil, tms(e.ts) + g.ms); r.tag = '接下來 1 小時 XP ×2'; }
+    } else if (e.type === 'witness_verdict') {
+      r.tag = e.verdict === 'ok' ? '見證人確認了' : '見證人說不算';
     } else if (e.type === 'party_quest') {     // 每週隊伍任務：一週只算一次（換隊伍也一樣）；寶箱等級由事件 id 決定
       if (pqWeeks.has(e.week)) r.tag = '這週的隊伍任務已經拿過獎勵，只記錄';
       else { const t = pqTier(e.id), c = PARTY.quest.coins[t.id]; pqWeeks.add(e.week); r = { xp: PARTY.quest.xp, coins: c, tag: `${t.name}隊伍寶箱` }; }
@@ -1328,6 +1378,7 @@ function compute() {
         if (e.paid > 0) { r = { xp: 0, coins: -e.paid, tag: '' }; spent += e.paid; }
         r.tag = [e.paid > 0 ? `用 ${e.paid} 代幣加買` : '', e.reason ? `原因：${e.reason}` : ''].filter(Boolean).join('，'); }
     }
+    if (r.xp > 0 && BOOST_TYPES.has(e.type) && tms(e.ts) < boostUntil) { r = { ...r, xp: r.xp * 2, tag: [r.tag, 'XP ×2（隊友送的）'].filter(Boolean).join('，') }; d.boostXp = (d.boostXp || 0) + r.xp / 2; }
     if (r.coins > 0) { earned += r.coins; d.coins += r.coins; }
     xp += r.xp; d.xp += r.xp; per[e.id] = r;
     if (r.xp > 0) d.evXp = (d.evXp || 0) + r.xp;
@@ -1387,7 +1438,7 @@ function compute() {
       earned += c.payout - c.stake; spent -= c.stake; d.coins += c.payout; d.contractDone = true;
       contractsDone++; w.done++; if (c.stake >= 500) bigWins++;
     }
-    if (per[c.id]) per[c.id].tag = c.status === 'done' ? `達成，拿回 ${fmt(c.payout)}` : c.status === 'failed' ? '沒達成，押金沒收'
+    if (per[c.id]) per[c.id].tag = c.status === 'done' ? `達成，拿回 ${fmt(c.payout)}` : c.status === 'failed' ? (c.rejected ? '見證人說不算，押金沒收' : '沒達成，押金沒收')
       : `進行中 ${c.goal.kind === 'clean' ? `犯了 ${c.count} 次` : `${c.count} / ${c.goal.target}`}`;
   }
   const contractWeekRun = longestWeeks(Object.keys(cweeks).filter(k => cweeks[k].done === cweeks[k].n));
@@ -1438,7 +1489,8 @@ function compute() {
     contracts, contractsOpened: contracts.length, contractsDone, bigWins, contractWeekRun, hits,
     focus: { ...fo, weekAborts: abortWeeks[weekStart(todayKey())] || 0, bestDay: Math.max(0, ...vals.map(d => d.focusMin || 0)) },
     inParty: party.info ? 1 : 0, partyKills: partyWeeks.size, partyWeekRun: longestWeeks(partyWeeks), cheersIn, cheersOut,
-    partyQuests: pqWeeks.size, pstreak: partyStreak(days),
+    partyQuests: pqWeeks.size, pstreak: partyStreak(days), giftsIn, giftsOut, boostUntil,
+    witnessedDone: contracts.filter(c => c.status === 'done' && c.verdict === 'ok').length,
     waterStreak: longestRun(keysWhere(d => (d.habits.water || 0) >= 8)),
     crosschecked: checked.size, submitted: submittedSet.size, graphSolved: graphSet.size,
     topicCount: Object.keys(tagSolved).length, tag: t => tagSolved[t]?.size || 0,
@@ -1453,17 +1505,22 @@ function compute() {
   };
 }
 function settleContracts(evs, hits, tk) {
-  const out = [];
+  const out = [], verdicts = {};
+  for (const e of evs) if (e.type === 'witness_verdict' && !verdicts[e.contract]) verdicts[e.contract] = e;   // 見證結果只算第一筆
   for (const e of evs) {
     if (e.type !== 'contract_open') continue;
     const g = e.goal, wk = e.week, end = addDays(wk, g.kind === 'clean' ? 6 : 7), from = tms(e.ts);
     const win = (goalHits(hits, g)).filter(h => h.ms >= from && h.day <= end);
-    const c = { id: e.id, ts: e.ts, week: wk, end, goal: g, stake: e.stake, mult: e.mult, payout: Math.round(e.stake * e.mult), count: win.length, status: 'active', doneDay: null };
+    const c = { id: e.id, ts: e.ts, week: wk, end, goal: g, stake: e.stake, mult: e.mult, payout: Math.round(e.stake * e.mult), count: win.length, status: 'active', doneDay: null,
+      witness: e.witness?.name || '', verdict: verdicts[e.id]?.verdict || (e.witness ? 'pending' : ''), note: verdicts[e.id]?.note || '' };
     if (g.kind === 'clean') {
       if (c.count > g.target) c.status = 'failed';
       else if (tk > end) { c.status = 'done'; c.doneDay = addDays(end, 1); }
     } else if (c.count >= g.target) { c.status = 'done'; c.doneDay = win[g.target - 1].day; }
     else if (tk > end) c.status = 'failed';
+    // 見證人說不算 → 押金沒收；確認達成 → 再多拿押金 × witnessBonus
+    if (c.verdict === 'reject') { c.status = 'failed'; c.doneDay = null; c.rejected = true; }
+    else if (c.verdict === 'ok' && c.status === 'done') c.payout = Math.round(e.stake * (e.mult + CONTRACT.witnessBonus));
     out.push(c);
   }
   return out;
@@ -1529,7 +1586,8 @@ function addEvent(e) {
 function commit() { save(); checkUnlocks(); render(); }
 // 契約簽下 1 小時後就不能刪（刪掉等於退押金）
 // 緊急解鎖的紀錄不能刪（刪掉等於取消懲罰）
-const locked = e => (e.type === 'contract_open' && Date.now() - tms(e.ts) >= CONTRACT.undoMs) || (e.type === 'focus' && e.result === 'aborted');
+const locked = e => (e.type === 'contract_open' && Date.now() - tms(e.ts) >= CONTRACT.undoMs) || (e.type === 'focus' && e.result === 'aborted')
+  || e.type === 'gift_send' || e.type === 'witness_verdict';   // 刪掉等於把禮物的代幣拿回來、取消見證結果
 function removeEvent(id) {
   const i = state.events.findIndex(e => e.id === id); if (i < 0) return;
   if (locked(state.events[i])) { toast(state.events[i].type === 'focus' ? '緊急解鎖的紀錄不能刪除。' : '契約簽下超過 1 小時，不能取消了。'); return; }
@@ -1568,7 +1626,10 @@ function eventTitle(e) {
   if (e.type === 'freeze_buy') return '買了連續天數保護卡';
   if (e.type === 'chest_open') return `開寶箱（${dayLabel(e.day)}的任務）`;
   if (e.type === 'cosmetic_buy') return `買了外觀：${COSMETIC_BY_ID[e.cosmetic]?.name || e.cosmetic}`;
-  if (e.type === 'cheer') return e.from ? `${e.from} 幫你加油` : `幫 ${e.to} 加油`;
+  if (e.type === 'cheer') { const k = CHEER_BY[e.kind]; return e.from ? `${e.from} 幫你加油${k ? `：${k[2]}` : ''}` : `幫 ${e.to} 加油${k ? `：${k[2]}` : ''}`; }
+  if (e.type === 'gift_send') return `送給 ${e.to}：${GIFT_BY[e.item]?.name || '禮物'}`;
+  if (e.type === 'gift') return `${e.from} 送你：${GIFT_BY[e.item]?.name || '禮物'}`;
+  if (e.type === 'witness_verdict') return `${e.by} ${e.verdict === 'ok' ? '確認了你的契約' : '說你的契約不算'}${e.note ? `：${e.note}` : ''}`;
   if (e.type === 'party_reward') return '和隊友打倒了共同 Boss';
   if (e.type === 'party_quest') return `完成隊伍任務：${PARTY_QUESTS.find(q => q.id === e.quest)?.text(e.members.length) || '每週任務'}`;
   if (e.type === 'focus') {
@@ -1589,7 +1650,9 @@ function eventIcon(e) {
   if (e.type === 'freeze_buy') return '❄️';
   if (e.type === 'chest_open') return '🎁';
   if (e.type === 'cosmetic_buy') return '🎨';
-  if (e.type === 'cheer') return '📣';
+  if (e.type === 'cheer') return CHEER_BY[e.kind]?.[1] || '📣';
+  if (e.type === 'gift_send' || e.type === 'gift') return GIFT_BY[e.item]?.icon || '🎁';
+  if (e.type === 'witness_verdict') return e.verdict === 'ok' ? '👍' : '👎';
   if (e.type === 'party_reward') return '🛡️';
   if (e.type === 'party_quest') return '🧭';
   if (e.type === 'focus') return e.result === 'aborted' ? '🔓' : e.result === 'cancelled' ? '↩️' : e.kind === 'curfew' ? '🌙' : state.habits.find(h => h.id === e.habit)?.icon || '🎯';
@@ -1625,7 +1688,8 @@ function validEvent(e) {
       if (!intIn(e.stake, 1, 1e6) || !Object.values(CONTRACT.mult).includes(e.mult)) return null;
       const okGoal = g.kind === 'lc' ? intIn(g.target, 1, 1000) : g.kind === 'habit' ? safeKey(g.habit) && intIn(g.target, 1, 1000)
         : g.kind === 'clean' ? safeKey(g.boss) && intIn(g.target, 0, 1000) : false;
-      return okGoal ? e : null;
+      const okWit = e.witness == null || (typeof e.witness === 'object' && uuidOk(e.witness.uid) && typeof e.witness.name === 'string' && cut(e.witness.name, 20) === e.witness.name);
+      return okGoal && okWit ? e : null;
     }
     case 'freeze_buy': return Number.isInteger(e.cost) && e.cost >= 0 && e.cost <= 1e4 ? e : null;
     // 寶箱、外觀只由網頁自己產生（normalize 不接受），這裡只檢查格式
@@ -1642,7 +1706,11 @@ function validEvent(e) {
     case 'gate': return Number.isInteger(e.minutes) && e.minutes >= 0 && e.minutes <= 60 && (e.paid == null || (Number.isInteger(e.paid) && e.paid >= 0 && e.paid <= 1000))
       && (e.app == null || typeof e.app === 'string') && (e.reason == null || typeof e.reason === 'string') ? e : null;
     // 隊伍事件只由網頁自己產生（normalize 不接受），這裡只檢查格式
-    case 'cheer': { const n = e.from ?? e.to; return (e.from == null) !== (e.to == null) && typeof n === 'string' && n && cut(n, 20) === n ? e : null; }
+    case 'cheer': { const n = e.from ?? e.to; return (e.from == null) !== (e.to == null) && typeof n === 'string' && n && cut(n, 20) === n && (e.kind == null || Object.hasOwn(CHEER_BY, e.kind)) ? e : null; }
+    case 'gift_send': { const g = GIFT_BY[e.item]; return g && e.cost === g.cost && typeof e.to === 'string' && e.to && cut(e.to, 20) === e.to ? e : null; }
+    case 'gift': return Object.hasOwn(GIFT_BY, e.item) && typeof e.from === 'string' && e.from && cut(e.from, 20) === e.from ? e : null;
+    case 'witness_verdict': return safeKey(e.contract) && ['ok', 'reject'].includes(e.verdict) && typeof e.by === 'string' && e.by && cut(e.by, 20) === e.by
+      && (e.note == null || (typeof e.note === 'string' && cut(e.note, 100) === e.note)) ? e : null;
     case 'party_reward': return safeKey(e.party) && dayOk(e.week) && Array.isArray(e.members) && e.members.length <= PARTY.size
       && e.members.every(m => typeof m === 'string' && cut(m, 20) === m) ? e : null;
     case 'party_quest': return safeKey(e.party) && dayOk(e.week) && PARTY_QUESTS.some(q => q.id === e.quest) && Array.isArray(e.members) && e.members.length >= 1 && e.members.length <= PARTY.size
@@ -1949,7 +2017,7 @@ if (!TABS.some(t => t.id === tab)) tab = 'today';
 let historyDays = 21;
 
 function render() {
-  const S = compute();
+  const S = compute(), chatFocus = document.activeElement?.id === 'pchatin';
   if (typeof pushWidget === 'function') { pushWidget(); pushGuard(); }
   applyTheme(S); renderHeader(S); renderTabs();
   const v = $('#view');
@@ -1962,6 +2030,8 @@ function render() {
     v.innerHTML = `<section class="panel"><h2>這一頁顯示不出來</h2><p class="hint">發生錯誤：${esc(err.message)}。其他分頁和資料不受影響，請把這段訊息告訴 Claude。</p></section>`;
   }
   if (pendingStamp && tab === 'today') requestAnimationFrame(playStamp);
+  if (chatFocus) { const i = $('#pchatin'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
+  const cl = $('#pchatlist'); if (cl) { cl.scrollTop = cl.scrollHeight; chatMarkSeen(); }
 }
 let hdrPrev = null;
 function renderHeader(S) {
@@ -2031,7 +2101,11 @@ function viewToday(S) {
   const cbNote = cb.pending ? `<div class="note"><span>💪 斷了沒關係：今天回來打卡，接下來 ${COMEBACK.days} 天 XP ×${COMEBACK.mult}。</span></div>`
     : cb.start ? `<div class="note"><span>💪 回歸加成第 ${daysBetween(cb.start, tk) + 1} / ${COMEBACK.days} 天：今天的 XP ×${COMEBACK.mult}${td.comebackXp ? `（已多拿 <b class="num">${fmt(td.comebackXp)}</b>）` : ''}。</span></div>` : '';
   const chestNote = oldChests.length ? `<div class="note"><span>🎁 還有 ${oldChests.length} 個寶箱沒開（${CHEST.keepDays} 天內要開）。</span><span class="btns"><button class="btn btn-brass btn-sm" data-act="chest" data-day="${oldChests[oldChests.length - 1]}">開</button></span></div>` : '';
-  const notes = [cbNote, chestNote, reviewPanel(S, tk), contractNudge(S, tk), linkTip].filter(x => x.startsWith('<div class="note')).join('');
+  const nz = !td.any && cloud.session ? nudgesToMe(tk) : [], nzNames = [...new Set(nz.map(n => party.members.find(m => m.uid === n.from)?.name || '隊友'))];
+  const nudgeNote = nz.length ? `<div class="note"><span>👉 ${esc(nzNames.join('、'))} 戳了你一下：今天還沒有紀錄喔，做一件小事就好。</span></div>` : '';
+  const boostMin = Math.ceil((S.boostUntil - Date.now()) / 60e3);
+  const boostNote = boostMin > 0 ? `<div class="note"><span>⚡ 隊友送的雙倍 XP 還有 <b class="num">${boostMin}</b> 分鐘：打卡、解題、鎖機專注的 XP ×2。</span></div>` : '';
+  const notes = [boostNote, nudgeNote, cbNote, chestNote, reviewPanel(S, tk), contractNudge(S, tk), linkTip].filter(x => x.startsWith('<div class="note')).join('');
   const review = guard.review ? reviewPanel(S, tk) : '';
   const ci = contractInfo(S, tk), contract = contractPanel(S, tk);
   const focusLive = IS_NATIVE && !!guard.status?.session, focus = focusPanel(S, tk);
@@ -2280,7 +2354,8 @@ function contractCard(c, tk) {
     <div class="chead"><span class="cico" aria-hidden="true">${esc(goalIcon(g))}</span><b>${esc(goalText(g))}</b>${undo}</div>
     <div class="bar" role="progressbar" aria-valuenow="${Math.round(pct * 100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct * 100}%"></i></div>
     <div class="cline"><span>${prog}</span><span>${when}</span></div>
-    <div class="cstake"><i class="coin sm"></i> 押 <span class="num">${fmt(c.stake)}</span> → 拿回 <span class="num">${fmt(c.payout)}</span>${hard ? '<span class="chard">挑戰 ×2</span>' : '<span class="dim">×1.5</span>'}</div></div>`;
+    <div class="cstake"><i class="coin sm"></i> 押 <span class="num">${fmt(c.stake)}</span> → 拿回 <span class="num">${fmt(c.payout)}</span>${hard ? '<span class="chard">挑戰 ×2</span>' : '<span class="dim">×1.5</span>'}</div>
+    ${c.witness ? `<div class="cwit">🧑‍⚖️ 見證人 ${esc(c.witness)}：${c.verdict === 'ok' ? `👍 確認了${c.status === 'done' ? `，多拿押金 × ${CONTRACT.witnessBonus}` : ''}` : c.verdict === 'reject' ? `👎 說不算${c.note ? `（${esc(c.note)}）` : ''}` : c.status === 'done' ? `等他確認，確認後多拿 ${fmt(Math.round(c.stake * CONTRACT.witnessBonus))} 代幣` : '達成後請他確認'}</div>` : ''}</div>`;
 }
 function contractOptions(S, wk) {
   const taken = S.contracts.filter(c => c.week === wk).map(c => c.goal);
@@ -2302,9 +2377,11 @@ function contractFormHTML(S, tk) {
       <label class="field grow">本週目標<select class="in" name="goal">${opts.map(([v, n]) => `<option value="${esc(v)}">${esc(n)}</option>`).join('')}</select></label>
       <label class="field" style="width:110px"><span id="ctlabel">${targetLabel(g)}</span><input class="in num" name="target" type="number" min="0" inputmode="numeric" value="${g.target}" required></label>
       <label class="field" style="width:110px">押金<input class="in num" name="stake" type="number" min="${CONTRACT.minStake}" max="${S.balance}" step="10" inputmode="numeric" value="${stake}" required></label></div>
+    ${witnessOptions().length ? `<div class="row" style="margin-top:10px"><label class="field grow">見證人（隊友確認達成，多拿押金 × ${CONTRACT.witnessBonus}；他說不算，押金沒收）<select class="in" name="witness"><option value="">不用見證人</option>${witnessOptions().map(m => `<option value="${esc(m.uid)}">${esc(m.name)}</option>`).join('')}</select></label></div>` : ''}
     <p class="cprev" id="cprev">${contractPreview(S, g, stake, tk)}</p>
     <div class="btns"><button class="btn btn-brass" type="submit">簽下契約</button><button class="btn btn-ghost" type="button" data-act="cskip">先不要</button></div></form>`;
 }
+const witnessOptions = () => party.v2 && party.info ? party.members.filter(m => m.uid !== myUid()) : [];
 function contractInfo(S, tk) {
   const wk = weekStart(tk), n = S.contracts.filter(c => c.week === wk).length, fresh = freshStart(tk);
   const shown = S.contracts.filter(c => c.week === wk || c.end >= addDays(tk, -1)).sort((a, b) => tms(a.ts) - tms(b.ts));
@@ -2331,9 +2408,10 @@ function openContract(fd) {
   const S = compute(), tk = todayKey(), goal = parseGoal(fd.get('goal'), fd.get('target')), stake = Math.round(Number(fd.get('stake')) || 0);
   const err = goal ? contractProblem(S, goal, stake, tk) : '請選一個目標';
   if (err) { toast(esc(err)); return; }
-  const mult = contractMult(S, goal, tk);
-  addEvent({ id: uid('ct'), type: 'contract_open', ts: nowISO(), week: weekStart(tk), goal, stake, mult, source: 'manual' });
+  const mult = contractMult(S, goal, tk), wm = witnessOptions().find(m => m.uid === fd.get('witness'));
+  addEvent({ id: uid('ct'), type: 'contract_open', ts: nowISO(), week: weekStart(tk), goal, stake, mult, ...(wm ? { witness: { uid: wm.uid, name: wm.name } } : {}), source: 'manual' });
   contractForm = false; commit(); chime('quest'); haptic('success');
+  if (wm) syncParty();   // 馬上把契約傳給見證人
   toast(`<b>簽下契約：${esc(goalText(goal))}</b><br><span class="dim">押 ${fmt(stake)} 代幣，達成拿回 ${fmt(Math.round(stake * mult))}。1 小時內可以取消。</span>`, null, 'ac');
 }
 
@@ -2360,6 +2438,8 @@ function partyPanel(S, tk) {
   }
   const B = partyBoss(S, weekStart(tk)), me = myUid(), left = daysBetween(tk, addDays(B.wk, 6)) + 1;
   const cheered = new Set(party.cheers.filter(c => c.from === me && c.day === tk).map(c => c.to));
+  const nudged = new Set(party.v2 ? party.nudges.filter(n => n.from === me && n.day === tk).map(n => n.to) : []);
+  const gifted = party.v2 && (state.events.some(e => e.id === `gs-${tk}`) || party.gifts.some(g => g.from === me && g.day === tk));
   const rows = B.rows.map(r => {
     const t = r.days.find(d => d.k === tk), today = r.me ? S.days[tk] : party.days[r.m.uid]?.[tk];
     const dots = t.cats.map(c => `<i style="background:${CATS[c].color}" title="${CATS[c].name}"></i>`).join('');
@@ -2369,7 +2449,10 @@ function partyPanel(S, tk) {
     return `<li class="pm${r.me ? ' me' : ''}"><div class="pmn"><b>${esc(r.m.name)}${r.me ? '<small>（你）</small>' : ''}</b>
         <span class="pst">${t.cats.length ? '今天有紀錄' : '今天還沒動'}<span class="pdots">${dots}</span>${extra ? `<span>${extra}</span>` : ''}</span></div>
       <div class="pweek" aria-label="本週每天有沒有紀錄">${week}</div><span class="pdmg num" title="本週傷害">${fmt(r.dmg)}</span>
-      ${r.me ? '<span></span>' : `<button class="btn btn-ghost pcheer" data-act="cheer" data-id="${esc(r.m.uid)}" ${cheered.has(r.m.uid) ? 'disabled' : ''}>${cheered.has(r.m.uid) ? '已加油' : '加油 📣'}</button>`}</li>`;
+      ${r.me ? '<span class="pnone"></span>' : `<span class="pact"><button class="btn btn-ghost pcheer" data-act="cheer" data-id="${esc(r.m.uid)}" ${cheered.has(r.m.uid) ? 'disabled' : ''}>${cheered.has(r.m.uid) ? '已加油' : '加油 📣'}</button>${party.v2 ? `
+        ${!t.cats.length ? `<button class="btn btn-ghost picon" data-act="nudge" data-id="${esc(r.m.uid)}" ${nudged.has(r.m.uid) ? 'disabled' : ''} aria-label="戳 ${esc(r.m.name)} 一下" title="${nudged.has(r.m.uid) ? '今天戳過了' : '戳一下：提醒他今天還沒紀錄'}">👉</button>` : ''}
+        <button class="btn btn-ghost picon" data-act="giftpick" data-id="${esc(r.m.uid)}" ${gifted ? 'disabled' : ''} aria-label="送禮物給 ${esc(r.m.name)}" title="${gifted ? '今天已經送過禮物了' : '送禮物'}">🎁</button>` : ''}</span>`}
+      ${partyUI.pick?.uid === r.m.uid ? pickerHTML(r.m, S) : ''}</li>`;
   }).join('');
   const status = B.killDay ? `打倒了！週日結束後每人 +${PARTY.reward.xp} XP、+${PARTY.reward.coins} 代幣` : left <= 1 ? '今天是最後一天' : `還剩 ${left} 天`;
   const W = B.weak && CATS[B.weak], ps = S.pstreak;
@@ -2384,9 +2467,38 @@ function partyPanel(S, tk) {
     <p class="hint">每人每天每個有紀錄的分類打 ${PARTY.dmg} 點${W ? `，弱點「${W.name}」打 ${PARTY.weakDmg} 點` : ''}（一天最多 ${PARTY.dayMax}）；有人整天沒紀錄，Boss 回 ${PARTY.heal} 血。收到加油 +${PARTY.cheer.coins} 代幣。</p>
     <ul class="pmembers">${rows}</ul>
     ${partyQuestHTML(B)}
-    <div class="btns" style="margin-top:12px"><button class="btn btn-ghost" data-act="preport" aria-expanded="${partyRep.open}">${partyRep.open ? '收起週報' : '📊 隊伍週報'}</button></div>
+    ${witnessHTML(tk)}
+    <div class="btns" style="margin-top:12px"><button class="btn btn-ghost" data-act="preport" aria-expanded="${partyRep.open}">${partyRep.open ? '收起週報' : '📊 隊伍週報'}</button>
+      ${party.v2 ? `<button class="btn btn-ghost" id="pchatbtn" data-act="pchat" aria-expanded="${partyUI.chatOpen}">${chatBtnLabel()}</button>` : ''}</div>
     ${partyRep.open ? partyReportHTML(S, tk) : ''}
+    ${party.v2 && partyUI.chatOpen ? `<div class="pchat"><ul class="pchatlist" id="pchatlist" aria-live="polite">${chatListHTML()}</ul>
+      <form id="partychat" autocomplete="off"><div class="row"><label class="field grow"><span class="sr">留言</span><input class="in" id="pchatin" name="body" maxlength="${CHAT.max}" placeholder="說點什麼…（最多 ${CHAT.max} 字）" value="${esc(partyUI.draft)}" required></label>
+        <button class="btn btn-brass" type="submit">送出</button></div></form></div>` : ''}
+    ${!party.v2 && party.status === 'in' ? '<p class="dim" style="font-size:13.5px;margin:10px 0 0">聊天、送禮、戳一下、契約見證人要先在 Supabase 執行 <code class="k">sync/party-v2.sql</code>。</p>' : ''}
     ${party.error ? `<p class="dim" style="font-size:13.5px;margin:8px 0 0">隊伍同步失敗，顯示的是上次的資料。</p>` : ''}</section>`;
+}
+function pickerHTML(m, S) {
+  const p = partyUI.pick, close = '<button class="btn-x" data-act="pickclose" aria-label="關閉" title="關閉">×</button>';
+  if (p.mode === 'cheer') return `<div class="ppick" role="group" aria-label="選一句加油的話給 ${esc(m.name)}">${CHEER_KINDS.map(([k, ic, tx]) => `<button class="btn btn-ghost" data-act="cheerk" data-id="${esc(m.uid)}" data-k="${k}"><span aria-hidden="true">${ic}</span> ${esc(tx)}</button>`).join('')}${close}</div>`;
+  return `<div class="ppick" role="group" aria-label="送禮物給 ${esc(m.name)}">${GIFTS.map(g => `<button class="btn btn-ghost" data-act="gift" data-id="${esc(m.uid)}" data-k="${g.id}" ${S.balance < g.cost ? 'disabled' : ''}><span aria-hidden="true">${g.icon}</span> ${esc(g.name)}<small class="num">${fmt(g.cost)} 幣</small></button>`).join('')}
+    <span class="dim ptip">一天送一份。代幣從你這邊扣${S.balance < 20 ? '（你的代幣不夠）' : ''}。</span>${close}</div>`;
+}
+// 你是見證人的契約（隊友請你作證的）
+function witnessHTML(tk) {
+  if (!party.v2) return '';
+  const me = myUid(), names = Object.fromEntries(party.members.map(m => [m.uid, m.name]));
+  const list = party.witness.filter(w => w.witness === me && tk <= addDays(w.week, 10)).sort((a, b) => (a.verdict === 'pending' ? 0 : 1) - (b.verdict === 'pending' ? 0 : 1) || a.week.localeCompare(b.week));
+  if (!list.length) return '';
+  const rows = list.map(w => {
+    const key = `${w.owner}|${w.cid}`, who = esc(names[w.owner] || '前隊友'), prog = `<span class="num">${fmt(Math.min(w.count, w.target))} / ${fmt(w.target)}</span>`;
+    const st = w.status === 'done' ? '已達成' : w.status === 'failed' ? '沒達成' : '進行中';
+    const act = w.verdict !== 'pending' ? `<span class="wv ${w.verdict}">${w.verdict === 'ok' ? '👍 你確認了' : '👎 你說不算'}${w.note ? `：${esc(w.note)}` : ''}</span>`
+      : w.status === 'failed' ? '<span class="dim">沒達成，不用作證</span>'
+      : partyUI.rejectFor === key ? `<form class="wreject" data-owner="${esc(w.owner)}" data-cid="${esc(w.cid)}" autocomplete="off"><input class="in" name="note" maxlength="100" placeholder="原因（可以不寫）"><button class="btn btn-ghost" type="submit">確定不算</button><button class="btn-x" type="button" data-act="wcancel" aria-label="取消">×</button></form>`
+      : `${w.status === 'done' ? `<button class="btn btn-brass btn-sm" data-act="wok" data-owner="${esc(w.owner)}" data-id="${esc(w.cid)}">👍 確認</button>` : ''}<button class="btn btn-ghost btn-sm" data-act="wno" data-owner="${esc(w.owner)}" data-id="${esc(w.cid)}">👎 不算</button>`;
+    return `<li><div><b>${who}</b>：${esc(w.goal)}<span class="dim">（${st} ${prog}）</span></div><div class="wact">${act}</div></li>`;
+  }).join('');
+  return `<div class="pwit"><div class="pqh"><span>🧑‍⚖️ 你是見證人</span></div><p class="hint" style="margin:4px 0 8px">隊友請你作證：達成後按「確認」，他多拿押金 × ${CONTRACT.witnessBonus}；覺得不算就按「不算」，他的押金會被沒收。每份只能按一次，週一起 10 天內有效。</p><ul>${rows}</ul></div>`;
 }
 function partyQuestHTML(B) {
   const st = partyQuestState(B); if (!st) return '';
@@ -3496,11 +3608,26 @@ const partyApi = {   // 測試時可以在 Console 換成假資料：window.__go
   clearStats: me => sbRest(`goal_party_days?user_id=eq.${me}`, { method: 'PATCH', body: JSON.stringify({ xp: null, streak: null }) }),
   pruneDays: (me, before) => sbRest(`goal_party_days?user_id=eq.${me}&day=lt.${before}`, { method: 'DELETE' }),
   pullDays: since => sbRest(`goal_party_days?select=user_id,day,active,cats,xp,streak&day=gte.${since}`),
-  cheer: (pid, to, day) => sbRest('goal_cheers', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ party_id: pid, to_user: to, day }) }),
-  pullCheers: since => sbRest(`goal_cheers?select=id,from_user,to_user,day,created_at&created_at=gte.${encodeURIComponent(since)}`),
+  cheer: (pid, to, day, kind) => sbRest('goal_cheers', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ party_id: pid, to_user: to, day, ...(kind ? { kind } : {}) }) }),
+  pullCheers: (since, v2) => sbRest(`goal_cheers?select=id,from_user,to_user,day,created_at${v2 ? ',kind' : ''}&created_at=gte.${encodeURIComponent(since)}`),
+  // build 20（sync/party-v2.sql）
+  nudge: (pid, to, day) => sbRest('goal_nudges', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ party_id: pid, to_user: to, day }) }),
+  pullNudges: since => sbRest(`goal_nudges?select=id,from_user,to_user,day,created_at&created_at=gte.${encodeURIComponent(since)}`),
+  gift: (pid, to, day, item) => sbRest('goal_gifts', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ party_id: pid, to_user: to, day, item }) }),
+  pullGifts: since => sbRest(`goal_gifts?select=id,from_user,to_user,day,item,created_at&created_at=gte.${encodeURIComponent(since)}`),
+  witnessAdd: row => sbRest('goal_witness', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify(row) }),
+  witnessUpdate: (me, cid, v) => sbRest(`goal_witness?owner=eq.${me}&contract_id=eq.${encodeURIComponent(cid)}`, { method: 'PATCH', headers: { Prefer: 'return=minimal' }, body: JSON.stringify(v) }),
+  witnessDel: (me, cid) => sbRest(`goal_witness?owner=eq.${me}&contract_id=eq.${encodeURIComponent(cid)}`, { method: 'DELETE' }),
+  pullWitness: since => sbRest(`goal_witness?select=owner,contract_id,witness,week,goal_text,target,count,status,verdict,verdict_at,note&week=gte.${since}`),
+  verdict: (owner, cid, verdict, note) => sbRest('rpc/goal_witness_verdict', { method: 'POST', body: JSON.stringify({ p_owner: owner, p_contract: cid, p_verdict: verdict, p_note: note }) }),
+  pullMessages: () => sbRest(`goal_party_messages?select=id,from_user,body,created_at&order=created_at.desc&limit=${CHAT.pull}`),
+  post: (pid, body) => sbRest('goal_party_messages', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ party_id: pid, body }) }),
+  delMessage: id => sbRest(`goal_party_messages?id=eq.${id}`, { method: 'DELETE' }),
+  pruneMessages: (me, before) => sbRest(`goal_party_messages?from_user=eq.${me}&created_at=lt.${encodeURIComponent(before)}`, { method: 'DELETE' }),
 };
 const PARTY_ERR = { already_in_party: '你已經在一個隊伍裡了', party_not_found: '找不到這個邀請碼', party_full: `這個隊伍已經滿 ${PARTY.size} 人了`,
-  bad_name: '隊名要 1～30 個字', bad_display_name: '顯示名稱要 1～20 個字', not_logged_in: '請先登入雲端同步', 23505: '今天已經幫他加油過了', 42501: '對方已經不在隊伍裡了' };
+  bad_name: '隊名要 1～30 個字', bad_display_name: '顯示名稱要 1～20 個字', not_logged_in: '請先登入雲端同步', 23505: '今天已經幫他加油過了', 42501: '對方已經不在隊伍裡了',
+  verdict_closed: '已經按過了，或是超過可以見證的時間', bad_verdict: '見證結果不對' };
 const partyMissing = e => e && (e.status === 404 || ['PGRST202', 'PGRST205', '42P01', '42883'].includes(e.code));
 const partyErr = e => PARTY_ERR[e.sbMsg] || PARTY_ERR[e.code] || (partyMissing(e) ? '隊伍功能還沒啟用：需要先在 Supabase 執行 sync/party-setup.sql' : e.message || String(e));
 const myUid = () => sessionUid(cloud.session);
@@ -3510,14 +3637,26 @@ const validPartyDay = d => d && typeof d === 'object' && uuidOk(d.user_id) && da
   cats: Array.isArray(d.cats) ? [...new Set(d.cats.filter(c => typeof c === 'string' && Object.hasOwn(CATS, c)))] : [],
   xp: d.xp == null ? null : Math.round(num(d.xp, 0, 5000)), streak: d.streak == null ? null : Math.round(num(d.streak, 0, 1e5)) } : null;
 const validCheer = c => c && typeof c === 'object' && uuidOk(c.id) && uuidOk(c.from_user) && uuidOk(c.to_user) && dayOk(c.day) && isoOk(c.created_at)
-  ? { id: c.id.toLowerCase(), from: c.from_user, to: c.to_user, day: c.day, at: c.created_at } : null;
+  ? { id: c.id.toLowerCase(), from: c.from_user, to: c.to_user, day: c.day, at: c.created_at, kind: Object.hasOwn(CHEER_BY, c.kind) ? c.kind : null } : null;
+const validNudge = c => { const v = validCheer(c); return v && { id: v.id, from: v.from, to: v.to, day: v.day, at: v.at }; };
+const validGift = c => { const v = validCheer(c); return v && Object.hasOwn(GIFT_BY, c.item) ? { id: v.id, from: v.from, to: v.to, day: v.day, at: v.at, item: c.item } : null; };
+const validWitness = w => w && typeof w === 'object' && uuidOk(w.owner) && uuidOk(w.witness) && typeof w.contract_id === 'string' && safeKey(w.contract_id) === w.contract_id && w.contract_id.length <= 60 && dayOk(w.week)
+  ? { owner: w.owner, cid: w.contract_id, witness: w.witness, week: w.week, goal: cut(w.goal_text, 80) || '契約', target: Math.round(num(w.target, 0, 1000)), count: Math.round(num(w.count, 0, 1e5)),
+      status: ['active', 'done', 'failed'].includes(w.status) ? w.status : 'active', verdict: ['ok', 'reject'].includes(w.verdict) ? w.verdict : 'pending',
+      at: isoOk(w.verdict_at) ? w.verdict_at : '', note: cut(w.note, 100) } : null;
+const validMessage = m => m && typeof m === 'object' && uuidOk(m.id) && uuidOk(m.from_user) && isoOk(m.created_at) && cut(m.body, CHAT.max)
+  ? { id: m.id.toLowerCase(), from: m.from_user, body: cut(m.body, CHAT.max), at: m.created_at } : null;
+const listOf = (a, f) => (Array.isArray(a) ? a : []).map(f).filter(Boolean);
 function applyParty(raw) {   // raw 是雲端原樣的資料（也存在 localStorage），每次都重新檢查
   raw ||= {};
   party.info = validPartyInfo(raw.party);
   party.members = party.info && Array.isArray(raw.members) ? raw.members.map(validPartyMember).filter(Boolean).slice(0, PARTY.size) : [];
   party.days = {};
   for (const d of (Array.isArray(raw.days) ? raw.days : []).map(validPartyDay).filter(Boolean)) (party.days[d.uid] ||= {})[d.day] = d;
-  party.cheers = (Array.isArray(raw.cheers) ? raw.cheers : []).map(validCheer).filter(Boolean);
+  party.cheers = listOf(raw.cheers, validCheer);
+  party.v2 = raw.v2 === true;
+  party.nudges = listOf(raw.nudges, validNudge); party.gifts = listOf(raw.gifts, validGift);
+  party.witness = listOf(raw.witness, validWitness); party.msgs = listOf(raw.msgs, validMessage).sort((a, b) => tms(a.at) - tms(b.at));
   party.raw = raw;
 }
 function saveParty() { lsSet(PARTY_LS, JSON.stringify({ owner: myUid(), status: party.status, raw: party.raw })); }
@@ -3526,7 +3665,7 @@ function loadParty() {
   if (!o || !myUid() || o.owner !== myUid()) return;
   applyParty(o.raw); if (o.status === 'in' || o.status === 'none' || o.status === 'nosetup') party.status = party.info ? 'in' : o.status;
 }
-function resetParty() { applyParty(null); party.status = 'off'; party.error = ''; party.pushed = ''; try { localStorage.removeItem(PARTY_LS); } catch (e) { /* ignore */ } }
+function resetParty() { applyParty(null); clearInterval(partyUI.poll); Object.assign(partyUI, { pick: null, rejectFor: '', chatOpen: false, draft: '' }); party.status = 'off'; party.error = ''; party.pushed = ''; try { localStorage.removeItem(PARTY_LS); } catch (e) { /* ignore */ } }
 // 自己最近 8 天的摘要；保護卡補上的日子 d.any 是 false，隊友不會誤以為有紀錄
 function partyDayRows(S) {
   const tk = todayKey(), share = state.settings.partyShare === 'xp';
@@ -3546,14 +3685,24 @@ async function syncParty() {
     const [ps, ms] = await Promise.all([partyApi.mine(), partyApi.members()]);
     const raw = { party: Array.isArray(ps) ? ps[0] || null : null, members: Array.isArray(ms) ? ms : [], days: [], cheers: [] };
     if (validPartyInfo(raw.party)) {
-      const rows = partyDayRows(compute()), h = h32([me, rows]);
+      const rows = partyDayRows(compute()), h = h32([me, rows]), wk = new Date(Date.now() - 7 * 864e5).toISOString();
       if (h !== party.pushed) { await partyApi.pushDays(rows); party.pushed = h; }
-      if (lsGet(PARTY_PRUNE) !== tk) { await partyApi.pruneDays(me, addDays(tk, -PARTY.keep)); lsSet(PARTY_PRUNE, tk); }
-      [raw.days, raw.cheers] = await Promise.all([partyApi.pullDays(addDays(tk, -PARTY.pull)), partyApi.pullCheers(new Date(Date.now() - 7 * 864e5).toISOString())]);
+      // build 20 的資料表：還沒執行 party-v2.sql 時整組略過，原本的隊伍功能照常
+      try {
+        [raw.nudges, raw.gifts, raw.witness, raw.msgs] = await Promise.all([partyApi.pullNudges(wk), partyApi.pullGifts(wk), partyApi.pullWitness(addDays(tk, -21)), partyApi.pullMessages()]);
+        raw.v2 = true;
+      } catch (e) { if (!partyMissing(e) && e.code !== '42703') throw e; raw.v2 = false; }
+      if (lsGet(PARTY_PRUNE) !== tk) {
+        await partyApi.pruneDays(me, addDays(tk, -PARTY.keep));
+        if (raw.v2) await partyApi.pruneMessages(me, new Date(Date.now() - CHAT.keepDays * 864e5).toISOString());
+        lsSet(PARTY_PRUNE, tk);
+      }
+      [raw.days, raw.cheers] = await Promise.all([partyApi.pullDays(addDays(tk, -PARTY.pull)), partyApi.pullCheers(wk, raw.v2)]);
     }
     applyParty(raw); party.status = party.info ? 'in' : 'none'; party.error = '';
+    if (party.info && party.v2 && await syncWitness(me)) { raw.witness = await partyApi.pullWitness(addDays(tk, -21)); applyParty(raw); }
     saveParty();
-    if (party.info) { ingestCheers(me); grantPartyReward(me); grantPartyQuest(me); }
+    if (party.info) { ingestCheers(me); grantPartyReward(me); grantPartyQuest(me); if (party.v2) { ingestGifts(me); ingestVerdicts(me); noticeNudges(me); } }
   } catch (e) {
     if (partyMissing(e)) { party.status = 'nosetup'; party.error = ''; }
     else { party.error = partyErr(e); if (party.status === 'off') party.status = 'error'; }
@@ -3567,13 +3716,65 @@ function ingestCheers(me) {
   const names = Object.fromEntries(party.members.map(m => [m.uid, m.name])), got = [];
   for (const c of party.cheers) {
     if (c.to !== me) continue;
-    const ev = { id: 'ch-' + c.id, type: 'cheer', ts: c.at, from: names[c.from] || '隊友' };
+    const ev = { id: 'ch-' + c.id, type: 'cheer', ts: c.at, from: names[c.from] || '隊友', ...(c.kind && c.kind !== 'cheer' ? { kind: c.kind } : {}) };
     if (addEvent(ev)) got.push(ev);
   }
   if (!got.length) return;
   save(); const S = compute();
-  for (const ev of got.slice(-3)) toast(`<b>${esc(ev.from)} 幫你加油了</b>${S.per[ev.id]?.coins ? `<br><span class="dim">+${PARTY.cheer.coins} 代幣</span>` : ''}`, null, 'ac');
+  for (const ev of got.slice(-3)) { const k = CHEER_BY[ev.kind || 'cheer'];
+    toast(`<b>${k[1]} ${esc(ev.from)}：${esc(k[2])}</b>${S.per[ev.id]?.coins ? `<br><span class="dim">+${PARTY.cheer.coins} 代幣</span>` : ''}`, null, 'ac'); }
   chime('quest'); haptic('success');
+}
+// 收到的禮物變成本機的 gift 事件（ts 是收到的時間，雙倍 XP 從這時開始算）
+function ingestGifts(me) {
+  const names = Object.fromEntries(party.members.map(m => [m.uid, m.name])), got = [];
+  for (const g of party.gifts) {
+    if (g.to !== me) continue;
+    const ev = { id: 'gf-' + g.id, type: 'gift', ts: nowISO(), from: names[g.from] || '隊友', item: g.item };
+    if (addEvent(ev)) got.push(ev);
+  }
+  if (!got.length) return;
+  save();
+  for (const ev of got.slice(-3)) { const g = GIFT_BY[ev.item]; toast(`<b>${g.icon} ${esc(ev.from)} 送你${esc(g.name)}！</b>${g.id === 'boost' ? '<br><span class="dim">接下來 1 小時打卡、解題的 XP ×2</span>' : ''}`, null, 'ac'); }
+  chime('quest'); haptic('success');
+}
+// 見證人按了「確認 / 不算」→ 變成本機的 witness_verdict 事件（固定 id，只收第一次）
+function ingestVerdicts(me) {
+  const names = Object.fromEntries(party.members.map(m => [m.uid, m.name])), mine = new Set(state.events.filter(e => e.type === 'contract_open').map(e => e.id));
+  let n = 0;
+  for (const w of party.witness) {
+    if (w.owner !== me || w.verdict === 'pending' || !mine.has(w.cid)) continue;
+    const ev = { id: 'wv-' + w.cid, type: 'witness_verdict', ts: w.at || nowISO(), contract: w.cid, verdict: w.verdict, by: names[w.witness] || '見證人', ...(w.note ? { note: w.note } : {}) };
+    if (!addEvent(ev)) continue; n++;
+    toast(w.verdict === 'ok' ? `<b>👍 ${esc(ev.by)} 確認了你的契約</b><br><span class="dim">達成時多拿押金 × ${CONTRACT.witnessBonus}</span>` : `<b>👎 ${esc(ev.by)} 說你的契約不算</b>${w.note ? `<br><span class="dim">${esc(w.note)}</span>` : ''}`, null, w.verdict === 'ok' ? 'ac' : null);
+  }
+  if (n) save();
+}
+// 有見證人的契約：上傳摘要與進度、取消的契約刪掉。有改到雲端就回傳 true
+async function syncWitness(me) {
+  const S = compute(), tk = todayKey(), mine = S.contracts.filter(c => c.witness && c.end >= addDays(tk, -10)), remote = new Map(party.witness.filter(w => w.owner === me).map(w => [w.cid, w]));
+  const byEv = Object.fromEntries(state.events.filter(e => e.type === 'contract_open' && e.witness).map(e => [e.id, e])); let changed = false;
+  for (const c of mine) {
+    const e = byEv[c.id], w = remote.get(c.id), status = c.rejected ? 'failed' : c.status, count = Math.min(c.count, 1e5);
+    if (!w) {
+      if (!party.members.some(m => m.uid === e.witness.uid) || c.week < addDays(tk, -8)) continue;   // 見證人不在隊伍了，或契約太舊（雲端不收）
+      try { await partyApi.witnessAdd({ contract_id: c.id, party_id: party.info.id, witness: e.witness.uid, week: c.week, goal_text: cut(`${goalText(c.goal)}（押 ${c.stake} 代幣）`, 80), target: c.goal.target, count, status }); changed = true; }
+      catch (err) { if (err.code !== '23505') console.warn('witness', err); }
+    } else if (w.count !== count || w.status !== status) {
+      try { await partyApi.witnessUpdate(me, c.id, { count, status }); changed = true; } catch (err) { console.warn('witness', err); } }
+  }
+  const alive = new Set(state.events.filter(e => e.type === 'contract_open').map(e => e.id));
+  for (const w of remote.values()) if (!alive.has(w.cid) && w.verdict === 'pending') { await partyApi.witnessDel(me, w.cid); changed = true; }   // 取消的契約
+  return changed;
+}
+// 被戳：今天還沒紀錄時，「今天」頁有一行提示；第一次看到跳一次通知
+const NUDGE_SEEN = 'goal.nudgeSeen';
+const nudgesToMe = tk => party.v2 ? party.nudges.filter(n => n.to === myUid() && n.day === tk) : [];
+function noticeNudges(me) {
+  const tk = todayKey(), got = nudgesToMe(tk), seen = new Set((lsGet(NUDGE_SEEN) || '').split(',')), names = Object.fromEntries(party.members.map(m => [m.uid, m.name]));
+  const fresh = got.filter(n => !seen.has(n.id)); if (!fresh.length) return;
+  lsSet(NUDGE_SEEN, got.map(n => n.id).join(','));
+  if (!compute().days[tk]?.any) { toast(`<b>👉 ${esc(fresh.map(n => names[n.from] || '隊友').join('、'))} 戳了你一下</b><br><span class="dim">今天還沒有紀錄喔，做一件小事就好</span>`, null, 'ac'); haptic('tap'); }
 }
 const joinedBy = (m, k) => !m.joined || dayKey(m.joined) <= k;   // 那天已經在隊伍裡
 const memberCats = (S, m, k) => {   // 自己用本機紀錄，隊友用雲端摘要；保護卡補的日子算沒有紀錄
@@ -3646,18 +3847,83 @@ function grantPartyReward(me) {
   addEvent({ id, type: 'party_reward', ts: nowISO(), party: party.info.id, week: prev, members: party.members.map(m => m.name) });
   save(); toast(`<b>上週的共同 Boss 打倒了！</b><br><span class="dim">+${PARTY.reward.xp} XP　+${PARTY.reward.coins} 代幣</span>`, null, 'ac');
 }
-async function sendCheer(to, btn) {
+async function sendCheer(to, btn, kind) {
   const m = party.members.find(x => x.uid === to); if (!m || !party.info) return;
-  const tk = todayKey(); if (btn) btn.disabled = true;
+  const tk = todayKey(), k = party.v2 && Object.hasOwn(CHEER_BY, kind) ? kind : null; if (btn) btn.disabled = true;
+  partyUI.pick = null;
   try {
-    await partyApi.cheer(party.info.id, to, tk);
+    await partyApi.cheer(party.info.id, to, tk, k);
     party.cheers.push({ id: '', from: myUid(), to, day: tk, at: nowISO() });
-    addEvent({ id: `cs-${to}-${tk}`, type: 'cheer', ts: nowISO(), to: m.name, source: 'manual' });
-    commit(); chime('quest'); haptic('success'); toast(`已幫 ${esc(m.name)} 加油`);
+    addEvent({ id: `cs-${to}-${tk}`, type: 'cheer', ts: nowISO(), to: m.name, ...(k && k !== 'cheer' ? { kind: k } : {}), source: 'manual' });
+    commit(); chime('quest'); haptic('success'); toast(`${CHEER_BY[k || 'cheer'][1]} 已幫 ${esc(m.name)} 加油`);
   } catch (e) {
     if (e.code === '23505') party.cheers.push({ id: '', from: myUid(), to, day: tk, at: nowISO() });
     toast(esc(partyErr(e))); render();
   }
+}
+/* ---------- build 20：戳一下、送禮、見證、聊天 ---------- */
+async function sendNudge(to, btn) {
+  const m = party.members.find(x => x.uid === to); if (!m || !party.info || !party.v2) return;
+  const tk = todayKey(); if (btn) btn.disabled = true;
+  try { await partyApi.nudge(party.info.id, to, tk); toast(`👉 戳了 ${esc(m.name)} 一下`); haptic('tap'); }
+  catch (e) { if (e.code !== '23505') { toast(esc(partyErr(e))); if (btn) btn.disabled = false; return; } toast('今天已經戳過他了'); }
+  party.nudges.push({ id: '', from: myUid(), to, day: tk, at: nowISO() }); render();
+}
+async function sendGift(to, item, btn) {
+  const m = party.members.find(x => x.uid === to), g = GIFT_BY[item]; if (!m || !g || !party.info || !party.v2) return;
+  const tk = todayKey(), id = `gs-${tk}`;
+  if (state.events.some(e => e.id === id) || party.gifts.some(x => x.from === myUid() && x.day === tk)) { toast('今天已經送過禮物了，明天再送'); return; }
+  if (compute().balance < g.cost) { toast('代幣不夠'); return; }
+  if (btn) btn.disabled = true;
+  try { await partyApi.gift(party.info.id, to, tk, item); }
+  catch (e) { toast(e.code === '23505' ? '今天已經送過禮物了，明天再送' : esc(partyErr(e))); render(); return; }
+  party.gifts.push({ id: '', from: myUid(), to, day: tk, at: nowISO(), item }); partyUI.pick = null;
+  addEvent({ id, type: 'gift_send', ts: nowISO(), to: m.name, item, cost: g.cost, source: 'manual' });
+  commit(); chime('quest'); haptic('success'); toast(`<b>${g.icon} 送給 ${esc(m.name)}：${esc(g.name)}</b><br><span class="dim">-${fmt(g.cost)} 代幣</span>`, null, 'ac');
+}
+async function sendVerdict(owner, cid, verdict, note, btn) {
+  if (btn) btn.disabled = true;
+  try { await partyApi.verdict(owner, cid, verdict, cut(note || '', 100)); }
+  catch (e) { toast(esc(partyErr(e))); if (btn) btn.disabled = false; return; }
+  const w = party.witness.find(x => x.owner === owner && x.cid === cid); if (w) { w.verdict = verdict; w.note = cut(note || '', 100); w.at = nowISO(); }
+  partyUI.rejectFor = ''; haptic('tap'); toast(verdict === 'ok' ? '👍 已確認，對方會多拿一點獎勵' : '👎 已經告訴對方這份不算'); render();
+}
+const CHAT_SEEN = 'goal.chatSeen';
+const chatUnread = () => { const me = myUid(), seen = lsGet(CHAT_SEEN) || ''; return party.v2 ? party.msgs.filter(m => m.from !== me && m.at > seen).length : 0; };
+function chatMarkSeen() { const last = party.msgs[party.msgs.length - 1]; if (last && last.at > (lsGet(CHAT_SEEN) || '')) lsSet(CHAT_SEEN, last.at); }
+function chatListHTML() {
+  const me = myUid(), names = Object.fromEntries(party.members.map(m => [m.uid, m.name])), tk = todayKey();
+  if (!party.msgs.length) return '<p class="empty" style="margin:6px 0">還沒有人說話。打個招呼吧！</p>';
+  return party.msgs.map(m => { const d = new Date(m.at), hm = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`, when = dayKey(m.at) === tk ? hm : `${mdOf(dayKey(m.at))} ${hm}`;
+    return `<li class="${m.from === me ? 'mine' : ''}"><div class="cmeta"><b>${esc(names[m.from] || '前隊友')}</b><span class="dim num">${when}</span>${m.from === me ? `<button class="btn-x" data-act="msgdel" data-id="${esc(m.id)}" aria-label="刪掉這則留言" title="刪掉">×</button>` : ''}</div><div class="cbody">${esc(m.body)}</div></li>`; }).join('');
+}
+function refreshChatList() {
+  const ul = $('#pchatlist'); if (!ul) return;
+  const atBottom = ul.scrollHeight - ul.scrollTop - ul.clientHeight < 40;
+  ul.innerHTML = chatListHTML(); if (atBottom) ul.scrollTop = ul.scrollHeight;
+  chatMarkSeen(); const b = $('#pchatbtn'); if (b) b.innerHTML = chatBtnLabel();
+}
+const chatBtnLabel = () => { const n = chatUnread(); return partyUI.chatOpen ? '收起聊天' : `💬 隊伍聊天${n ? `<span class="ubadge num">${n}</span>` : ''}`; };
+async function pollChat() {
+  if (!partyUI.chatOpen || document.hidden || tab !== 'today' || !party.info || !party.v2) return;
+  try { const raw = party.raw; raw.msgs = await partyApi.pullMessages(); party.msgs = listOf(raw.msgs, validMessage).sort((a, b) => tms(a.at) - tms(b.at)); saveParty(); refreshChatList(); }
+  catch (e) { console.warn('chat', e); }
+}
+function toggleChat() {
+  partyUI.chatOpen = !partyUI.chatOpen; clearInterval(partyUI.poll);
+  if (partyUI.chatOpen) { partyUI.poll = setInterval(pollChat, CHAT.pollMs); pollChat(); }
+  render(); if (partyUI.chatOpen) { const ul = $('#pchatlist'); if (ul) ul.scrollTop = ul.scrollHeight; chatMarkSeen(); }
+}
+async function postChat(f) {
+  const body = cut(f.elements.body.value, CHAT.max); if (!body || !party.info) return;
+  const btn = f.querySelector('button[type="submit"]'); if (btn) btn.disabled = true;
+  try { await partyApi.post(party.info.id, body); f.elements.body.value = ''; partyUI.draft = ''; await pollChat(); }
+  catch (e) { toast(esc(partyErr(e))); }
+  if (btn) btn.disabled = false; f.elements.body.focus();
+}
+async function delChat(id) {
+  try { await partyApi.delMessage(id); party.msgs = party.msgs.filter(m => m.id !== id); party.raw.msgs = (party.raw.msgs || []).filter(m => String(m.id).toLowerCase() !== id); saveParty(); refreshChatList(); }
+  catch (e) { toast(esc(partyErr(e))); }
 }
 async function partyAction(fn, ok) {
   try { await fn(); party.pushed = ''; if (ok) toast(ok); await syncParty(); render(); }
@@ -4100,7 +4366,17 @@ document.addEventListener('click', e => {
     addEvent({ id: uid('fz'), type: 'freeze_buy', ts: nowISO(), cost: FREEZE.cost, source: 'manual' });
     commit(); chime('tick'); haptic('tap'); toast('買了一張保護卡。哪天忙到沒紀錄，它會自動補上 ❄️');
   }
-  else if (act === 'cheer') sendCheer(id, t);
+  else if (act === 'cheer') { if (party.v2) { partyUI.pick = partyUI.pick?.uid === id && partyUI.pick.mode === 'cheer' ? null : { uid: id, mode: 'cheer' }; render(); } else sendCheer(id, t); }
+  else if (act === 'cheerk') sendCheer(id, t, t.dataset.k);
+  else if (act === 'giftpick') { partyUI.pick = partyUI.pick?.uid === id && partyUI.pick.mode === 'gift' ? null : { uid: id, mode: 'gift' }; render(); }
+  else if (act === 'gift') sendGift(id, t.dataset.k, t);
+  else if (act === 'pickclose') { partyUI.pick = null; render(); }
+  else if (act === 'nudge') sendNudge(id, t);
+  else if (act === 'wok') sendVerdict(t.dataset.owner, id, 'ok', '', t);
+  else if (act === 'wno') { partyUI.rejectFor = `${t.dataset.owner}|${id}`; render(); const f = $('.wreject input'); if (f) f.focus(); }
+  else if (act === 'wcancel') { partyUI.rejectFor = ''; render(); }
+  else if (act === 'pchat') toggleChat();
+  else if (act === 'msgdel') delChat(id);
   else if (act === 'preport') { partyRep.open = !partyRep.open; render(); }
   else if (act === 'preportimg') partyReportImage().catch(err => toast('圖片做不出來：' + esc(err.message)));
   else if (act === 'partycopy') { const code = party.info?.code || ''; (navigator.clipboard ? navigator.clipboard.writeText(code) : Promise.reject()).then(() => toast('已複製邀請碼'), () => toast(`邀請碼：${esc(code)}`)); }
@@ -4153,6 +4429,8 @@ document.addEventListener('click', e => {
 document.addEventListener('submit', e => {
   e.preventDefault();
   const f = e.target, fd = new FormData(f);
+  if (f.id === 'partychat') { postChat(f); return; }
+  if (f.classList.contains('wreject')) { sendVerdict(f.dataset.owner, f.dataset.cid, 'reject', String(fd.get('note') || ''), f.querySelector('button[type="submit"]')); return; }
   if (f.id === 'lcform') {
     const title = String(fd.get('title') || '').trim(); if (!title) return;
     const pid = Number(fd.get('pid')) || null, difficulty = fd.get('diff') || 'medium';
@@ -4245,6 +4523,7 @@ document.addEventListener('input', e => {
   const cf = e.target.closest && e.target.closest('#cform');
   if (cf) { updateContractForm(cf, e.target.name === 'goal'); return; }
   if (e.target.id === 'gpq') { guard.pickQ = e.target.value; const box = $('.picker'); if (box) { const pos = e.target.selectionStart; box.outerHTML = appPicker(); const q = $('#gpq'); if (q) { q.focus(); q.setSelectionRange(pos, pos); } } return; }
+  if (e.target.id === 'pchatin') { partyUI.draft = e.target.value; return; }
   if (e.target.id === 'pq') { pf.q = e.target.value; const ul = $('#plist'); if (ul) ul.innerHTML = problemRows(compute()); }
 });
 document.addEventListener('change', e => {

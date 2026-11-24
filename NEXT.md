@@ -1,6 +1,6 @@
 # 接下來要實作的事
 
-> 更新：2026-11-25　｜　目前網頁 build 19，原生 NATIVE_VERSION 6（`version.json` 的 minNative 6）
+> 更新：2026-11-25　｜　目前網頁 build 20，原生 NATIVE_VERSION 6（`version.json` 的 minNative 6）
 > 先讀 `CLAUDE.md`（架構、發佈規則、測試方法）。設計理由與研究依據在 `PLAN.md` 第 8 節。
 
 ## 目前狀態
@@ -38,6 +38,9 @@
 
 - **build 19 隊伍擴充（2026-11-25，PLAN 8.4）**：`PARTY` 多了 `weakDmg`、`heal`、`v2`、`cheerQuest`、`quest`，`pull` 改成 59；`PARTY_BOSSES` 第三欄是弱點；`PARTY_QUESTS` / `pqTier()`；`partyBoss()` 改寫（`joinedBy()`、`memberCats()`、`miss`、`healed`、`fullDays`），`partyQuestState()`、`partyStreak()`（`S.pstreak`）、`grantPartyQuest()`（新事件 `party_quest`）；額外任務 `d.cheersOut` → `d.cheerQuest`，`cheerQuestLine()` 在今日任務面板；週報 `partyRep`、`partyReportHTML()`、`partyReportImage()`。3 個徽章 `p_streak7`、`p_streak30`、`p_quest5`。在瀏覽器用假的 Supabase 回應（4 人隊伍、中途加入、漏打、髒資料）測過，數字都對過。
   - 研究後剩下的隊伍功能（中等 / 困難，要改 SQL 或原生）：加油選表情、戳一下、隊友當契約見證人、送禮物、自訂挑戰、聊天、照片打卡、推播、小工具顯示隊伍、一起鎖機、職業系統。
+
+- **build 20 隊伍第二輪（2026-11-25，PLAN 8.5）**：`sync/party-v2.sql`（`goal_cheers.kind`、`goal_nudges`、`goal_gifts`、`goal_witness` + `goal_witness_verdict()`、`goal_party_messages`），權限測試 `sync/test/run-party-v2-test.sh`。網頁：`CHEER_KINDS`、`GIFTS`、`CHAT`、`CONTRACT.witnessBonus`；`partyApi` 新方法；`validNudge/Gift/Witness/Message()`；`party.v2` 決定要不要顯示；`partyUI`（選單、聊天狀態）；`sendNudge()`、`sendGift()`、`sendVerdict()`、`syncWitness()`、`ingestGifts()`、`ingestVerdicts()`、`noticeNudges()`、聊天 `toggleChat()` / `pollChat()` / `postChat()`（只更新 `#pchatlist`，不重畫整頁；`render()` 會保留聊天輸入框的焦點）。瀏覽器測過有 SQL 和沒 SQL 兩種情況。
+  - 🙋 使用者要做：在 Supabase SQL Editor 執行 `sync/party-v2.sql`。
 
 ## 1. 之後的候選（依建議順序）
 1. **實機回饋修正**：build 9 的鎖定畫面、通知、Health Connect 第一次在 Pixel 9a 上跑，先處理使用者回報的問題。

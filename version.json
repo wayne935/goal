@@ -1,5 +1,5 @@
 {
-  "build": 19,
+  "build": 20,
   "minNative": 6,
   "files": [
     "index.html",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "隊伍功能擴充：隊伍連續天數、每週隊伍任務、隊伍週報、共同 Boss 弱點與漏打回血、加油額外任務"
+  "notes": "隊伍功能第二輪：加油選表情、戳一下、送禮、契約見證人、隊伍聊天（要先執行 sync/party-v2.sql）"
 }
