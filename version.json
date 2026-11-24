@@ -1,5 +1,5 @@
 {
-  "build": 18,
+  "build": 19,
   "minNative": 6,
   "files": [
     "index.html",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "分心 App 放行修正：選完時間直接回到原本的 App、放行到期準時鎖回（要重新建置 App）"
+  "notes": "隊伍功能擴充：隊伍連續天數、每週隊伍任務、隊伍週報、共同 Boss 弱點與漏打回血、加油額外任務"
 }

@@ -1,6 +1,6 @@
 # 接下來要實作的事
 
-> 更新：2026-11-04　｜　目前網頁 build 18，原生 NATIVE_VERSION 6（`version.json` 的 minNative 6）
+> 更新：2026-11-25　｜　目前網頁 build 19，原生 NATIVE_VERSION 6（`version.json` 的 minNative 6）
 > 先讀 `CLAUDE.md`（架構、發佈規則、測試方法）。設計理由與研究依據在 `PLAN.md` 第 8 節。
 
 ## 目前狀態
@@ -35,6 +35,9 @@
 - **NATIVE_VERSION 6（2026-11-09，網頁仍是 build 18）**：實機回報 2：放行設 3 分鐘，①選完時間有時沒回到原本的 App ②到期沒鎖回。原因：①`LockActivity.finish()` 後回哪個任務由系統決定（從服務開的新任務有時被標成回主畫面）②`GuardService` 每 15 秒補查用的 `lastPkg` 會被輸入法、systemui、對話框事件蓋掉，而且一直滑同一個 App 不會有新事件。修法：`LockActivity.backToApp()` 用 launch intent 叫回原 App；`GuardService` 的 `fgPkg` 只在真正的 Activity（`getActivityInfo` 查得到，或主畫面、看不到的系統 App）時更新；`scheduleNext()` 排到放行到期 / 專注結束的那一刻（`GuardService.poke()` 在 `openGate()`、`start()` 時呼叫），螢幕打開也檢查；`LockActivity.shown` + 1.5 秒驗證，鎖定畫面沒出現就 `GLOBAL_ACTION_HOME` 並發通知。雲端編譯過，**還沒實機測**。使用者要重新建置 App。
   - 還沒做：回顧卡在 App 裡只能截圖（WebView 不能長按存圖）。
   - 數值都是草案（賽季每階 80 XP、各階代幣、寶箱機率），等使用者用一兩週回報手感再調。
+
+- **build 19 隊伍擴充（2026-11-25，PLAN 8.4）**：`PARTY` 多了 `weakDmg`、`heal`、`v2`、`cheerQuest`、`quest`，`pull` 改成 59；`PARTY_BOSSES` 第三欄是弱點；`PARTY_QUESTS` / `pqTier()`；`partyBoss()` 改寫（`joinedBy()`、`memberCats()`、`miss`、`healed`、`fullDays`），`partyQuestState()`、`partyStreak()`（`S.pstreak`）、`grantPartyQuest()`（新事件 `party_quest`）；額外任務 `d.cheersOut` → `d.cheerQuest`，`cheerQuestLine()` 在今日任務面板；週報 `partyRep`、`partyReportHTML()`、`partyReportImage()`。3 個徽章 `p_streak7`、`p_streak30`、`p_quest5`。在瀏覽器用假的 Supabase 回應（4 人隊伍、中途加入、漏打、髒資料）測過，數字都對過。
+  - 研究後剩下的隊伍功能（中等 / 困難，要改 SQL 或原生）：加油選表情、戳一下、隊友當契約見證人、送禮物、自訂挑戰、聊天、照片打卡、推播、小工具顯示隊伍、一起鎖機、職業系統。
 
 ## 1. 之後的候選（依建議順序）
 1. **實機回饋修正**：build 9 的鎖定畫面、通知、Health Connect 第一次在 Pixel 9a 上跑，先處理使用者回報的問題。

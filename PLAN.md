@@ -283,6 +283,29 @@ Goal/
 - Duolingo – Streak research：https://blog.duolingo.com/duolingo-streak-research/
 - Coglode – Temptation bundling：https://www.coglode.com/nuggets/temptation-bundling
 
+### 8.4 隊伍擴充（✅ 2026-11-25，build 19）
+**依據**（2026-11-09 研究，按難易度排過，這次做最簡單的 6 項，都不用改 SQL）
+- Duolingo Friend Streak：有至少一個好友連勝的人，完成每日課程的機率高 22%；不需要一起做同一件事，各做各的就算。
+- Duolingo Friends Quests：每週隨機一個共同目標，完成拿寶箱。
+- Finch：送 good vibes 是每日任務之一。
+- Habitica：隊員沒完成每日任務，Boss 會打全隊（社群常抱怨被拖累，所以這裡只讓 Boss 回血，不扣任何人的東西）。
+
+**玩法與數值**（`PARTY` 常數，`v2` = 2026-11-25 起生效，之前的日子不追溯）
+| 項目 | 數值 |
+|---|---|
+| 隊伍連續天數 | 那天已經入隊的人（至少 2 人）全部有紀錄才算；今天還沒過完不算斷。保護卡補的日子算沒紀錄。只看得到最近 60 天（`pull` 從 14 改成 59） |
+| 加油額外任務 | 當天送出任何一次加油 +5 XP、+5 代幣；不算在每日任務三件裡，不影響寶箱 |
+| Boss 弱點 | 每隻共同 Boss 一個弱點分類，那個分類打 20 點（一天上限仍是 50）；`PARTY_BOSSES` 第三欄 |
+| 漏打回血 | 已經過完的日子、已經入隊、整天沒紀錄 → Boss 每人回 15 血；打倒之後不再回血 |
+| 每週隊伍任務 | `PARTY_QUESTS` 9 種（合計 5n 人天、3 天全員到齊、每人 4 天、每人 3 個分類、各分類合計 2n 天），`hashStr('pq:' + 週一 + 隊伍 id)` 選題。完成 +25 XP 和一個隊伍寶箱（普通 30／稀有 50／史詩 80／傳說 150 代幣，機率同每日寶箱，由事件 id 決定）。一週只算一次（換隊伍也一樣） |
+| 隊伍週報 | 本週 / 上週：每人有紀錄的天數、各分類天數、傷害、MVP（天數和傷害都第一才給）、全員到齊天數、漏打回血、任務結果；可以做成 1080×1350 圖片 |
+
+**實作**
+- 新事件 `party_quest`（`party`、`week`、`quest`、`members`），跟 `party_reward` 一樣只由網頁產生：`grantPartyQuest()` 在 `syncParty()` 裡檢查這週和上週，完成就記一筆固定 id（`pq-隊伍-週一`）。
+- `partyBoss()` 多回傳 `weak`、`healed`、`fullDays`、`quest`，每天多 `inn`（已入隊）、`miss`（漏打）；`partyStreak(days)` 在 `compute()` 裡算（`S.pstreak`），隊友資料一樣只來自 `goal_party_days` 摘要。
+- 新徽章：同進同退（隊伍連續 7 天）、形影不離（30 天，傳說）、默契十足（完成 5 次隊伍任務）。
+- 已知取捨：隊友還沒打開 App 同步之前，他昨天的紀錄還沒上傳，會暫時被算成漏打（同步後自動更正）；隊員之間如果版本不同（舊版沒有弱點和回血），血量顯示會不一樣，App 自動更新後就一致。
+
 ---
 
 ## 9. 鎖機專注與自動紀錄（build 9 / NATIVE_VERSION 4，2026-11-02）

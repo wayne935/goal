@@ -385,8 +385,50 @@ details.bcat[open] .shelf{display:none}
 .pwbox{margin-top:14px}
 .pwbox summary{cursor:pointer;font-size:14.5px;color:var(--brass-hi);width:max-content}
 .pwbox form{margin-top:10px}
+.pweek i.miss{background:rgba(238,122,100,.35);box-shadow:inset 0 0 0 1.5px rgba(238,122,100,.7)}
+.pweek i.miss.today{box-shadow:inset 0 0 0 1.5px rgba(238,122,100,.7),0 0 0 1.5px var(--chalk)}
+.pstreak{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:10px 0 0;padding:9px 12px;border-radius:12px;background:rgba(0,0,0,.2);font-size:15px}
+.pstreak .pfire{font-size:20px}
+.pstreak b{font-size:21px;color:var(--brass-hi)}
+.pstreak small{color:var(--chalk-dim);font-size:13px;margin-left:4px}
+.pstreak .dim{font-size:13.5px;margin-left:auto}
+.pstreak.all .dim{color:#8fe0cf}
+.pweak{display:inline-flex;align-items:center;gap:5px;margin-left:10px;padding:1px 9px;border-radius:99px;background:rgba(0,0,0,.24);font-size:13px;font-weight:400;color:var(--chalk-dim);vertical-align:2px}
+.pweak i{width:9px;height:9px;border-radius:50%}
+.pheal{margin-left:8px;color:#f3b4a5;font-size:13px}
+.pquest{margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(0,0,0,.2)}
+.pquest .pqh{display:flex;justify-content:space-between;gap:10px;font-size:14px;color:var(--chalk-dim)}
+.pquest .pqh .num{font-size:16px;color:var(--chalk)}
+.pquest .pqt{font-size:16px;font-weight:700;margin:3px 0 8px}
+.pquest .bar{height:7px;border-radius:7px;background:rgba(0,0,0,.28);overflow:hidden}
+.pquest .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brass),var(--brass-hi));border-radius:7px}
+.pquest .pqr{font-size:13.5px;color:var(--chalk-dim);margin-top:7px}
+.pquest.done .bar i{background:var(--health)}
+.pquest.done .pqr{color:#8fe0cf}
+.preport{margin-top:12px;padding-top:12px;border-top:1px dashed var(--chalk-faint)}
+.preport .rhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.preport .rhead b{font-size:16px}
+.prstats{list-style:none;margin:10px 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 8px;font-size:14px;color:var(--chalk-dim)}
+.prstats li{padding:4px 10px;border-radius:99px;background:rgba(0,0,0,.2)}
+.prstats b{color:var(--chalk)}
+.prows{list-style:none;margin:0;padding:0}
+.prows li{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1.2fr) 48px;gap:4px 10px;align-items:center;padding:7px 0;border-bottom:1px dashed var(--chalk-faint);font-size:15px}
+.prows li:last-child{border-bottom:0}
+.prows li.me .prn{color:var(--brass-hi)}
+.prn{overflow-wrap:anywhere;font-weight:700}
+.prn small{font-weight:400;color:var(--chalk-dim);font-size:12.5px;margin-left:3px}
+.prd{font-size:15px;color:var(--chalk-dim)}
+.prc{display:flex;flex-wrap:wrap;gap:3px 9px;font-size:13.5px}
+.prc>span{display:inline-flex;align-items:center;gap:3px}
+.prc i{width:9px;height:9px;border-radius:50%}
+.prg{text-align:right;font-size:17px;color:#ff8f78}
+.qextra{margin-top:13px;padding-top:11px;border-top:1px dashed var(--chalk-faint)}
+.qtag{display:inline-block;font-size:12px;padding:0 7px;border-radius:99px;background:rgba(214,162,67,.22);color:var(--brass-hi);margin-right:6px;vertical-align:1px}
 @media (max-width:720px){
   .pm{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"n c" "w d"}
+  .prows li{grid-template-columns:minmax(0,1fr) auto 48px;grid-template-areas:"n d g" "c c c"}
+  .prn{grid-area:n} .prd{grid-area:d} .prc{grid-area:c} .prg{grid-area:g}
+  .pstreak .dim{margin-left:0;flex-basis:100%}
 }
 
 /* ---------- history ---------- */
@@ -764,7 +806,7 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 18;
+const APP_BUILD = 19;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 /* 手機底部只放 5 個分頁：徽章牆、紀錄、設定收進「我的」，頁面上方有子分頁 */
@@ -922,9 +964,22 @@ const unitMin = h => (h && h.unitMin) || 25;
 const focusPenalty = (base, k) => Math.max(FOCUS.minPenalty, Math.round(base * FOCUS.rate * Math.min(2 ** Math.max(0, k - 1), FOCUS.maxMult)));
 /* ---------- 隊友副本 ----------
    每週一隻共同 Boss：血量 = 每人 150 × 人數；每人每天每個有紀錄的分類 10 點（一天最多 50）。
-   週日結束時已經打倒，每個人各自在本機記一筆 party_reward。隊友的加油在本機變成 cheer 事件。 */
-const PARTY = { hpPer: 150, dmg: 10, dayMax: 50, size: 4, reward: { xp: 40, coins: 60 }, cheer: { coins: 5, dailyMax: 3 }, push: 8, pull: 14, keep: 60 };
-const PARTY_BOSSES = [['🐲', '拖延龍'], ['🗿', '懶散巨人'], ['👾', '三分鐘熱度怪'], ['🦑', '分心章魚'], ['🐌', '明天再說蝸牛'], ['🦇', '熬夜蝙蝠']];
+   週日結束時已經打倒，每個人各自在本機記一筆 party_reward。隊友的加油在本機變成 cheer 事件。
+   build 19（PARTY.v2 起）：Boss 有弱點分類（20 點）；昨天以前有人整天沒紀錄，Boss 每人回 heal 血；
+   每天幫隊友加油是額外任務；每週一個隊伍任務（hashStr 決定題目，完成記一筆 party_quest）；隊伍連續天數（全員都有紀錄的天）。 */
+const PARTY = { hpPer: 150, dmg: 10, weakDmg: 20, dayMax: 50, heal: 15, v2: '2026-11-25', size: 4, reward: { xp: 40, coins: 60 }, cheer: { coins: 5, dailyMax: 3 },
+  cheerQuest: { xp: 5, coins: 5 }, quest: { xp: 25, coins: { common: 30, rare: 50, epic: 80, legend: 150 } }, push: 8, pull: 59, keep: 60 };   // pull：拉 60 天，隊伍連續天數才算得出來
+const PARTY_BOSSES = [['🐲', '拖延龍', 'research'], ['🗿', '懶散巨人', 'health'], ['👾', '三分鐘熱度怪', 'hobby'], ['🦑', '分心章魚', 'code'], ['🐌', '明天再說蝸牛', 'life'], ['🦇', '熬夜蝙蝠', 'health']];
+/* 每週隊伍任務：n = 隊伍人數；v(B) 從 partyBoss() 的結果算進度。「每個人」類的進度單位是人 */
+const pqDays = r => r.days.filter(d => d.cats.length).length;
+const PARTY_QUESTS = [
+  { id: 'pq_days', text: n => `全隊合計 ${5 * n} 個「有紀錄的人天」`, goal: n => 5 * n, v: B => B.rows.reduce((a, r) => a + pqDays(r), 0) },
+  { id: 'pq_full', text: () => '有 3 天全隊都有紀錄', goal: () => 3, v: B => B.fullDays },
+  { id: 'pq_each', text: () => '每個人本週都有 4 天以上有紀錄', goal: n => n, unit: '人', v: B => B.rows.filter(r => pqDays(r) >= 4).length },
+  { id: 'pq_var', text: () => '每個人本週都碰過 3 個分類', goal: n => n, unit: '人', v: B => B.rows.filter(r => new Set(r.days.flatMap(d => d.cats)).size >= 3).length },
+  ...Object.keys(CATS).map(c => ({ id: 'pq_' + c, text: n => `全隊合計 ${2 * n} 天有「${CATS[c].name}」紀錄`, goal: n => 2 * n, v: B => B.rows.reduce((a, r) => a + r.days.filter(d => d.cats.includes(c)).length, 0) })),
+];
+const pqTier = id => { const roll = hashStr('pq:' + id) % 1000; let acc = 0; return CHEST.tiers.find(t => (acc += t.p) > roll) || CHEST.tiers[0]; };
 // 隊伍資料是別人的：只放在記憶體與 localStorage，不進 state、也不進 goal_meta
 const party = { status: 'off', info: null, members: [], days: {}, cheers: [], raw: null, error: '', busy: false, pushed: '', leaveArm: 0 };
 const bossMaxHp = (b, L) => Math.round(b.days * BOSS.dayDmg * (1 + 0.5 * (L - 1)));
@@ -1019,6 +1074,9 @@ const ACH = [
   { id:'p_week4',    cat:'life', icon:'⚜️', name:'鐵打的隊伍', desc:'連續 4 週打倒共同 Boss',           goal:4,   coins:250, v:s=>s.partyWeekRun },
   { id:'p_cheer10',  cat:'life', icon:'📣', name:'啦啦隊',     desc:'幫隊友加油 10 次',                 goal:10,  coins:60,  v:s=>s.cheersOut },
   { id:'p_cheered10',cat:'life', icon:'💌', name:'有人挺你',   desc:'收到隊友加油 10 次',               goal:10,  coins:60,  v:s=>s.cheersIn },
+  { id:'p_streak7',  cat:'life', icon:'🔗', name:'同進同退',   desc:'隊伍連續 7 天全員都有紀錄',        goal:7,   coins:100, v:s=>s.pstreak.best },
+  { id:'p_streak30', cat:'life', icon:'🏯', name:'形影不離',   desc:'隊伍連續 30 天全員都有紀錄',       goal:30,  coins:300, v:s=>s.pstreak.best, legend:true },
+  { id:'p_quest5',   cat:'life', icon:'🧭', name:'默契十足',   desc:'完成 5 次每週隊伍任務',            goal:5,   coins:120, v:s=>s.partyQuests },
   // 鎖機專注、宵禁、分心 App
   { id:'fo_first',   cat:'life', icon:'🎯', name:'放下手機',   desc:'完成第一次鎖機專注',               goal:1,   coins:20,  v:s=>s.focus.done },
   { id:'fo_10h',     cat:'life', icon:'⏳', name:'十小時心流', desc:'鎖機專注累計 10 小時',             goal:10,  coins:120, v:s=>Math.floor(s.focus.minutes / 60) },
@@ -1184,7 +1242,7 @@ function compute() {
   const tagSolved = {}, checked = new Set(), submittedSet = new Set(), graphSet = new Set(), solvedIds = new Set();
   const bossIds = new Set(state.bosses.map(b => b.id)), critIds = new Set(); let saved = 0;
   const hits = { lc: [], habit: {}, relapse: {} }, freezeBuys = [];   // 契約要數的紀錄：{ ms, day }
-  const partyWeeks = new Set(); let cheersIn = 0, cheersOut = 0;
+  const partyWeeks = new Set(), pqWeeks = new Set(); let cheersIn = 0, cheersOut = 0;
   const fo = { done: 0, minutes: 0, run: 0, best: 0, curfewKept: 0, aborts: 0, skips: 0, gates: 0 }, abortWeeks = {};
   const owned = new Set(['felt']);   // 擁有的外觀
   const skillXp = {};   // 各領域等級：興趣類每個習慣各算一條，其他照分類
@@ -1239,9 +1297,12 @@ function compute() {
     } else if (e.type === 'cheer') {           // 收到的加油給代幣（每天有上限）；送出的只記錄
       if (e.from) { const c = d.cheers = (d.cheers || 0) + 1; cheersIn++;
         r = c > PARTY.cheer.dailyMax ? { xp: 0, coins: 0, tag: `今天收到的加油超過 ${PARTY.cheer.dailyMax} 次，只記錄` } : { xp: 0, coins: PARTY.cheer.coins, tag: `+${PARTY.cheer.coins} 代幣` }; }
-      else cheersOut++;
+      else { cheersOut++; d.cheersOut = (d.cheersOut || 0) + 1; }
     } else if (e.type === 'party_reward') {
       r = { xp: PARTY.reward.xp, coins: PARTY.reward.coins, tag: '' }; partyWeeks.add(e.week);
+    } else if (e.type === 'party_quest') {     // 每週隊伍任務：一週只算一次（換隊伍也一樣）；寶箱等級由事件 id 決定
+      if (pqWeeks.has(e.week)) r.tag = '這週的隊伍任務已經拿過獎勵，只記錄';
+      else { const t = pqTier(e.id), c = PARTY.quest.coins[t.id]; pqWeeks.add(e.week); r = { xp: PARTY.quest.xp, coins: c, tag: `${t.name}隊伍寶箱` }; }
     } else if (e.type === 'focus') {           // 鎖機專注：一次專注 = units 段習慣（受每日上限限制）
       const h = habitsById[e.habit], units = e.kind === 'curfew' ? 1 : e.units;
       if (e.result === 'done' || e.result === 'kept') {
@@ -1280,6 +1341,8 @@ function compute() {
       d.questDone = true; questDays++;
       xp += QUEST_BONUS.xp; earned += QUEST_BONUS.coins; d.xp += QUEST_BONUS.xp; d.coins += QUEST_BONUS.coins;
     }
+    // 額外任務：幫隊友加油（不算在每日任務的三件裡，不影響寶箱）
+    if (d.cheersOut && k >= PARTY.v2) { d.cheerQuest = true; xp += PARTY.cheerQuest.xp; earned += PARTY.cheerQuest.coins; d.xp += PARTY.cheerQuest.xp; d.coins += PARTY.cheerQuest.coins; }
   }
   // 寶箱：那天每日任務全部完成才算，一天一個，開的那天入帳
   const chests = {};
@@ -1375,6 +1438,7 @@ function compute() {
     contracts, contractsOpened: contracts.length, contractsDone, bigWins, contractWeekRun, hits,
     focus: { ...fo, weekAborts: abortWeeks[weekStart(todayKey())] || 0, bestDay: Math.max(0, ...vals.map(d => d.focusMin || 0)) },
     inParty: party.info ? 1 : 0, partyKills: partyWeeks.size, partyWeekRun: longestWeeks(partyWeeks), cheersIn, cheersOut,
+    partyQuests: pqWeeks.size, pstreak: partyStreak(days),
     waterStreak: longestRun(keysWhere(d => (d.habits.water || 0) >= 8)),
     crosschecked: checked.size, submitted: submittedSet.size, graphSolved: graphSet.size,
     topicCount: Object.keys(tagSolved).length, tag: t => tagSolved[t]?.size || 0,
@@ -1506,6 +1570,7 @@ function eventTitle(e) {
   if (e.type === 'cosmetic_buy') return `買了外觀：${COSMETIC_BY_ID[e.cosmetic]?.name || e.cosmetic}`;
   if (e.type === 'cheer') return e.from ? `${e.from} 幫你加油` : `幫 ${e.to} 加油`;
   if (e.type === 'party_reward') return '和隊友打倒了共同 Boss';
+  if (e.type === 'party_quest') return `完成隊伍任務：${PARTY_QUESTS.find(q => q.id === e.quest)?.text(e.members.length) || '每週任務'}`;
   if (e.type === 'focus') {
     const n = state.habits.find(h => h.id === e.habit)?.name || e.habit;
     if (e.kind === 'curfew') return e.result === 'kept' ? '宵禁守住了一整晚' : '宵禁中緊急解鎖';
@@ -1526,6 +1591,7 @@ function eventIcon(e) {
   if (e.type === 'cosmetic_buy') return '🎨';
   if (e.type === 'cheer') return '📣';
   if (e.type === 'party_reward') return '🛡️';
+  if (e.type === 'party_quest') return '🧭';
   if (e.type === 'focus') return e.result === 'aborted' ? '🔓' : e.result === 'cancelled' ? '↩️' : e.kind === 'curfew' ? '🌙' : state.habits.find(h => h.id === e.habit)?.icon || '🎯';
   if (e.type === 'gate') return e.skipped ? '🫁' : '🔑';
   return e.icon || '⭐';
@@ -1578,6 +1644,8 @@ function validEvent(e) {
     // 隊伍事件只由網頁自己產生（normalize 不接受），這裡只檢查格式
     case 'cheer': { const n = e.from ?? e.to; return (e.from == null) !== (e.to == null) && typeof n === 'string' && n && cut(n, 20) === n ? e : null; }
     case 'party_reward': return safeKey(e.party) && dayOk(e.week) && Array.isArray(e.members) && e.members.length <= PARTY.size
+      && e.members.every(m => typeof m === 'string' && cut(m, 20) === m) ? e : null;
+    case 'party_quest': return safeKey(e.party) && dayOk(e.week) && PARTY_QUESTS.some(q => q.id === e.quest) && Array.isArray(e.members) && e.members.length >= 1 && e.members.length <= PARTY.size
       && e.members.every(m => typeof m === 'string' && cut(m, 20) === m) ? e : null;
   }
   return null;
@@ -2297,19 +2365,93 @@ function partyPanel(S, tk) {
     const dots = t.cats.map(c => `<i style="background:${CATS[c].color}" title="${CATS[c].name}"></i>`).join('');
     const xp = r.me ? (S.days[tk]?.xp || 0) : today?.xp, streak = r.me ? S.streak : today?.streak;
     const extra = [xp != null ? `${fmt(xp)} XP` : '', streak != null ? `連續 ${streak} 天` : ''].filter(Boolean).join('，');
-    const week = r.days.map(d => `<i class="${d.dmg ? 'on' : ''}${d.k === tk ? ' today' : ''}" title="${dayLabel(d.k)}：${d.dmg} 點"></i>`).join('');
+    const week = r.days.map(d => `<i class="${d.dmg ? 'on' : d.miss ? 'miss' : ''}${d.k === tk ? ' today' : ''}" title="${dayLabel(d.k)}：${d.miss ? `沒有紀錄，Boss 回 ${PARTY.heal} 血` : `${d.dmg} 點`}"></i>`).join('');
     return `<li class="pm${r.me ? ' me' : ''}"><div class="pmn"><b>${esc(r.m.name)}${r.me ? '<small>（你）</small>' : ''}</b>
         <span class="pst">${t.cats.length ? '今天有紀錄' : '今天還沒動'}<span class="pdots">${dots}</span>${extra ? `<span>${extra}</span>` : ''}</span></div>
       <div class="pweek" aria-label="本週每天有沒有紀錄">${week}</div><span class="pdmg num" title="本週傷害">${fmt(r.dmg)}</span>
       ${r.me ? '<span></span>' : `<button class="btn btn-ghost pcheer" data-act="cheer" data-id="${esc(r.m.uid)}" ${cheered.has(r.m.uid) ? 'disabled' : ''}>${cheered.has(r.m.uid) ? '已加油' : '加油 📣'}</button>`}</li>`;
   }).join('');
   const status = B.killDay ? `打倒了！週日結束後每人 +${PARTY.reward.xp} XP、+${PARTY.reward.coins} 代幣` : left <= 1 ? '今天是最後一天' : `還剩 ${left} 天`;
+  const W = B.weak && CATS[B.weak], ps = S.pstreak;
+  const streak = party.members.length < 2 ? '' : `<div class="pstreak${ps.left.length ? '' : ' all'}"><span class="pfire" aria-hidden="true">🔥</span>
+      <span>隊伍連續 <b class="num">${ps.cur}${ps.capped ? '+' : ''}</b> 天全員有紀錄${ps.best > ps.cur ? `<small>（最長 ${ps.best}）</small>` : ''}</span>
+      <span class="dim">${ps.left.length ? `今天還差：${ps.left.map(esc).join('、')}` : '今天全員到齊！'}</span></div>`;
   return `<section class="panel partyp"><div class="phead"><h2>${esc(party.info.name)}</h2><span class="dim num">${party.members.length} / ${PARTY.size} 人</span></div>
-    <div class="pboss${B.killDay ? ' dead' : ''}"><span class="bico" aria-hidden="true">${B.icon}</span><div class="pbm"><b>本週共同 Boss：${B.name}</b>
+    ${streak}
+    <div class="pboss${B.killDay ? ' dead' : ''}"><span class="bico" aria-hidden="true">${B.icon}</span><div class="pbm"><b>本週共同 Boss：${B.name}${W ? `<span class="pweak">弱點 <i style="background:${W.color}"></i>${W.name}</span>` : ''}</b>
       <div class="hp" role="progressbar" aria-label="共同 Boss 血量" aria-valuenow="${B.hp}" aria-valuemin="0" aria-valuemax="${B.max}"><i style="width:${B.hp / B.max * 100}%"></i></div>
-      <div class="hpline"><span class="num">HP ${fmt(B.hp)} / ${fmt(B.max)}</span><span>${status}</span></div></div></div>
-    <p class="hint">每人每天每個有紀錄的分類打 ${PARTY.dmg} 點（一天最多 ${PARTY.dayMax}）。收到加油 +${PARTY.cheer.coins} 代幣。</p>
-    <ul class="pmembers">${rows}</ul>${party.error ? `<p class="dim" style="font-size:13.5px;margin:8px 0 0">隊伍同步失敗，顯示的是上次的資料。</p>` : ''}</section>`;
+      <div class="hpline"><span class="num">HP ${fmt(B.hp)} / ${fmt(B.max)}${B.healed ? `<small class="pheal">漏打回血 ${fmt(B.healed)}</small>` : ''}</span><span>${status}</span></div></div></div>
+    <p class="hint">每人每天每個有紀錄的分類打 ${PARTY.dmg} 點${W ? `，弱點「${W.name}」打 ${PARTY.weakDmg} 點` : ''}（一天最多 ${PARTY.dayMax}）；有人整天沒紀錄，Boss 回 ${PARTY.heal} 血。收到加油 +${PARTY.cheer.coins} 代幣。</p>
+    <ul class="pmembers">${rows}</ul>
+    ${partyQuestHTML(B)}
+    <div class="btns" style="margin-top:12px"><button class="btn btn-ghost" data-act="preport" aria-expanded="${partyRep.open}">${partyRep.open ? '收起週報' : '📊 隊伍週報'}</button></div>
+    ${partyRep.open ? partyReportHTML(S, tk) : ''}
+    ${party.error ? `<p class="dim" style="font-size:13.5px;margin:8px 0 0">隊伍同步失敗，顯示的是上次的資料。</p>` : ''}</section>`;
+}
+function partyQuestHTML(B) {
+  const st = partyQuestState(B); if (!st) return '';
+  const id = `pq-${party.info.id}-${B.wk}`, got = state.events.some(e => e.id === id), r = got ? compute().per[id] : null;
+  const lo = PARTY.quest.coins.common, hi = PARTY.quest.coins.legend;
+  const note = got ? (r?.coins ? `完成了！${esc(r.tag)}：+${PARTY.quest.xp} XP、+${fmt(r.coins)} 代幣` : esc(r?.tag || '完成了！'))
+    : st.done ? '完成了！獎勵下次同步時入帳' : `完成每人 +${PARTY.quest.xp} XP，再開一個隊伍寶箱（${lo}～${hi} 代幣）`;
+  return `<div class="pquest${st.done ? ' done' : ''}"><div class="pqh"><span>🧭 本週隊伍任務</span><span class="num">${st.v} / ${st.goal}${st.q.unit ? ` ${st.q.unit}` : ''}</span></div>
+    <div class="pqt">${esc(st.text)}</div><div class="bar"><i style="width:${st.v / st.goal * 100}%"></i></div><div class="pqr">${note}</div></div>`;
+}
+/* ---------- 隊伍週報（只用隊友已經分享的摘要：有沒有紀錄、分類） ---------- */
+const partyRep = { open: false, off: 0 };   // off：0 = 本週，1 = 上週
+const mdOf = k => { const [, m, d] = k.split('-').map(Number); return `${m}/${d}`; };
+function partyReportData(S, tk) {
+  const wk = addDays(weekStart(tk), -7 * partyRep.off), end = addDays(wk, 6), B = partyBoss(S, wk);
+  const span = partyRep.off ? 7 : daysBetween(wk, tk) + 1;
+  const rows = B.rows.filter(r => joinedBy(r.m, end)).map(r => {
+    const cats = {}; for (const d of r.days) for (const c of d.cats) cats[c] = (cats[c] || 0) + 1;
+    return { ...r, active: pqDays(r), cats };
+  }).sort((a, b) => b.active - a.active || b.dmg - a.dmg);
+  const mvp = rows.length > 1 && rows[0].active && (rows[0].active > rows[1].active || rows[0].dmg > rows[1].dmg) ? rows[0].m.uid : null;
+  return { wk, end, B, span, rows, mvp, st: partyQuestState(B), dmg: rows.reduce((a, r) => a + r.dmg, 0) };
+}
+function partyReportHTML(S, tk) {
+  const o = partyReportData(S, tk), B = o.B;
+  const boss = B.killDay ? `${B.icon} ${B.name}：${mdOf(B.killDay)} 打倒` : `${B.icon} ${B.name}：剩 ${fmt(B.hp)} / ${fmt(B.max)} 血`;
+  const rows = o.rows.map(r => `<li class="${r.me ? 'me' : ''}"><span class="prn">${r.m.uid === o.mvp ? '<span title="本週 MVP">👑</span> ' : ''}${esc(r.m.name)}${r.me ? '<small>（你）</small>' : ''}</span>
+      <span class="num prd">${r.active} / ${o.span} 天</span>
+      <span class="prc">${Object.entries(CATS).filter(([c]) => r.cats[c]).map(([c, m]) => `<span title="${m.name} ${r.cats[c]} 天"><i style="background:${m.color}"></i><span class="num">${r.cats[c]}</span></span>`).join('') || '<span class="dim">—</span>'}</span>
+      <span class="num prg" title="傷害">${fmt(r.dmg)}</span></li>`).join('');
+  return `<div class="preport"><div class="rhead"><b>${mdOf(o.wk)}–${mdOf(o.end)} 週報</b>
+      <div class="seg zh" role="radiogroup" aria-label="哪一週">${['本週', '上週'].map((n, i) => `<label style="--dc:var(--chalk)"><input type="radio" name="prepw" value="${i}" ${partyRep.off === i ? 'checked' : ''}><span>${n}</span></label>`).join('')}</div></div>
+    <ul class="prstats"><li><b>${esc(boss)}</b></li><li>全員到齊 <b class="num">${B.fullDays}</b> 天</li><li>合計傷害 <b class="num">${fmt(o.dmg)}</b></li>
+      ${B.healed ? `<li>漏打回血 <b class="num">${fmt(B.healed)}</b></li>` : ''}${o.st ? `<li>隊伍任務 ${o.st.done ? '✓ 完成' : `<span class="num">${o.st.v} / ${o.st.goal}</span>`}</li>` : ''}</ul>
+    <ul class="prows">${rows}</ul>
+    <div class="btns" style="margin-top:10px"><button class="btn btn-brass" data-act="preportimg">做成圖片</button></div></div>`;
+}
+async function partyReportImage() {
+  const S = compute(), o = partyReportData(S, todayKey()), B = o.B, W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const x = cv.getContext('2d'), css = getComputedStyle(document.documentElement), v = n => css.getPropertyValue(n).trim();
+  const zh = '"Nunito","Chiron GoRound TC",sans-serif', nm = '"Barlow Condensed","Chiron GoRound TC",sans-serif';
+  const texts = `${party.info.name}隊伍週報打倒剩血全員到齊天合計傷害任務完成漏打回Goal 成就板 ${B.name} ${o.rows.map(r => r.m.name).join('')} 0123456789/–`;
+  try { await Promise.all([`700 64px ${zh}`, `400 34px ${zh}`, `700 120px ${nm}`].map(f => document.fonts.load(f, texts))); } catch (e) { /* 用系統字 */ }
+  const g = x.createRadialGradient(W / 2, 0, 100, W / 2, H / 2, H); g.addColorStop(0, v('--felt-hi2') || '#376657'); g.addColorStop(1, v('--felt-deep') || '#183129');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.strokeStyle = 'rgba(239,232,214,.18)'; x.setLineDash([14, 10]); x.lineWidth = 3; x.strokeRect(40, 40, W - 80, H - 80); x.setLineDash([]);
+  x.textAlign = 'center'; x.fillStyle = '#efe8d6'; x.font = `700 62px ${zh}`; x.fillText(party.info.name, W / 2, 160, W - 160);
+  x.fillStyle = '#aebdaf'; x.font = `400 36px ${zh}`; x.fillText(`隊伍週報　${mdOf(o.wk)}–${mdOf(o.end)}`, W / 2, 222);
+  x.font = '120px sans-serif'; x.globalAlpha = B.killDay ? 1 : .85; x.fillText(B.icon, W / 2, 380); x.globalAlpha = 1;
+  x.fillStyle = B.killDay ? '#8fe0cf' : '#efe8d6'; x.font = `700 44px ${zh}`; x.fillText(B.killDay ? `${B.name}：${mdOf(B.killDay)} 打倒！` : `${B.name}：剩 ${fmt(B.hp)} / ${fmt(B.max)} 血`, W / 2, 465);
+  const cells = [[B.fullDays, '全員到齊（天）'], [fmt(o.dmg), '合計傷害'], [o.st ? (o.st.done ? '✓' : `${o.st.v}/${o.st.goal}`) : '—', '隊伍任務']];
+  cells.forEach(([n, l], i) => { const cx = 210 + i * 330, cy = 600;
+    x.fillStyle = 'rgba(0,0,0,.22)'; x.beginPath(); x.roundRect(cx - 145, cy - 90, 290, 165, 24); x.fill();
+    x.fillStyle = '#efe8d6'; x.font = `700 84px ${nm}`; x.fillText(String(n), cx, cy + 10); x.fillStyle = '#aebdaf'; x.font = `400 28px ${zh}`; x.fillText(l, cx, cy + 55); });
+  o.rows.forEach((r, i) => { const y = 790 + i * 120;
+    x.fillStyle = r.me ? 'rgba(214,162,67,.16)' : 'rgba(0,0,0,.18)'; x.beginPath(); x.roundRect(90, y - 52, W - 180, 100, 20); x.fill();
+    x.textAlign = 'left'; x.fillStyle = '#efe8d6'; x.font = `700 38px ${zh}`; x.fillText(`${r.m.uid === o.mvp ? '👑 ' : ''}${r.m.name}`, 125, y + 13, 330);
+    r.days.forEach((d, j) => { x.fillStyle = d.cats.length ? '#d6a243' : d.miss ? 'rgba(238,122,100,.45)' : 'rgba(0,0,0,.3)'; x.beginPath(); x.roundRect(480 + j * 46, y - 18, 36, 36, 8); x.fill(); });
+    x.textAlign = 'right'; x.fillStyle = '#ff8f78'; x.font = `700 48px ${nm}`; x.fillText(fmt(r.dmg), W - 125, y + 16); });
+  x.textAlign = 'center'; x.fillStyle = '#d6a243'; x.font = `700 34px ${zh}`; x.fillText('Goal 成就板', W / 2, H - 80);
+  const url = cv.toDataURL('image/png');
+  const ov = document.createElement('div'); ov.className = 'imgview'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', '隊伍週報圖片');
+  ov.innerHTML = `<div class="iv"><img alt="隊伍週報" src="${url}"><p>App 裡直接截圖就好；瀏覽器可以長按圖片或按下載。</p><div class="btns"><a class="btn btn-brass" download="goal-party-${o.wk}.png" href="${url}">下載</a><button class="btn btn-ghost" data-close>關閉</button></div></div>`;
+  ov.addEventListener('click', e => { if (e.target === ov || e.target.closest('[data-close]')) ov.remove(); });
+  document.body.append(ov);
 }
 function partySettingsHTML() {
   if (!cloud.session) return '<p class="hint" style="margin:0">登入雲端同步後才能組隊。</p>';
@@ -2365,6 +2507,10 @@ function chestLine(S, tk) {
   return S.days[tk]?.questDone ? `<div class="chestl"><button class="btn btn-brass chestbtn" data-act="chest" data-day="${tk}">🎁 開寶箱</button><span class="dim">任務全部完成的獎勵</span></div>`
     : `<p class="chestl dim">🎁 三件都完成，還可以開一個寶箱。</p>`;
 }
+// 額外任務：有隊友才顯示；不算在三件裡
+const cheerQuestLine = d => !d.cheerQuest && !(party.info && party.members.length >= 2) ? ''
+  : `<ul class="qlist qextra"><li class="${d.cheerQuest ? 'done' : ''}"><span class="qc" aria-hidden="true">${d.cheerQuest ? '✓' : ''}</span><span><span class="qtag">額外</span>幫一位隊友加油
+    <span class="sub">${d.cheerQuest ? `已拿到 +${PARTY.cheerQuest.xp} XP、+${PARTY.cheerQuest.coins} 代幣` : `+${PARTY.cheerQuest.xp} XP、+${PARTY.cheerQuest.coins} 代幣，不算在上面三件裡`}</span></span></li></ul>`;
 function questPanel(S, tk) {
   const d = S.days[tk] || emptyDay(), qs = questsFor(tk), oks = qs.map(q => q.ok(d)), n = oks.filter(Boolean).length;
   const np = nextProblem(S);
@@ -2373,7 +2519,7 @@ function questPanel(S, tk) {
   const goals = weekGoals().map(g => { const v = Math.min(g.v(w), g.goal); return `<div class="wg"><span>${esc(g.text)}</span><span class="num">${v} / ${g.goal}</span><div class="bar"><i style="width:${v / g.goal * 100}%"></i></div></div>`; }).join('');
   return `<section class="panel quests">${n === qs.length && qs.length ? '<div class="stamp" aria-hidden="true">全數完成</div>' : ''}<h2>今日任務</h2>
     <p class="hint">${n === qs.length ? `全部完成，已拿到 +${QUEST_BONUS.xp} XP 和 +${QUEST_BONUS.coins} 代幣。` : `完成這 ${qs.length} 件事，額外得到 +${QUEST_BONUS.xp} XP 和 +${QUEST_BONUS.coins} 代幣。`}</p>
-    <ul class="qlist">${items}</ul>${chestLine(S, tk)}
+    <ul class="qlist">${items}</ul>${cheerQuestLine(d)}${chestLine(S, tk)}
     <h3>本週目標 <span class="dim">${w.done ? `已達成，+${WEEK_BONUS.coins} 代幣已入帳` : `全部達成 +${WEEK_BONUS.xp} XP、+${WEEK_BONUS.coins} 代幣`}</span></h3>
     <div class="wgs">${goals}</div></section>`;
 }
@@ -3407,7 +3553,7 @@ async function syncParty() {
     }
     applyParty(raw); party.status = party.info ? 'in' : 'none'; party.error = '';
     saveParty();
-    if (party.info) { ingestCheers(me); grantPartyReward(me); }
+    if (party.info) { ingestCheers(me); grantPartyReward(me); grantPartyQuest(me); }
   } catch (e) {
     if (partyMissing(e)) { party.status = 'nosetup'; party.error = ''; }
     else { party.error = partyErr(e); if (party.status === 'off') party.status = 'error'; }
@@ -3429,20 +3575,66 @@ function ingestCheers(me) {
   for (const ev of got.slice(-3)) toast(`<b>${esc(ev.from)} 幫你加油了</b>${S.per[ev.id]?.coins ? `<br><span class="dim">+${PARTY.cheer.coins} 代幣</span>` : ''}`, null, 'ac');
   chime('quest'); haptic('success');
 }
+const joinedBy = (m, k) => !m.joined || dayKey(m.joined) <= k;   // 那天已經在隊伍裡
+const memberCats = (S, m, k) => {   // 自己用本機紀錄，隊友用雲端摘要；保護卡補的日子算沒有紀錄
+  const mine = S.days[k], theirs = party.days[m.uid]?.[k];
+  return m.uid === myUid() ? (mine?.any ? [...mine.cats].filter(c => Object.hasOwn(CATS, c)) : []) : theirs?.active ? theirs.cats : [];
+};
 function partyBoss(S, wk) {
   const me = myUid(), tk = todayKey(), max = PARTY.hpPer * Math.max(1, party.members.length);
+  const [icon, name, weakCat] = PARTY_BOSSES[hashStr(wk + (party.info?.id || '')) % PARTY_BOSSES.length];
+  const weak = addDays(wk, 6) >= PARTY.v2 ? weakCat : null;   // 弱點從 build 19 那週開始
   const rows = party.members.map(m => {
     const days = Array.from({ length: 7 }, (_, i) => {
-      const k = addDays(wk, i), mine = S.days[k], theirs = party.days[m.uid]?.[k];
-      const cats = k > tk ? [] : m.uid === me ? (mine?.any ? [...mine.cats].filter(c => Object.hasOwn(CATS, c)) : []) : theirs?.active ? theirs.cats : [];
-      return { k, cats, dmg: Math.min(cats.length * PARTY.dmg, PARTY.dayMax) };
+      const k = addDays(wk, i), cats = k > tk ? [] : memberCats(S, m, k), inn = joinedBy(m, k);
+      // 漏打：那天已經過完、人已經在隊伍裡、整天沒紀錄（build 19 之後的日子才算）
+      return { k, cats, inn, miss: k < tk && k >= PARTY.v2 && inn && !cats.length, dmg: Math.min(cats.reduce((a, c) => a + (c === weak ? PARTY.weakDmg : PARTY.dmg), 0), PARTY.dayMax) };
     });
-    return { m, me: m.uid === me, days, dmg: days.reduce((a, d) => a + d.dmg, 0) };
+    return { m, me: m.uid === me, days, dmg: days.reduce((a, d) => a + d.dmg, 0), miss: days.filter(d => d.miss).length };
   });
-  let total = 0, killDay = null;
-  for (let i = 0; i < 7; i++) { for (const r of rows) total += r.days[i].dmg; if (!killDay && total >= max) killDay = addDays(wk, i); }
-  const [icon, name] = PARTY_BOSSES[hashStr(wk + (party.info?.id || '')) % PARTY_BOSSES.length];
-  return { wk, max, hp: Math.max(0, max - total), total, rows, killDay, icon, name };
+  let total = 0, killDay = null, healed = 0, fullDays = 0;
+  for (let i = 0; i < 7; i++) {
+    for (const r of rows) total += r.days[i].dmg;
+    if (!killDay && total >= max) killDay = addDays(wk, i);
+    if (!killDay) { const h = Math.min(total, rows.filter(r => r.days[i].miss).length * PARTY.heal); total -= h; healed += h; }   // 打倒之後就不會回血
+    const inn = rows.filter(r => r.days[i].inn);
+    if (inn.length && inn.every(r => r.days[i].cats.length)) fullDays++;
+  }
+  return { wk, max, hp: Math.max(0, max - total), total, rows, killDay, icon, name, weak, healed, fullDays, quest: partyQuestOf(wk) };
+}
+const partyQuestOf = wk => party.info ? PARTY_QUESTS[hashStr('pq:' + wk + party.info.id) % PARTY_QUESTS.length] : null;
+function partyQuestState(B) {
+  const q = B.quest, n = Math.max(1, party.members.length); if (!q) return null;
+  const goal = q.goal(n), v = Math.min(q.v(B), goal);
+  return { q, n, goal, v, done: v >= goal, text: q.text(n) };
+}
+/* 隊伍連續天數：全員（那天已經入隊的人，至少 2 人）都有紀錄的日子，連起來算。只看得到最近 PARTY.pull 天（雲端只留 60 天） */
+function partyStreak(days) {
+  const out = { cur: 0, best: 0, capped: false, left: [] };
+  if (!party.info || party.members.length < 2) return out;
+  const S = { days }, tk = todayKey(), from = addDays(tk, -PARTY.pull);
+  const full = k => { const ms = party.members.filter(m => joinedBy(m, k)); return ms.length >= 2 && ms.every(m => memberCats(S, m, k).length); };
+  out.left = party.members.filter(m => !memberCats(S, m, tk).length).map(m => m.name);
+  let run = 0;
+  for (let k = from; k <= tk; k = addDays(k, 1)) { if (full(k)) { run++; out.best = Math.max(out.best, run); } else if (k < tk) run = 0; }   // 今天還沒過完，不算斷
+  let k = full(tk) ? tk : addDays(tk, -1);
+  while (k >= from && full(k)) { out.cur++; k = addDays(k, -1); }
+  out.capped = k < from;
+  return out;
+}
+// 隊伍任務完成就記一筆 party_quest（固定 id）；檢查這週和上週（上週可能週日晚上才完成、還沒同步）
+function grantPartyQuest(me) {
+  const self = party.members.find(m => m.uid === me); if (!self) return;
+  const S = compute(), tk = todayKey(), wk = weekStart(tk);
+  for (const w of [wk, addDays(wk, -7)]) {
+    const id = `pq-${party.info.id}-${w}`;
+    if (addDays(w, 6) < PARTY.v2 || state.events.some(e => e.id === id) || state.deleted.includes(id) || !joinedBy(self, addDays(w, 6))) continue;
+    const st = partyQuestState(partyBoss(S, w)); if (!st?.done) continue;
+    addEvent({ id, type: 'party_quest', ts: nowISO(), party: party.info.id, week: w, quest: st.q.id, members: party.members.map(m => m.name) });
+    save(); const r = compute().per[id];
+    toast(`<b>隊伍任務完成！</b><br><span class="dim">${esc(st.text)}<br>${r?.coins ? `${esc(r.tag)}：+${PARTY.quest.xp} XP　+${fmt(r.coins)} 代幣` : esc(r?.tag || '')}</span>`, null, 'ac');
+    chime('quest'); haptic('success');
+  }
 }
 // 上一週打倒了，就在本機記一筆獎勵（固定 id：同一隊同一週只入帳一次）；那週結束後才加入的人不算
 function grantPartyReward(me) {
@@ -3909,6 +4101,8 @@ document.addEventListener('click', e => {
     commit(); chime('tick'); haptic('tap'); toast('買了一張保護卡。哪天忙到沒紀錄，它會自動補上 ❄️');
   }
   else if (act === 'cheer') sendCheer(id, t);
+  else if (act === 'preport') { partyRep.open = !partyRep.open; render(); }
+  else if (act === 'preportimg') partyReportImage().catch(err => toast('圖片做不出來：' + esc(err.message)));
   else if (act === 'partycopy') { const code = party.info?.code || ''; (navigator.clipboard ? navigator.clipboard.writeText(code) : Promise.reject()).then(() => toast('已複製邀請碼'), () => toast(`邀請碼：${esc(code)}`)); }
   else if (act === 'partyleave') {
     if (Date.now() - party.leaveArm >= 4000) { party.leaveArm = Date.now(); render(); toast('退出後會失去本週的共同 Boss 進度。4 秒內再按一次就退出。'); setTimeout(() => { if (tab === 'settings') render(); }, 4100); return; }
@@ -4029,6 +4223,7 @@ document.addEventListener('change', e => {
   else if (t.dataset.gpick) togglePick(t.dataset.gpick, t.checked);
   else if (t.id === 'fhabit') { guard.form.habit = t.value; guard.form.minutes = 0; render(); }
   else if (t.name === 'recapm') { recapOffset = Number(t.value) ? 1 : 0; render(); }
+  else if (t.name === 'prepw') { partyRep.off = Number(t.value) ? 1 : 0; render(); }
   else if (t.name === 'rvday') { guard.reviewDay = Number(t.value) ? 1 : 0; render(); }
   else if (t.id === 'haptics') { state.settings.haptics = t.checked; touchMeta(); save(); if (state.settings.haptics) haptic('success'); }
   else if (t.dataset.wh !== undefined) { const ids = [...widgetHabitIds()]; while (ids.length < 3) ids.push(DEFAULT_WIDGET_HABITS[ids.length]); ids[Number(t.dataset.wh)] = t.value; state.settings.widgetHabits = ids; touchMeta(); save(); render(); }
