@@ -1,6 +1,6 @@
 # 接下來要實作的事
 
-> 更新：2026-11-25　｜　目前網頁 build 21，原生 NATIVE_VERSION 6（`version.json` 的 minNative 6）
+> 更新：2026-11-25　｜　目前網頁 build 22，原生 NATIVE_VERSION 6（`version.json` 的 minNative 6）
 > 先讀 `CLAUDE.md`（架構、發佈規則、測試方法）。設計理由與研究依據在 `PLAN.md` 第 8 節。
 
 ## 目前狀態
@@ -52,3 +52,8 @@
 3b. **筆電也一起鎖**：Chrome 擴充功能在專注期間擋分心網站。
 4. **LeetCode Chrome 擴充功能**（階段 4，可選）：偵測 Accepted，送出 `leetcode_submitted: true` 的事件。
 5. **數值調整**：等使用者回報一週的使用手感，不要自己猜（契約倍率、保護卡價格也一樣）。
+
+- **build 22 日記（2026-11-25，PLAN 11）**：設計文件（Claude Doc）https://claude.ai/artifact/9jvb6X4exJg6T1ndg7biK8 。`journal` 事件、`JOURNAL` / `MOODS` / `JTAGS` 常數、加密在 `jSeal()` / `jDecrypt()`（事件 id 當 AES-GCM 附加資料），金鑰 `state.jkey`（`validJkey()`、兩台裝置衝突用 `pickJkey()`：同一把取 `at` 比較新的，不同把留 `created` 比較早的），這台裝置的金鑰在 IndexedDB `goal-journal`（`<帳號 id>:<kid>`）。寫日記畫面 `.jwv` 放在 `#view` 外面（重新整理畫面不會打斷輸入）。`QUEST_POOL` 的任務可以有 `since`，`q_journal` 從 `JOURNAL.since`（2026-11-27）才加入，舊日子的任務不變。
+  - 使用者的決定：先做日記、要跟 XP / 代幣掛勾、用日記密碼加密（不然 Supabase 後台看得到對方的日記）、情侶隊是重點（兩人每天開、都用 Pixel、對方已有帳號）、目前沒有朋友隊所以維持一人一隊、要做每日一問、心情預設給對方看。不串 Pixel Journal。
+  - 已知取捨：搜尋只能用標籤和日期（內文是加密的）；兩台裝置在同步前各自設定了不同的日記密碼時，後設定的那台寫的日記只能在那台打開；草稿沒有加密（只在這台裝置）。
+  - **下一步：情侶隊與交換日記**（設計文件「情侶隊與交換日記」那節）：`goal_parties` 加 `kind` / `since`、`goal_exchange` / `goal_exchange_replies`（`sync/party-v4.sql`，`party.v4`）、在一起的天數、彼此的心情、每日一問、玫瑰主題、分享 / 回覆的獎勵（各 +5 XP / +3 代幣，每天一次）。

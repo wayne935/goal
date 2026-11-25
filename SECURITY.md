@@ -89,3 +89,10 @@
 - 鎖手機設定（`guardConfig`）來自網頁，所以 **SECURITY 第 7 項（誰能推到 repo 誰就能改你手機上的網頁）現在也代表能改鎖機設定**。但緊急解鎖、電話、緊急求救、鬧鐘是原生程式寫死的，網頁無法關掉；最壞的情況是被設成鎖住很多 App，隨時可以緊急解鎖或關閉無障礙服務。建議開啟 GitHub 兩步驟驗證。
 - Health Connect 只申請讀取（步數、運動、睡眠），只在打開 App 時讀，不申請背景讀取；轉成的事件只存「達標了」與時長，不存原始健康資料。
 - 新增的 receiver、activity、service 都是 `exported="false"`（Health Connect 要求的權限說明 alias 除外，它只能由系統以 `START_VIEW_PERMISSION_USAGE` 權限開啟，打開的是 App 首頁）。
+
+## 日記加密（2026-11-25，build 22）
+- 日記的標題和內文在裝置上加密後才存進 `state.events`、同步到 `goal_events`：Web Crypto 的 AES-GCM（256 位元、每篇隨機 12 bytes IV、事件 id 當附加資料，密文不能搬到別筆事件）。明文只有日期、心情、標籤、字數（`compute()` 算分用）。
+- 日記金鑰是隨機產生的；用日記密碼（PBKDF2-SHA256 60 萬次）和 12 字備用碼（約 60 bits）各包一份放在 `state.jkey`，跟著 `goal_meta` 同步。改密碼只重包，不用重新加密日記。這台裝置把**不能匯出**的金鑰存進 IndexedDB，換帳號用不同的位置（`<帳號 id>:<kid>`）。
+- Supabase 後台（專案擁有者）和任何拿到資料庫或備份檔的人都只看得到密文；離線猜密碼要對每個猜測跑 60 萬次 PBKDF2，所以日記密碼還是要夠長。
+- 雲端和備份檔進來的 `journal` 事件一律經過 `validEvent()`（標籤經過 `cleanTag()`、密文長度上限），`jkey` 經過 `validJkey()`；解密出來的文字一律 `esc()` 或 `textContent`。`normalize()` 不接受 `journal`（inbox / AI 不能寫日記）。
+- 剩下的風險（可接受）：草稿以明文存在這台裝置的 localStorage；能打開這台已解鎖裝置的人看得到日記（可以在日記分頁「在這台裝置上鎖起來」）；忘記密碼又弄丟備用碼，日記就讀不回來。

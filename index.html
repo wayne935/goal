@@ -70,6 +70,8 @@ button{cursor:pointer}
 .tab[aria-current="page"]{color:var(--chalk);font-weight:700}
 .tab[aria-current="page"]::after{content:"";position:absolute;left:12px;right:12px;bottom:-2px;height:3px;border-radius:3px;background:var(--brass)}
 .tab .ti{font-size:17px}
+.tab span{white-space:nowrap}
+@media (min-width:721px) and (max-width:1020px){.tab{padding:10px 9px 12px;font-size:16px;gap:5px}}
 .tab-me,.subtabs{display:none}
 .subtabs{background:rgba(0,0,0,.24);border-radius:12px;padding:4px;gap:4px;margin:0 0 16px}
 .subtabs button{flex:1;background:none;border:0;border-radius:9px;padding:8px 6px;color:var(--chalk-dim);font-size:15px;font-weight:700;white-space:nowrap}
@@ -582,6 +584,65 @@ details.bcat[open] .shelf{display:none}
 .dayhead b{font-size:18px}
 .dayhead span{font-family:var(--ff-num);color:var(--chalk-dim);font-size:16px}
 
+/* ---------- 日記（build 22） ---------- */
+:root{--m1:#ee7a64;--m2:#e0a35a;--m3:#aebdaf;--m4:#7fc6a0;--m5:#4cc3b0}
+.jtoday{display:flex;align-items:center;gap:12px;background:var(--felt-hi);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.jtoday .jm{font-size:34px;line-height:1}
+.jtoday small{display:block;color:var(--chalk-dim);font-size:14px}
+body.jw-open{overflow:hidden}
+.jwv{position:fixed;inset:0;z-index:45;background:rgba(5,15,12,.86);display:flex;justify-content:center;align-items:flex-start;overflow-y:auto;padding:28px 16px}
+.jw{width:min(720px,100%);background:var(--felt-deep);border-radius:18px;padding:16px;display:grid;gap:12px;box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.jwh{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.jwh .in{width:auto;padding:7px 10px}
+.jmoods{justify-self:start}
+.jmoods span{font-size:24px;line-height:1.2;padding:5px 11px}
+.jmoods input:checked+span{background:var(--dc)}
+.jwt{font-size:18px;font-weight:700}
+textarea.in.jwb{font-family:var(--ff-zh);font-size:17px;line-height:1.75;min-height:42vh}
+.jwtags{margin:0;align-items:center}
+.chips input.jwnt{position:static;opacity:1;width:120px;padding:3px 10px;font-size:14px;border-radius:99px}
+.jwf{display:flex;justify-content:space-between;gap:12px;font-size:14.5px;color:var(--chalk-dim)}
+.jwf #jwhint{color:var(--brass-hi);text-align:right}
+.stats.jstats{grid-template-columns:repeat(4,1fr);margin-top:4px}
+.jcalh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.jcalh b{font-size:17px}
+.jcalh .btn-x:disabled{opacity:.3}
+.jcal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}
+.jcal .wd{font-size:12.5px;color:var(--chalk-dim)}
+.jgrid{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}
+@media (max-width:960px){.jgrid{grid-template-columns:1fr}}
+.jcal button{height:40px;border:0;border-radius:9px;background:rgba(0,0,0,.22);color:var(--chalk-dim);font-family:var(--ff-num);font-size:15px;padding:0}
+.jcal button.has{background:var(--mc,var(--chalk-dim));color:#10241e;font-weight:700;cursor:pointer}
+.jcal button.today{outline:2px solid var(--brass);outline-offset:-2px}
+.jcal button[aria-pressed="true"]{outline:3px solid var(--chalk);outline-offset:-3px}
+.jcal button:disabled{cursor:default}
+.jlegend{justify-content:flex-start;flex-wrap:wrap;gap:4px 12px}
+.jlegend span{display:inline-flex;align-items:center;gap:5px}
+.jtagf{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.jtagf button{font-size:14px;padding:3px 10px;border-radius:99px;border:1.5px solid var(--chalk-faint);background:none;color:var(--chalk-dim)}
+.jtagf button[aria-pressed="true"]{background:var(--chalk);color:#183129;border-color:var(--chalk)}
+.jent{background:rgba(0,0,0,.18);border-radius:14px;padding:12px 14px;margin-top:10px}
+.jent .jh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:15px}
+.jent .jm{font-size:22px;line-height:1}
+.jent .jh .dim{color:var(--chalk-dim);font-size:14px}
+.jent .jtags{color:var(--chalk-dim);font-size:13.5px}
+.jent .jact{margin-left:auto;display:flex;gap:4px;align-items:center}
+.jent .jt{margin:8px 0 0;font-size:17px}
+.jent .jt:empty{display:none}
+.jent .jb{margin:6px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.75;font-size:15.5px;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.jent.open .jb{display:block}
+.jent.enc .jb{color:var(--chalk-dim)}
+.jent .jmore{margin:6px 0 0}
+.jform{display:grid;gap:12px;max-width:420px;margin-top:12px}
+.jforgot{margin-top:16px}
+.jforgot summary{cursor:pointer;color:var(--brass-hi);font-size:15px}
+.jcode{font-family:ui-monospace,Consolas,monospace;font-size:26px;letter-spacing:.08em;background:rgba(0,0,0,.3);border-radius:12px;padding:14px;text-align:center;user-select:all;margin:10px 0 14px;overflow-wrap:anywhere}
+@media (max-width:720px){
+  .jwv{padding:0}
+  .jw{border-radius:0;min-height:100%;align-content:start}
+  .stats.jstats{grid-template-columns:repeat(2,1fr)}
+}
+
 /* ---------- settings ---------- */
 .hab-edit{display:grid;gap:8px}
 .hab-row{display:grid;grid-template-columns:56px minmax(140px,360px) 72px 72px 84px 110px 110px 92px 30px;gap:8px;align-items:center}
@@ -847,12 +908,12 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 21;
+const APP_BUILD = 22;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
-/* 手機底部只放 5 個分頁：徽章牆、紀錄、設定收進「我的」，頁面上方有子分頁 */
+/* 手機底部只放 5 個分頁：日記、徽章牆、紀錄、設定收進「我的」，頁面上方有子分頁 */
 const SKILL_SEEN = 'goal.skillSeen', SBOSS_SEEN = 'goal.sbossSeen';
-const ME_TABS = ['badges', 'history', 'settings'], ME_KEY = 'goal.meTab';
+const ME_TABS = ['journal', 'badges', 'history', 'settings'], ME_KEY = 'goal.meTab';
 const meTab = () => { const t = lsGet(ME_KEY); return ME_TABS.includes(t) ? t : 'badges'; };
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -873,6 +934,10 @@ const DIFF = {
 };
 const REVIEW_FACTOR = 0.4;
 const CUSTOM_CAP = { xp: 30, coins: 20 };
+/* 日記（build 22）：每天（日記的日期）第一篇滿 min 字給分、滿 long 字再加；補寫只有昨天給分。since 之後每日任務池才有寫日記 */
+const JOURNAL = { min: 50, long: 300, xp: 12, coins: 8, longXp: 8, longCoins: 4, maxLen: 5000, titleLen: 60, tags: 5, tagLen: 12, since: '2026-11-27', iter: 600000 };
+const MOODS = [null, ['😣', '很糟'], ['😕', '不太好'], ['😐', '普通'], ['🙂', '不錯'], ['😄', '很好']];
+const JTAGS = ['工作', '研究', '約會', '家人', '朋友', '運動', '練琴', '下棋', '電影', '美食', '旅行', '休息'];
 
 const DEFAULT_HABITS = [
   { id: 'exercise', name: '運動',            icon: '🏃', cat: 'health',   xp: 15, coins: 10, dailyMax: 2 },
@@ -914,7 +979,8 @@ const QUEST_POOL = {
           { id: 'q_write', need: 'write',      text: '寫論文 2 個時段',    ok: d => (d.habits.write || 0) >= 2 },
           { id: 'q_exp',   need: 'experiment', text: '跑一次實驗或分析',   ok: d => (d.habits.experiment || 0) >= 1 },
           { id: 'q_bass',  need: 'bass',       text: '練一次貝斯',         ok: d => (d.habits.bass || 0) >= 1 },
-          { id: 'q_chess', need: 'chess',      text: '下一盤棋或做戰術題', ok: d => (d.habits.chess || 0) >= 1 } ],
+          { id: 'q_chess', need: 'chess',      text: '下一盤棋或做戰術題', ok: d => (d.habits.chess || 0) >= 1 },
+          { id: 'q_journal', since: JOURNAL.since, text: `寫一篇日記（${JOURNAL.min} 字以上）`, ok: d => (d.journal || 0) >= 1 } ],
 };
 const QUEST_BONUS = { xp: 20, coins: 25 };
 const WEEK_GOALS = [
@@ -1028,7 +1094,7 @@ const GIFTS = [
   { id: 'coins100', icon: '🧧', name: '100 代幣紅包', cost: 100, coins: 100 }, { id: 'freeze', icon: '❄️', name: '一張保護卡', cost: 150 },
   { id: 'boost', icon: '⚡', name: '1 小時雙倍 XP', cost: 80, ms: 3600e3 } ];
 const GIFT_BY = Object.fromEntries(GIFTS.map(g => [g.id, g]));
-const BOOST_TYPES = new Set(['leetcode', 'habit', 'custom', 'focus']);   // 雙倍 XP 只加在「做了事」的紀錄上，獎勵類不加
+const BOOST_TYPES = new Set(['leetcode', 'habit', 'custom', 'focus', 'journal']);   // 雙倍 XP 只加在「做了事」的紀錄上，獎勵類不加
 const CHAT = { max: 200, pull: 50, pollMs: 20000, keepDays: 60 };
 /* build 21（要先執行 sync/party-v3.sql）：一起專注。開房 → 隊友用手機加入 → 開房的人按開始 → 每支手機各自開始平常的鎖機專注。
    大家都撐完（至少 2 人、沒有人緊急解鎖）→ 每人 +xp × 人數、+coins × 人數（group_focus 事件）。開始 3 分鐘內沒鎖上的人算沒趕上 */
@@ -1044,7 +1110,7 @@ function hashStr(str) { let h = 2166136261; for (const ch of str) { h ^= ch.code
 const hasHabit = id => state.habits.some(h => h.id === id);
 function questsFor(key) {
   return ['code', 'body', 'mind'].map(slot => {
-    const pool = QUEST_POOL[slot].filter(q => !q.need || hasHabit(q.need));
+    const pool = QUEST_POOL[slot].filter(q => (!q.need || hasHabit(q.need)) && (!q.since || key >= q.since));   // since：新任務只從那天起加入，舊日子的任務不變
     return pool.length ? pool[hashStr(key + ':' + slot) % pool.length] : null;
   }).filter(Boolean);
 }
@@ -1155,6 +1221,13 @@ const ACH = [
   { id:'sb_5',       cat:'life', icon:'🌈', name:'五魔全破',   desc:'打倒 5 隻季節 Boss（每一種弱點都打過）', goal:5, coins:300, v:s=>s.sbossKills, legend:true },
   { id:'ch_10',      cat:'life', icon:'🎁', name:'開箱達人',   desc:'開 10 個寶箱',                      goal:10,  coins:50,  v:s=>s.chestsOpened },
   { id:'ch_legend',  cat:'life', icon:'👑', name:'歐皇',       desc:'開到一次傳說寶箱',                  goal:1,   coins:50,  v:s=>s.chestLegend },
+  // 日記（build 22）
+  { id:'j_first',    cat:'life', icon:'📔', name:'翻開第一頁', desc:'寫第一篇日記（50 字以上）',          goal:1,   coins:20,  v:s=>s.journal.n },
+  { id:'j_7',        cat:'life', icon:'🖋️', name:'一週日記',   desc:'連續 7 天寫日記',                   goal:7,   coins:60,  v:s=>s.journal.best },
+  { id:'j_30',       cat:'life', icon:'📚', name:'日記習慣',   desc:'連續 30 天寫日記',                  goal:30,  coins:250, v:s=>s.journal.best },
+  { id:'j_100d',     cat:'life', icon:'🏛️', name:'百日日記',   desc:'連續 100 天寫日記',                 goal:100, coins:600, v:s=>s.journal.best, legend:true },
+  { id:'j_100',      cat:'life', icon:'🗂️', name:'百篇',       desc:'累計寫 100 篇日記（50 字以上）',    goal:100, coins:300, v:s=>s.journal.n },
+  { id:'j_words',    cat:'life', icon:'🪶', name:'十萬字',     desc:'日記累計寫 10 萬字',                goal:100000, coins:800, v:s=>s.journal.words, legend:true },
 ];
 const ACH_BY_ID = Object.fromEntries(ACH.map(a => [a.id, a]));
 
@@ -1228,7 +1301,8 @@ function save() {
 /* ---------- ledger: everything derived from events ---------- */
 function probKey(p) { return p.slug || (p.id != null ? 'lc-' + p.id : p.title); }
 /* ---------- 各領域等級（只看紀錄的 XP，不給額外獎勵；每日任務、Boss 等加成不算） ---------- */
-const skillKey = (e, cat) => cat === 'hobby' && e.habit ? 'h:' + e.habit : cat;
+const skillKey = (e, cat) => e.type === 'journal' ? 'journal' : cat === 'hobby' && e.habit ? 'h:' + e.habit : cat;
+const SKILL_EXTRA = { journal: { name: '日記', icon: '📔', color: 'var(--life)' } };   // 不是分類也不是習慣的能力
 function skillLevel(xp) {   // 比總等級快一倍：Lv2 要 60、之後每級多 20
   let L = 1, rem = xp;
   while (rem >= 40 + 20 * L) { rem -= 40 + 20 * L; L++; }
@@ -1242,6 +1316,7 @@ const SKILL_TITLES = {
   'h:bass': ['撥弦新手', '找到拍子', '穩拍手', '律動手', '低音支柱', 'Groove 職人', '樂團靈魂', '低音大師'],
   'h:chess':['棋盤新手', '認得戰術', '戰術獵人', '開局研究者', '中局指揮官', '殘局行者', '大師候選', '棋盤之王'],
   hobby:    ['剛入門', '上手了', '熟練', '進階', '高手', '職人', '大師', '傳奇'],
+  journal:  ['寫下第一頁', '日記新手', '記錄者', '自我觀察者', '文字工匠', '生活作家', '回憶收藏家', '人生史官'],
 };
 const skillTitle = (key, L) => { const t = SKILL_TITLES[key] || SKILL_TITLES[key.startsWith('h:') ? 'hobby' : 'life'] || SKILL_TITLES.hobby; return t[Math.min(t.length - 1, Math.floor((L - 1) / 3))]; };
 function skillList(S) {
@@ -1249,9 +1324,9 @@ function skillList(S) {
   for (const k of Object.keys(S.skills)) if (!keys.includes(k)) keys.push(k);
   return keys.map(k => {
     const h = k.startsWith('h:') ? state.habits.find(x => x.id === k.slice(2)) : null;
-    const name = h ? h.name.replace(/\s*\d+\s*分$/, '') : k.startsWith('h:') ? '已刪除的習慣' : CATS[k]?.name || k;
+    const name = h ? h.name.replace(/\s*\d+\s*分$/, '') : k.startsWith('h:') ? '已刪除的習慣' : CATS[k]?.name || SKILL_EXTRA[k]?.name || k;
     const xp = S.skills[k] || 0, lv = skillLevel(xp);
-    return { key: k, name, icon: h ? h.icon : '', color: CATS[h ? 'hobby' : k]?.color || 'var(--hobby)', xp, ...lv, title: skillTitle(k, lv.level) };
+    return { key: k, name, icon: h ? h.icon : SKILL_EXTRA[k]?.icon || '', color: CATS[h ? 'hobby' : k]?.color || SKILL_EXTRA[k]?.color || 'var(--hobby)', xp, ...lv, title: skillTitle(k, lv.level) };
   }).filter(x => x.xp > 0 || !x.key.startsWith('h:') || state.habits.some(h => 'h:' + h.id === x.key)).sort((a, b) => b.xp - a.xp);
 }
 function skillsPanel(S) {
@@ -1307,6 +1382,7 @@ function compute() {
   const fo = { done: 0, minutes: 0, run: 0, best: 0, curfewKept: 0, aborts: 0, skips: 0, gates: 0 }, abortWeeks = {};
   const owned = new Set(['felt']);   // 擁有的外觀
   const skillXp = {};   // 各領域等級：興趣類每個習慣各算一條，其他照分類
+  const jScored = {}, jStat = { n: 0, words: 0 };   // 日記：日記的日期 → 拿到獎勵的那一篇
   for (const e of evs) {
     const dk = dayKey(e.ts), hit = { ms: tms(e.ts), day: dk };
     const d = days[dk] ||= emptyDay();
@@ -1393,6 +1469,15 @@ function compute() {
         r = { xp: 0, coins: -pen, tag: `本週第 ${k} 次緊急解鎖，扣 ${pen} 代幣${e.reason ? `。原因：${e.reason}` : ''}` };
         spent += pen; fo.aborts++; if (e.kind !== 'curfew') fo.run = 0;
       } else r.tag = '開始 2 分鐘內取消，不扣分';
+    } else if (e.type === 'journal') {         // 日記：每個日期第一篇滿字數的給分；補寫只有昨天算；寫在當天的才算每日任務
+      const w = e.words || 0, back = e.day === dk ? 0 : e.day === addDays(dk, -1) ? 1 : 2;
+      jStat.words += w; if (w >= JOURNAL.min) jStat.n++;
+      if (w >= JOURNAL.min && back < 2 && !jScored[e.day]) {
+        const long = w >= JOURNAL.long; jScored[e.day] = e.id;
+        r = { xp: JOURNAL.xp + (long ? JOURNAL.longXp : 0), coins: JOURNAL.coins + (long ? JOURNAL.longCoins : 0), tag: [back ? '補寫昨天' : '', long ? `${JOURNAL.long} 字以上` : ''].filter(Boolean).join('，') };
+        cat = 'life'; d.cats.add('life'); if (!back) d.journal = (d.journal || 0) + 1;
+      } else r.tag = w < JOURNAL.min ? `不到 ${JOURNAL.min} 字，只記錄` : back === 2 ? '補寫太久以前的日子，只記錄' : '這天的日記已經拿過獎勵，只記錄';
+      d.any = true;
     } else if (e.type === 'gate') {            // 分心 App：放行只記錄（加買的扣代幣）；選「算了」給一點代幣
       if (e.skipped) { const c = d.skips = (d.skips || 0) + 1; fo.skips++;
         r = c > FOCUS.skipMax ? { xp: 0, coins: 0, tag: '今天的「算了」獎勵已領完，只記錄' } : { xp: 0, coins: FOCUS.skipCoins, tag: `+${FOCUS.skipCoins} 代幣` }; }
@@ -1521,6 +1606,7 @@ function compute() {
     bestWeekCats, questDays, weeksDone, weeks, solvedKeys: solved, solvedIds,
     bosses, bossKills, bestClean, bossComebacks, crits: critIds.size, saved,
     skills: skillXp, owned, chests, comeback: cb, seasons, seasonsDone, sboss, sbossKills,
+    journal: { ...jStat, scored: new Set(Object.keys(jScored)), scoredBy: jScored, best: longestRun(new Set(Object.keys(jScored))), run: currentRun(new Set(Object.keys(jScored))) },
     chestsOpened: Object.keys(chests).length, chestLegend: Object.values(chests).filter(c => c.tier.id === 'legend').length,
     habit: id => habitCount[id] || 0,
     habitStreak: id => longestRun(keysWhere(d => (d.habits[id] || 0) > 0)),
@@ -1661,6 +1747,7 @@ function eventTitle(e) {
     return e.result === 'done' ? `${n}（鎖機 ${e.minutes} 分）` : e.result === 'aborted' ? `緊急解鎖：${n}` : `取消專注：${n}`;
   }
   if (e.type === 'gate') return e.skipped ? `忍住沒打開 ${e.app || ''}` : `放行 ${e.app || '分心 App'} ${e.minutes} 分鐘`;
+  if (e.type === 'journal') return `${e.day === dayKey(e.ts) ? '' : `補寫${dayLabel(e.day)}的`}日記・${fmt(e.words || 0)} 字`;
   return e.title || '紀錄';
 }
 function eventIcon(e) {
@@ -1681,6 +1768,7 @@ function eventIcon(e) {
   if (e.type === 'party_quest') return '🧭';
   if (e.type === 'focus') return e.result === 'aborted' ? '🔓' : e.result === 'cancelled' ? '↩️' : e.kind === 'curfew' ? '🌙' : state.habits.find(h => h.id === e.habit)?.icon || '🎯';
   if (e.type === 'gate') return e.skipped ? '🫁' : '🔑';
+  if (e.type === 'journal') return MOODS[e.mood]?.[0] || '📔';
   return e.icon || '⭐';
 }
 /* ---------- 資料檢查 ----------
@@ -1716,6 +1804,13 @@ function validEvent(e) {
       return okGoal && okWit ? e : null;
     }
     case 'freeze_buy': return Number.isInteger(e.cost) && e.cost >= 0 && e.cost <= 1e4 ? e : null;
+    // 日記只由網頁自己產生（normalize 不接受）；內容是加密的，這裡只檢查格式
+    case 'journal': {
+      const n = e.enc, intIn = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
+      if (!dayOk(e.day) || !intIn(e.words, 0, 20000) || (e.mood != null && !intIn(e.mood, 1, 5)) || (e.editedAt != null && !isoOk(e.editedAt))) return null;
+      if (e.tags != null && !(Array.isArray(e.tags) && e.tags.length <= JOURNAL.tags && e.tags.every(t => typeof t === 'string' && t && cleanTag(t) === t))) return null;
+      return n && typeof n === 'object' && safeKey(n.k) && n.k.length <= 40 && b64ok(n.iv, 16, 16) && b64ok(n.ct, 24, 40000) ? e : null;
+    }
     // 寶箱、外觀只由網頁自己產生（normalize 不接受），這裡只檢查格式
     case 'chest_open': return dayOk(e.day) ? e : null;
     case 'cosmetic_buy': return COSMETIC_BY_ID[e.cosmetic] && Number.isInteger(e.cost) && e.cost >= 0 && e.cost <= 1e4 ? e : null;
@@ -2033,6 +2128,7 @@ const TABS = [
   { id: 'today',    name: '今天',   icon: '☀️' },
   { id: 'boss',     name: '惡習',   icon: '⚔️' },
   { id: 'problems', name: '題單',   icon: '📋' },
+  { id: 'journal',  name: '日記',   icon: '📔' },
   { id: 'badges',   name: '徽章牆', icon: '🏅' },
   { id: 'shop',     name: '商店',   icon: '🎟️' },
   { id: 'history',  name: '紀錄',   icon: '📒' },
@@ -2048,13 +2144,14 @@ function render() {
   applyTheme(S); renderHeader(S); renderTabs();
   const v = $('#view');
   try {
-  v.innerHTML = tab === 'today' ? viewToday(S) : tab === 'badges' ? viewBadges(S) : tab === 'shop' ? viewShop(S)
+  v.innerHTML = tab === 'today' ? viewToday(S) : tab === 'badges' ? viewBadges(S) : tab === 'shop' ? viewShop(S) : tab === 'journal' ? viewJournal(S)
               : tab === 'history' ? viewHistory(S) : tab === 'problems' ? viewProblems(S) : tab === 'boss' ? viewBoss(S) : viewSettings(S);
   if (ME_TABS.includes(tab)) v.insertAdjacentHTML('afterbegin', `<nav class="subtabs" aria-label="我的">${TABS.filter(t => ME_TABS.includes(t.id)).map(t => `<button data-tab="${t.id}" ${t.id === tab ? 'aria-current="page"' : ''}><span aria-hidden="true">${t.icon}</span> ${t.name}</button>`).join('')}</nav>`);
   } catch (err) {
     console.error(err);
     v.innerHTML = `<section class="panel"><h2>這一頁顯示不出來</h2><p class="hint">發生錯誤：${esc(err.message)}。其他分頁和資料不受影響，請把這段訊息告訴 Claude。</p></section>`;
   }
+  if (tab === 'journal') fillJournal();
   if (pendingStamp && tab === 'today') requestAnimationFrame(playStamp);
   if (chatFocus) { const i = $('#pchatin'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
   const cl = $('#pchatlist'); if (cl) { cl.scrollTop = cl.scrollHeight; chatMarkSeen(); }
@@ -2135,11 +2232,12 @@ function viewToday(S) {
   const review = guard.review ? reviewPanel(S, tk) : '';
   const ci = contractInfo(S, tk), contract = contractPanel(S, tk);
   const focusLive = IS_NATIVE && !!guard.status?.session, focus = focusPanel(S, tk);
-  /* 手機上是一欄，用 --o 決定順序：打卡 → 專注 → 任務 → 契約 → 今天的紀錄 → 解題 → 隊伍 → 熱力圖 → 徽章 */
+  /* 手機上是一欄，用 --o 決定順序：打卡 → 日記 → 專注 → 任務 → 契約 → 今天的紀錄 → 解題 → 隊伍 → 熱力圖 → 徽章 */
   const rqDue = reviewQueue().filter(x => x.late >= 0).length;
   const slot = (o, html) => html ? `<div class="slot" style="--o:${o}">${html}</div>` : '';
   return `${notes ? `<div class="notes">${notes}</div>` : ''}${review}${focusLive ? focus : ''}${ci.showForm ? contract : ''}<div class="grid2 tgrid"><div>
     ${slot(1, `<section class="panel"><h2>今天做了什麼？</h2><p class="hint">點一下記一次，圓點是今天的次數和上限。🔒 的任務只能用鎖機專注記錄。</p><div class="habits">${habits}</div></section>`)}
+    ${slot(2, journalPanel(S, tk))}
     ${focusLive ? '' : slot(IS_NATIVE ? 2 : 8, focus)}
     ${slot(6, `<section class="panel"><h2>記錄解題</h2><p class="hint">用 AI 判題會自動入帳；這裡是手動補登。${rqDue ? `<br>🔁 今天有 <b class="num">${rqDue}</b> 題該複習 <button class="mini" data-tab="problems">看是哪幾題</button>` : ''}</p>
       <form id="lcform" autocomplete="off">
@@ -2799,6 +2897,9 @@ function monthRecap(S, mk) {
   o.bestRun = longestRun(new Set(keys.filter(k => S.days[k].any)), new Set([...S.frozen].filter(k => k.startsWith(mk))));
   o.badges = ACH.filter(a => state.unlocked[a.id] && dayKey(state.unlocked[a.id]).startsWith(mk));
   o.chests = Object.keys(S.chests).filter(k => k.startsWith(mk)).length;
+  const js = state.events.filter(e => e.type === 'journal' && e.day.startsWith(mk)), mc = {};
+  for (const e of js) if (e.mood) mc[e.mood] = (mc[e.mood] || 0) + 1;
+  o.journal = js.length; o.mood = Number(Object.entries(mc).sort((a, b) => b[1] - a[1])[0]?.[0]) || 0;
   const top = Object.entries(o.habits).sort((a, b) => b[1] - a[1])[0]; o.topHabit = top ? { h: state.habits.find(h => h.id === top[0]), n: top[1] } : null;
   return o;
 }
@@ -2810,7 +2911,7 @@ function recapPanel(S) {
       <div class="seg zh" role="radiogroup" aria-label="哪個月">${['這個月', '上個月'].map((n, i) => `<label style="--dc:var(--chalk)"><input type="radio" name="recapm" value="${i}" ${recapOffset === i ? 'checked' : ''}><span>${n}</span></label>`).join('')}</div></div>
     ${o.active ? `<div class="stats rstats">${stat(fmt(o.xp), 'XP')}${stat(o.active, '有紀錄的天數')}${stat(o.bestRun, '最長連續')}${stat(o.newLc, '新解的題')}${stat(o.quests, '任務全清的天')}${stat(o.badges.length, '新徽章')}</div>
     ${tot ? `<div class="wbar">${used.map(([c, m]) => `<i style="width:${o.catXp[c] / tot * 100}%;background:${m.color}" title="${m.name}"></i>`).join('')}</div>` : ''}
-    <p class="hint" style="margin:10px 0 0">${o.topHabit?.h ? `最常做：${esc(o.topHabit.h.icon)} ${esc(o.topHabit.h.name)} ${o.topHabit.n} 次。` : ''}${o.badges.length ? `拿到 ${o.badges.slice(0, 6).map(a => esc(a.icon)).join('')}${o.badges.length > 6 ? '…' : ''}` : ''}</p>
+    <p class="hint" style="margin:10px 0 0">${o.topHabit?.h ? `最常做：${esc(o.topHabit.h.icon)} ${esc(o.topHabit.h.name)} ${o.topHabit.n} 次。` : ''}${o.journal ? `寫了 ${o.journal} 篇日記${o.mood ? `，最常的心情是 ${MOODS[o.mood][0]}` : ''}。` : ''}${o.badges.length ? `拿到 ${o.badges.slice(0, 6).map(a => esc(a.icon)).join('')}${o.badges.length > 6 ? '…' : ''}` : ''}</p>
     <div class="btns" style="margin-top:12px"><button class="btn btn-brass" data-act="recapimg">做成圖片</button></div>` : '<p class="empty">這個月還沒有紀錄。</p>'}</section>`;
 }
 async function recapImage() {
@@ -3414,12 +3515,352 @@ function mergeState(remote) {
     bundles: validBundles(newer.bundles) || state.bundles,
     problems: mergeProblems(state.problems || {}, remote.problems || {}),
     importedLists: [...new Set([...(state.importedLists || []), ...(remote.importedLists || [])])],
+    jkey: pickJkey(validJkey(state.jkey), validJkey(remote.jkey)),
     settings: { ...state.settings, ...(newer.settings || {}) }, seedVersion: newer.seedVersion || 1 };
   migrate(state);
   return true;
 }
 setInterval(() => { if (fs.status === 'linked' && !document.hidden) scanInbox(); }, 4000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden && fs.status === 'linked') scanInbox(); });
+
+/* ---------- 日記（build 22） ----------
+   一篇 = 一筆 journal 事件。日期、心情、標籤、字數是明文（compute() 用來算分，不用解密）；
+   標題和內文用日記金鑰加密成 enc = { k: 金鑰 id, iv, ct }（AES-GCM，事件 id 當附加資料，內容不能搬到別筆事件）。
+   日記金鑰是隨機產生的，用「日記密碼」和「備用碼」各包一份放在 state.jkey（跟著 goal_meta 同步，見 pickJkey）；
+   這台裝置解開後，把不能匯出的金鑰存進 IndexedDB，之後不用再輸入。忘記密碼又弄丟備用碼 = 舊日記讀不回來。
+   草稿只存在這台裝置（localStorage，沒有加密）。 */
+const jEnc = new TextEncoder(), jDec = new TextDecoder();
+const b64e = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode(...u8.subarray(i, i + 0x8000)); return btoa(s); };
+const b64d = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const b64ok = (v, lo, hi) => typeof v === 'string' && v.length >= lo && v.length <= hi && /^[A-Za-z0-9+/]+={0,2}$/.test(v);
+const rnd = n => crypto.getRandomValues(new Uint8Array(n));
+const jc = { slot: '', key: null, loading: false, plain: new Map(), other: {}, newCode: '', busy: false };
+const jf = { month: 0, tag: '', day: '', more: 20 };   // 日記分頁的篩選（不存）
+const jw = { id: null, scored: new Set() };              // 寫日記畫面
+const jCryptoOk = () => !!(globalThis.crypto && crypto.subtle && globalThis.indexedDB);
+const jSlot = kid => `${state.owner || 'local'}:${kid}`;
+const JDRAFT = () => `goal.jdraft@${state.owner || 'local'}`;
+const jWrapOk = w => w && typeof w === 'object' && b64ok(w.s, 24, 24) && b64ok(w.iv, 16, 16) && b64ok(w.ct, 40, 80);
+function validJkey(o) {
+  if (!o || typeof o !== 'object' || o.v !== 1 || !safeKey(o.kid) || o.kid.length > 40 || !isoOk(o.created) || !isoOk(o.at)) return null;
+  if (!Number.isInteger(o.it) || o.it < 100000 || o.it > 5e6 || !jWrapOk(o.pw) || !jWrapOk(o.rc)) return null;
+  return { v: 1, kid: o.kid, created: o.created, at: o.at, it: o.it, pw: { s: o.pw.s, iv: o.pw.iv, ct: o.pw.ct }, rc: { s: o.rc.s, iv: o.rc.iv, ct: o.rc.ct } };
+}
+// 兩台裝置的金鑰：同一把取比較新的（改過密碼）；不同把（兩邊同時設定）留先建立的那把
+function pickJkey(a, b) {
+  if (!a || !b) return a || b || null;
+  if (a.kid === b.kid) return tms(b.at) > tms(a.at) ? b : a;
+  return tms(b.created) < tms(a.created) ? b : a;
+}
+const countWords = s => { const cjk = /[㐀-鿿豈-﫿぀-ヿ가-힯]/g; return (s.match(cjk) || []).length + (s.replace(cjk, ' ').match(/[A-Za-z0-9]+(?:['’][A-Za-z]+)?/g) || []).length; };
+function recoveryCode() {   // 12 個字（去掉 I、O、0、1），每個字 5 bits
+  const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', r = rnd(12); let s = '';
+  for (let i = 0; i < 12; i++) s += A[r[i] & 31] + (i % 4 === 3 && i < 11 ? '-' : '');
+  return s;
+}
+const normCode = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+async function jKdf(secret, salt, it) {
+  const base = await crypto.subtle.importKey('raw', jEnc.encode(String(secret).normalize('NFKC')), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: it, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['wrapKey', 'unwrapKey']);
+}
+async function jWrap(dk, secret, it) {
+  const salt = rnd(16), iv = rnd(12), kek = await jKdf(secret, salt, it);
+  return { s: b64e(salt), iv: b64e(iv), ct: b64e(new Uint8Array(await crypto.subtle.wrapKey('raw', dk, kek, { name: 'AES-GCM', iv }))) };
+}
+async function jUnwrap(w, secret, it, extractable) {
+  const kek = await jKdf(secret, b64d(w.s), it);
+  return crypto.subtle.unwrapKey('raw', b64d(w.ct), kek, { name: 'AES-GCM', iv: b64d(w.iv) }, { name: 'AES-GCM', length: 256 }, extractable, ['encrypt', 'decrypt']);
+}
+function jIdb(mode, fn) {
+  return new Promise((ok, no) => {
+    const r = indexedDB.open('goal-journal', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('keys');
+    r.onerror = () => no(r.error);
+    r.onsuccess = () => { const db = r.result, tx = db.transaction('keys', mode), q = fn(tx.objectStore('keys'));
+      tx.oncomplete = () => { db.close(); ok(q.result); }; tx.onerror = tx.onabort = () => { db.close(); no(tx.error); }; };
+  });
+}
+const jIdbGet = slot => jIdb('readonly', st => st.get(slot));
+const jIdbPut = (slot, key) => jIdb('readwrite', st => st.put(key, slot));
+const jIdbDel = slot => jIdb('readwrite', st => st.delete(slot));
+async function jRemember(dk) {   // 這台裝置只留不能匯出的版本
+  const dev = await crypto.subtle.importKey('raw', await crypto.subtle.exportKey('raw', dk), { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+  const slot = jSlot(state.jkey.kid); await jIdbPut(slot, dev); jc.slot = slot; jc.key = dev; jc.loading = false;
+}
+// 'none'（還沒設定）、'loading'、'locked'（這台裝置還沒輸入密碼）、'open'
+function jState() {
+  const k = state.jkey; if (!k) return 'none';
+  if (!jCryptoOk()) return 'locked';
+  const slot = jSlot(k.kid);
+  if (jc.slot !== slot) {
+    if (!jc.slot.startsWith(`${state.owner || 'local'}:`)) jc.plain.clear();   // 換帳號：解密過的快取不留
+    jc.slot = slot; jc.key = null; jc.loading = true;
+    jIdbGet(slot).then(key => { if (jc.slot === slot) { jc.key = key || null; jc.loading = false; if (tab === 'journal') render(); } })
+      .catch(() => { if (jc.slot === slot) { jc.loading = false; if (tab === 'journal') render(); } });
+  }
+  return jc.loading ? 'loading' : jc.key ? 'open' : 'locked';
+}
+async function jKeyFor(kid) {
+  if (kid === state.jkey?.kid) return jc.key;
+  if (!(kid in jc.other)) jc.other[kid] = await jIdbGet(jSlot(kid)).catch(() => null) || null;   // 以前用過的另一把（兩台裝置同時設定時）
+  return jc.other[kid];
+}
+async function jSeal(id, obj) {
+  if (jState() !== 'open') throw new Error('locked');
+  const iv = rnd(12), ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: jEnc.encode(id) }, jc.key, jEnc.encode(JSON.stringify(obj)));
+  return { k: state.jkey.kid, iv: b64e(iv), ct: b64e(new Uint8Array(ct)) };
+}
+async function jDecrypt(e) {
+  const c = jc.plain.get(e.id); if (c && c.ct === e.enc.ct) return c;
+  const key = await jKeyFor(e.enc.k); if (!key) throw new Error('nokey');
+  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64d(e.enc.iv), additionalData: jEnc.encode(e.id) }, key, b64d(e.enc.ct));
+  const o = JSON.parse(jDec.decode(pt)), v = { t: str(o && o.t, JOURNAL.titleLen), b: str(o && o.b, JOURNAL.maxLen), ct: e.enc.ct };
+  jc.plain.set(e.id, v); return v;
+}
+const jCached = e => { const c = jc.plain.get(e.id); return c && c.ct === e.enc.ct ? c : null; };
+const journals = () => state.events.filter(e => e.type === 'journal').sort((a, b) => a.day < b.day ? 1 : a.day > b.day ? -1 : tms(b.ts) - tms(a.ts));
+const cleanTag = t => str(t, 40).replace(/^#+/, '').replace(/[\u0000-\u001f<>]/g, '').trim().slice(0, JOURNAL.tagLen);
+async function jBusy(btn, fn) {
+  if (jc.busy) return; jc.busy = true; const label = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = '處理中…'; }
+  try { await fn(); } catch (err) { toast(err && err.name === 'OperationError' ? '密碼或備用碼不對。' : `沒辦法完成：${esc(err && err.message || err)}`); }
+  finally { jc.busy = false; if (btn && btn.isConnected) { btn.disabled = false; btn.textContent = label; } }
+}
+async function jSetup(f) {
+  const fd = new FormData(f), p1 = String(fd.get('p1') || ''), p2 = String(fd.get('p2') || '');
+  if (p1.length < 6) { toast('日記密碼至少 6 個字。'); return; }
+  if (p1 !== p2) { toast('兩次輸入的密碼不一樣。'); return; }
+  await jBusy(f.querySelector('[type="submit"]'), async () => {
+    if (cloud.session && state.owner === myUid()) { await syncNow(); if (state.jkey) { toast('你已經在另一台裝置設定過日記密碼了，請輸入那組密碼。'); render(); return; } }
+    const dk = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']), code = recoveryCode(), it = JOURNAL.iter, now = nowISO();
+    state.jkey = { v: 1, kid: uid('k'), created: now, at: now, it, pw: await jWrap(dk, p1, it), rc: await jWrap(dk, normCode(code), it) };
+    await jRemember(dk); jc.newCode = code; save(); render();
+  });
+}
+async function jUnlock(f) {
+  const pass = String(new FormData(f).get('p') || ''); if (!pass) return;
+  await jBusy(f.querySelector('[type="submit"]'), async () => {
+    const dk = await jUnwrap(state.jkey.pw, pass, state.jkey.it, true); await jRemember(dk); toast('日記打開了，這台裝置之後不用再輸入。'); render();
+  });
+}
+async function jRecover(f) {   // 用備用碼解開，重設日記密碼
+  const fd = new FormData(f), code = normCode(fd.get('code')), p1 = String(fd.get('p1') || ''), p2 = String(fd.get('p2') || '');
+  if (code.length !== 12) { toast('備用碼是 12 個英文字母和數字。'); return; }
+  if (p1.length < 6 || p1 !== p2) { toast(p1.length < 6 ? '新密碼至少 6 個字。' : '兩次輸入的新密碼不一樣。'); return; }
+  await jBusy(f.querySelector('[type="submit"]'), async () => {
+    const k = state.jkey, dk = await jUnwrap(k.rc, code, k.it, true);
+    state.jkey = { ...k, at: nowISO(), pw: await jWrap(dk, p1, k.it) }; await jRemember(dk); save(); toast('日記密碼重設好了。'); render();
+  });
+}
+async function jChange(f) {
+  const fd = new FormData(f), old = String(fd.get('old') || ''), p1 = String(fd.get('p1') || ''), p2 = String(fd.get('p2') || '');
+  if (p1.length < 6 || p1 !== p2) { toast(p1.length < 6 ? '新密碼至少 6 個字。' : '兩次輸入的新密碼不一樣。'); return; }
+  await jBusy(f.querySelector('[type="submit"]'), async () => {
+    const k = state.jkey, dk = await jUnwrap(k.pw, old, k.it, true);
+    state.jkey = { ...k, at: nowISO(), pw: await jWrap(dk, p1, k.it) }; save(); toast('日記密碼改好了，其他裝置不用重新輸入。'); render();
+  });
+}
+async function jNewCode(f) {
+  const pass = String(new FormData(f).get('p') || ''); if (!pass) return;
+  await jBusy(f.querySelector('[type="submit"]'), async () => {
+    const k = state.jkey, dk = await jUnwrap(k.pw, pass, k.it, true), code = recoveryCode();
+    state.jkey = { ...k, at: nowISO(), rc: await jWrap(dk, normCode(code), k.it) }; jc.newCode = code; save(); render();
+  });
+}
+async function jLock() {
+  if (state.jkey) await jIdbDel(jSlot(state.jkey.kid)).catch(() => {});
+  jc.key = null; jc.slot = ''; jc.plain.clear(); jc.other = {}; toast('這台裝置的日記鎖起來了，下次要輸入日記密碼。'); render();
+}
+/* ---------- 寫日記畫面（放在 #view 外面，重新整理畫面時不會打斷輸入） ---------- */
+function jDraft() {
+  try { const d = JSON.parse(lsGet(JDRAFT())); if (!d || typeof d !== 'object') return null;
+    return { day: dayOk(d.day) ? d.day : todayKey(), mood: Number.isInteger(d.mood) && d.mood >= 1 && d.mood <= 5 ? d.mood : 0,
+      tags: Array.isArray(d.tags) ? d.tags.map(cleanTag).filter(Boolean).slice(0, JOURNAL.tags) : [], title: str(d.title, JOURNAL.titleLen), body: str(d.body, JOURNAL.maxLen) };
+  } catch (e) { return null; }
+}
+function jFormData(f) {
+  const fd = new FormData(f), tk = todayKey(), dv = String(fd.get('day') || '');
+  const tags = [...new Set([...fd.getAll('tags'), ...String(fd.get('newtag') || '').split(/[\s,，、]+/)].map(cleanTag).filter(Boolean))].slice(0, JOURNAL.tags);
+  const mood = Number(fd.get('mood'));
+  return { day: dayOk(dv) && dv <= tk ? dv : tk, mood: Number.isInteger(mood) && mood >= 1 && mood <= 5 ? mood : 0, tags,
+    title: str(fd.get('title'), JOURNAL.titleLen).trim(), body: str(fd.get('body'), JOURNAL.maxLen).replace(/\s+$/, '') };
+}
+const jUsedTags = () => { const n = {}; for (const e of state.events) if (e.type === 'journal') for (const t of e.tags || []) n[t] = (n[t] || 0) + 1; return Object.keys(n).sort((a, b) => n[b] - n[a]); };
+async function jOpenWriter(id, day) {
+  const st = jState();
+  if (st !== 'open') { tab = 'journal'; lsSet(TAB_KEY, tab); lsSet(ME_KEY, tab); render(); scrollTo({ top: 0 });
+    toast(st === 'none' ? '先設定日記密碼，日記會加密後才上傳。' : st === 'loading' ? '日記金鑰還在讀取，等一下再按。' : '先輸入日記密碼。'); return; }
+  const tk = todayKey(); let d = { day: dayOk(day) && day <= tk ? day : tk, mood: 0, tags: [], title: '', body: '' };
+  const old = id ? state.events.find(e => e.id === id && e.type === 'journal') : null;
+  if (id && !old) return;
+  if (old) { let v; try { v = await jDecrypt(old); } catch (err) { toast('這篇解不開，沒辦法編輯。'); return; } d = { day: old.day, mood: old.mood || 0, tags: old.tags || [], title: v.t, body: v.b }; }
+  else { const dr = jDraft(); if (dr && (dr.body || dr.title) && !day) d = dr; }
+  const S = compute(); jw.id = old ? old.id : null; jw.scored = new Set(S.journal.scored); if (old && S.journal.scoredBy[old.day] === old.id) jw.scored.delete(old.day);
+  jw.sameDay = !old || dayKey(nowISO()) === dayKey(old.ts);
+  document.querySelector('.jwv')?.remove();
+  const tagOpts = [...new Set([...JTAGS, ...jUsedTags(), ...d.tags])].slice(0, 30);
+  const ov = document.createElement('div'); ov.className = 'jwv'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', old ? '編輯日記' : '寫日記');
+  ov.innerHTML = `<form id="jwform" class="jw" autocomplete="off">
+    <div class="jwh"><button type="button" class="btn btn-ghost" data-act="jclose">${old ? '取消' : '先收起來'}</button>
+      ${old ? `<b>${esc(dayLabel(d.day))}</b><input type="hidden" name="day" value="${esc(d.day)}">` : `<label class="jwday"><span class="sr">哪一天</span><input class="in num" type="date" name="day" value="${esc(d.day)}" max="${tk}" required></label>`}
+      <button class="btn btn-brass" type="submit">存檔</button></div>
+    <div class="seg jmoods" role="radiogroup" aria-label="心情">${[1, 2, 3, 4, 5].map(i => `<label style="--dc:var(--m${i})" title="${MOODS[i][1]}"><input type="radio" name="mood" value="${i}" ${d.mood === i ? 'checked' : ''} aria-label="${MOODS[i][1]}"><span>${MOODS[i][0]}</span></label>`).join('')}</div>
+    <input class="in jwt" name="title" maxlength="${JOURNAL.titleLen}" placeholder="標題（可以不寫）" value="${esc(d.title)}">
+    <textarea class="in jwb" name="body" maxlength="${JOURNAL.maxLen}" placeholder="今天發生了什麼？有什麼感覺？" aria-label="日記內容">${esc(d.body)}</textarea>
+    <fieldset class="chips jwtags"><legend>標籤（最多 ${JOURNAL.tags} 個）</legend>${tagOpts.map(t => `<label><input type="checkbox" name="tags" value="${esc(t)}" ${d.tags.includes(t) ? 'checked' : ''}><span>${esc(t)}</span></label>`).join('')}<input class="in jwnt" name="newtag" maxlength="${JOURNAL.tagLen}" placeholder="+ 新標籤" aria-label="新標籤"></fieldset>
+    <div class="jwf"><span class="num" id="jwc"></span><span id="jwhint"></span></div>
+  </form>`;
+  document.body.append(ov); document.body.classList.add('jw-open');
+  jwCount(); const b = ov.querySelector('.jwb'); b.focus(); b.setSelectionRange(b.value.length, b.value.length);
+}
+function jwCount() {
+  const f = $('#jwform'); if (!f) return;
+  const d = jFormData(f), w = countWords(`${d.title}\n${d.body}`), tk = todayKey(), y = addDays(tk, -1);
+  const done = JOURNAL.xp + JOURNAL.longXp;
+  const hint = !jw.sameDay ? '編輯以前的日記不會改變獎勵'
+    : d.day < y ? '更早的日子只記錄，不給分'
+    : jw.scored.has(d.day) ? '這天已經拿過日記獎勵，這篇只記錄'
+    : w < JOURNAL.min ? `再寫 ${JOURNAL.min - w} 字拿 +${JOURNAL.xp} XP`
+    : w < JOURNAL.long ? `+${JOURNAL.xp} XP 到手，再寫 ${JOURNAL.long - w} 字多拿 +${JOURNAL.longXp}`
+    : `寫滿了，這篇 +${done} XP`;
+  $('#jwc').textContent = `${fmt(w)} 字`; $('#jwhint').textContent = hint;
+}
+let jDraftT = 0;
+function jwInput() {
+  jwCount(); if (jw.id) return;   // 編輯舊日記不存草稿
+  clearTimeout(jDraftT); jDraftT = setTimeout(() => { const f = $('#jwform'); if (f) lsSet(JDRAFT(), JSON.stringify(jFormData(f))); }, 400);
+}
+function jwClose() {
+  const f = $('#jwform'); if (f && !jw.id) { const d = jFormData(f); if (d.body || d.title) { lsSet(JDRAFT(), JSON.stringify(d)); toast('先幫你存成草稿了（只在這台裝置）。'); } }
+  clearTimeout(jDraftT); document.querySelector('.jwv')?.remove(); document.body.classList.remove('jw-open');
+}
+function jwAddTag(inp) {
+  const t = cleanTag(inp.value); inp.value = ''; if (!t) return;
+  const box = inp.closest('fieldset'), ex = [...box.querySelectorAll('input[name="tags"]')].find(x => x.value === t);
+  if (ex) { ex.checked = true; return; }
+  inp.insertAdjacentHTML('beforebegin', `<label><input type="checkbox" name="tags" value="${esc(t)}" checked><span>${esc(t)}</span></label>`); jwInput();
+}
+async function jSave(f) {
+  const d = jFormData(f); if (!d.body && !d.title) { toast('還沒寫內容喔。'); return; }
+  const btn = f.querySelector('[type="submit"]');
+  await jBusy(btn, async () => {
+    const old = jw.id ? state.events.find(e => e.id === jw.id) : null, id = old ? old.id : uid('j');
+    const enc = await jSeal(id, { t: d.title, b: d.body }), w = countWords(`${d.title}\n${d.body}`);
+    const extra = { ...(d.mood ? { mood: d.mood } : {}), ...(d.tags.length ? { tags: d.tags } : {}) };
+    if (old) {   // 同一天內修改會重算字數；之後再改就只改內容，獎勵不變
+      const { mood, tags, ...rest } = old, ev = { ...rest, ...extra, enc, words: dayKey(nowISO()) === dayKey(old.ts) ? w : old.words, editedAt: nowISO() };
+      state.events[state.events.indexOf(old)] = ev;
+    } else addEvent({ id, type: 'journal', ts: nowISO(), day: d.day, words: w, ...extra, enc });
+    jc.plain.set(id, { t: d.title, b: d.body, ct: enc.ct });
+    if (!old) try { localStorage.removeItem(JDRAFT()); } catch (e) { /* ignore */ }
+    const rect = $('#jwhint')?.getBoundingClientRect(); jw.id = null; document.querySelector('.jwv')?.remove(); document.body.classList.remove('jw-open');
+    commit();
+    const r = compute().per[id];
+    if (!old && r && r.xp > 0) { chime('tick'); haptic('tap'); flyXp(rect, `+${r.xp} XP`); toast(`日記存好了：+${r.xp} XP、+${r.coins} 代幣`); }
+    else toast(old ? '日記改好了。' : `日記存好了${r && r.tag ? `（${esc(r.tag)}）` : ''}。`);
+  });
+}
+/* ---------- 「今天」頁的日記面板 ---------- */
+function journalPanel(S, tk) {
+  const mine = state.events.filter(e => e.type === 'journal'), todays = mine.filter(e => e.day === tk), y = addDays(tk, -1);
+  const reward = `每天第一篇 ${JOURNAL.min} 字以上 +${JOURNAL.xp} XP、+${JOURNAL.coins} 代幣，寫滿 ${JOURNAL.long} 字再 +${JOURNAL.longXp} XP。`;
+  if (!state.jkey) return `<section class="panel"><h2>日記</h2><p class="hint">${reward}內容會用你自己的日記密碼加密後才上傳。</p>
+    <div class="btns"><button class="btn btn-brass" data-act="jwrite">開始寫日記</button></div></section>`;
+  const back = !mine.some(e => e.day === y) && !S.journal.scored.has(y) ? `<button class="btn btn-ghost" data-act="jwrite" data-day="${y}">補寫昨天</button>` : '';
+  if (todays.length) {
+    const last = todays[todays.length - 1], m = MOODS[last.mood], words = todays.reduce((s, e) => s + (e.words || 0), 0);
+    return `<section class="panel"><h2>日記</h2><div class="jtoday"><span class="jm" aria-hidden="true">${m ? m[0] : '📔'}</span>
+      <div><b>今天寫了 ${todays.length} 篇</b><small><span class="num">${fmt(words)}</span> 字${S.journal.run > 1 ? `，連續 <span class="num">${S.journal.run}</span> 天` : ''}${S.journal.scored.has(tk) ? '' : `，寫滿 ${JOURNAL.min} 字才有獎勵`}</small></div></div>
+      <div class="btns"><button class="btn btn-ghost" data-act="jwrite">再寫一篇</button><button class="btn btn-ghost" data-tab="journal">看日記</button>${back}</div></section>`;
+  }
+  return `<section class="panel"><h2>日記</h2><p class="hint">${reward}${S.journal.run ? `已經連續 <b class="num">${S.journal.run}</b> 天。` : ''}</p>
+    <div class="btns"><button class="btn btn-brass" data-act="jwrite">寫今天的日記</button>${back}</div></section>`;
+}
+/* ---------- 「我的 → 日記」 ---------- */
+function jSetupPanel() {
+  if (!jCryptoOk()) return '<section class="panel"><h2>日記</h2><p class="hint">這個瀏覽器不支援加密（要用 https 開啟），沒辦法寫日記。</p></section>';
+  return `<section class="panel jkeyp"><h2>設定日記密碼</h2>
+    <p class="hint">日記的內容會先在這台裝置上用日記密碼加密，才同步到雲端，連 Supabase 後台也看不到。每台裝置第一次要輸入一次。設定好會給你一組備用碼，<b>忘記密碼又弄丟備用碼，舊日記就讀不回來。</b></p>
+    <form id="jsetup" class="jform"><label class="field">日記密碼（至少 6 個字，跟登入密碼不一樣比較好）<input class="in" type="password" name="p1" minlength="6" autocomplete="new-password" required></label>
+      <label class="field">再輸入一次<input class="in" type="password" name="p2" minlength="6" autocomplete="new-password" required></label>
+      <div class="btns"><button class="btn btn-brass" type="submit">設定</button></div></form></section>`;
+}
+function jCodePanel() {
+  return `<section class="panel jkeyp"><h2>你的備用碼</h2><p class="hint">抄在紙上或存進密碼管理器。忘記日記密碼時，用它可以重設密碼；這組碼只會出現這一次。</p>
+    <div class="jcode num">${esc(jc.newCode)}</div>
+    <div class="btns"><button class="btn btn-ghost" data-act="jcopy">複製</button><button class="btn btn-brass" data-act="jcodeok">我存好了</button></div></section>`;
+}
+function jUnlockPanel() {
+  if (!jCryptoOk()) return '<section class="panel"><h2>日記</h2><p class="hint">這個瀏覽器不支援加密（要用 https 開啟），沒辦法打開日記。</p></section>';
+  return `<section class="panel jkeyp"><h2>輸入日記密碼</h2><p class="hint">這台裝置第一次打開日記，輸入一次之後就會記住。</p>
+    <form id="junlock" class="jform"><label class="field">日記密碼<input class="in" type="password" name="p" autocomplete="current-password" required></label>
+      <div class="btns"><button class="btn btn-brass" type="submit">打開日記</button></div></form>
+    <details class="jforgot"><summary>忘記密碼？用備用碼重設</summary>
+      <form id="jrecover" class="jform"><label class="field">備用碼（12 個字）<input class="in num" name="code" autocomplete="off" autocapitalize="characters" placeholder="XXXX-XXXX-XXXX" required></label>
+        <label class="field">新的日記密碼<input class="in" type="password" name="p1" minlength="6" autocomplete="new-password" required></label>
+        <label class="field">再輸入一次<input class="in" type="password" name="p2" minlength="6" autocomplete="new-password" required></label>
+        <div class="btns"><button class="btn btn-brass" type="submit">重設密碼</button></div></form></details></section>`;
+}
+function jCalendar(mk, byDay, tk) {
+  const [y, m] = mk.split('-').map(Number), lead = (new Date(y, m - 1, 1).getDay() + 6) % 7, n = new Date(y, m, 0).getDate();
+  let cells = ['一', '二', '三', '四', '五', '六', '日'].map(w => `<span class="wd">${w}</span>`).join('') + '<span></span>'.repeat(lead);
+  for (let i = 1; i <= n; i++) {
+    const k = `${mk}-${String(i).padStart(2, '0')}`, es = byDay[k] || [], mood = es.find(e => e.mood)?.mood;
+    cells += `<button data-act="jday" data-day="${k}" class="${es.length ? 'has' : ''}${k === tk ? ' today' : ''}" ${mood ? `style="--mc:var(--m${mood})"` : ''} aria-pressed="${jf.day === k}" ${!es.length ? 'disabled' : ''} aria-label="${m} 月 ${i} 日${es.length ? `，${es.length} 篇` : ''}">${i}</button>`;
+  }
+  return `<div class="jcal">${cells}</div>`;
+}
+function jEntryHTML(e, S) {
+  const c = jCached(e), m = MOODS[e.mood], r = S.per[e.id];
+  return `<article class="jent${c ? '' : ' enc'}" data-jid="${esc(e.id)}" ${c ? 'data-filled="1"' : ''}>
+    <div class="jh"><span class="jm" ${m ? `title="${m[1]}"` : 'aria-hidden="true"'}>${m ? m[0] : '📔'}</span><b>${esc(dayLabel(e.day))}</b>
+      <span class="dim"><span class="num">${fmt(e.words || 0)}</span> 字${r && r.xp ? `，+${r.xp} XP` : ''}</span>
+      ${(e.tags || []).length ? `<span class="jtags">${e.tags.map(t => `#${esc(t)}`).join(' ')}</span>` : ''}
+      <span class="jact"><button class="mini" data-act="jedit" data-id="${esc(e.id)}">編輯</button><button class="btn-x" data-act="del" data-id="${esc(e.id)}" aria-label="刪除這篇日記" title="刪除">×</button></span></div>
+    <h3 class="jt">${c ? esc(c.t) : ''}</h3><p class="jb">${c ? esc(c.b) : '解密中…'}</p>
+    <button class="mini jmore" data-act="jmore">展開</button></article>`;
+}
+function viewJournal(S) {
+  const st = jState();
+  if (st === 'none') return jSetupPanel();
+  if (jc.newCode) return jCodePanel();
+  if (st === 'loading') return '<section class="panel"><p class="empty">讀取日記金鑰…</p></section>';
+  if (st === 'locked') return jUnlockPanel();
+  const tk = todayKey(), all = journals(), byDay = {};
+  for (const e of all) (byDay[e.day] ||= []).push(e);
+  const mk = monthKey(jf.month), tags = jUsedTags();
+  const list = all.filter(e => (!jf.day || e.day === jf.day) && (!jf.tag || (e.tags || []).includes(jf.tag)));
+  const md = tk.slice(5), ago = all.filter(e => e.day.slice(5) === md && e.day.slice(0, 4) < tk.slice(0, 4));
+  const stat = (v, l) => `<div class="stat"><span class="num">${v}</span><small>${l}</small></div>`;
+  return `<section class="panel"><div class="rhead"><h2>日記</h2><button class="btn btn-brass" data-act="jwrite">寫日記</button></div>
+      <div class="stats jstats">${stat(fmt(all.length), '篇')}${stat(S.journal.run, '連續天數')}${stat(S.journal.best, '最長連續')}${stat(fmt(S.journal.words), '總字數')}</div></section>
+    ${ago.length ? `<section class="panel"><h2>${tk.slice(0, 4) - ago[0].day.slice(0, 4) === 1 ? '一年前' : '以前'}的今天</h2>${ago.slice(0, 3).map(e => jEntryHTML(e, S)).join('')}</section>` : ''}
+    <div class="grid2 jgrid"><section class="panel"><div class="jcalh"><button class="btn-x" data-act="jmon" data-d="1" aria-label="上個月">‹</button><b>${recapLabel(mk)}</b>
+        <button class="btn-x" data-act="jmon" data-d="-1" aria-label="下個月" ${jf.month <= 0 ? 'disabled' : ''}>›</button></div>
+      ${jCalendar(mk, byDay, tk)}
+      <div class="legend jlegend">${[1, 2, 3, 4, 5].map(i => `<span><i style="background:var(--m${i})"></i>${MOODS[i][1]}</span>`).join('')}</div>
+      ${tags.length ? `<div class="jtagf" role="group" aria-label="標籤">${tags.slice(0, 20).map(t => `<button data-act="jtag" data-tag="${esc(t)}" aria-pressed="${jf.tag === t}">#${esc(t)}</button>`).join('')}</div>` : ''}</section>
+    <section class="panel"><h2>${jf.day ? esc(dayLabel(jf.day)) : jf.tag ? `#${esc(jf.tag)}` : '全部'}${jf.day || jf.tag ? ' <button class="mini" data-act="jclear">看全部</button>' : ''}</h2>
+      ${list.length ? list.slice(0, jf.more).map(e => jEntryHTML(e, S)).join('') : `<p class="empty">${all.length ? '沒有符合的日記。' : '還沒有日記。寫下今天的一件小事就好。'}</p>`}
+      ${list.length > jf.more ? '<div class="btns" style="margin-top:12px"><button class="btn btn-ghost" data-act="jmorelist">顯示更多</button></div>' : ''}</section></div>
+    <section class="panel"><details class="jforgot"><summary>日記密碼</summary>
+      <form id="jchange" class="jform"><b>改密碼</b><label class="field">目前的密碼<input class="in" type="password" name="old" autocomplete="current-password" required></label>
+        <label class="field">新密碼<input class="in" type="password" name="p1" minlength="6" autocomplete="new-password" required></label>
+        <label class="field">再輸入一次<input class="in" type="password" name="p2" minlength="6" autocomplete="new-password" required></label>
+        <div class="btns"><button class="btn btn-brass" type="submit">改密碼</button></div></form>
+      <form id="jnewcode" class="jform"><b>產生新的備用碼</b><span class="hint">舊的備用碼會失效。</span><label class="field">目前的密碼<input class="in" type="password" name="p" autocomplete="current-password" required></label>
+        <div class="btns"><button class="btn btn-ghost" type="submit">產生</button></div></form>
+      <div class="btns" style="margin-top:14px"><button class="btn btn-ghost" data-act="jlock">在這台裝置上鎖起來</button></div>
+    </details></section>`;
+}
+function fillJournal() {
+  document.querySelectorAll('.jent[data-jid]:not([data-filled])').forEach(el => {
+    const e = state.events.find(x => x.id === el.dataset.jid && x.type === 'journal'); if (!e) return;
+    el.dataset.filled = '1';
+    jDecrypt(e).then(v => { el.querySelector('.jt').textContent = v.t; el.querySelector('.jb').textContent = v.b; el.classList.remove('enc'); })
+      .catch(err => { el.querySelector('.jb').textContent = err.message === 'nokey' ? '這篇是用另一組日記密碼寫的，這台裝置打不開。' : '這篇解不開（資料可能壞了）。'; });
+  });
+}
 
 /* ---------- cloud sync (Supabase) ----------
    事件一筆一列存在 goal_events（刪除用 deleted=true 的墓碑），
@@ -3481,7 +3922,7 @@ async function sbRest(path, opt = {}, retry = true) {
   const txt = await r.text(); return txt ? JSON.parse(txt) : null;
 }
 const metaPayload = () => ({ habits: state.habits, rewards: state.rewards, bosses: state.bosses, bundles: state.bundles, settings: state.settings, problems: state.problems,
-  unlocked: state.unlocked, importedLists: state.importedLists, metaAt: state.metaAt || state.updatedAt });
+  unlocked: state.unlocked, importedLists: state.importedLists, jkey: state.jkey || null, metaAt: state.metaAt || state.updatedAt });
 function touchMeta() { state.metaAt = nowISO(); }
 function scheduleCloudSync(delay = 2500) {
   if (!cloud.session) return;
@@ -3528,6 +3969,7 @@ async function syncNow() {
       state.unlocked = un;
       const lists = Array.isArray(remote.importedLists) ? remote.importedLists.map(x => str(x, 120)) : [];
       state.importedLists = [...new Set([...(state.importedLists || []), ...lists])];
+      state.jkey = pickJkey(state.jkey || null, validJkey(remote.jkey));   // 日記金鑰不看 metaAt（舊版 App 推上來的沒有這欄，保留本機的）
       if (tms(remote.metaAt) > tms(state.metaAt)) {
         const hb = validHabits(remote.habits), rw = validRewards(remote.rewards), bs = validBosses(remote.bosses), bd = validBundles(remote.bundles);
         if (hb) state.habits = keepHabitExtras(hb, state.habits);
@@ -4529,6 +4971,18 @@ document.addEventListener('click', e => {
   else if (act === 'rvredeem') reviewRedeem(id);
   else if (act === 'rvdone') reviewDone();
   else if (act === 'del') removeEvent(id);
+  else if (act === 'jwrite') jOpenWriter(null, t.dataset.day);
+  else if (act === 'jedit') jOpenWriter(id);
+  else if (act === 'jclose') jwClose();
+  else if (act === 'jday') { jf.day = jf.day === t.dataset.day ? '' : t.dataset.day; jf.more = 20; render(); }
+  else if (act === 'jtag') { jf.tag = jf.tag === t.dataset.tag ? '' : t.dataset.tag; jf.more = 20; render(); }
+  else if (act === 'jclear') { jf.day = ''; jf.tag = ''; render(); }
+  else if (act === 'jmon') { jf.month = Math.max(0, jf.month + Number(t.dataset.d)); render(); }
+  else if (act === 'jmorelist') { jf.more += 20; render(); }
+  else if (act === 'jmore') { const a = t.closest('.jent'); a.classList.toggle('open'); t.textContent = a.classList.contains('open') ? '收起' : '展開'; }
+  else if (act === 'jcopy') navigator.clipboard?.writeText(jc.newCode).then(() => toast('複製好了，記得貼到安全的地方。'), () => toast('沒辦法複製，請手動抄下來。'));
+  else if (act === 'jcodeok') { jc.newCode = ''; render(); }
+  else if (act === 'jlock') jLock();
   else if (act === 'pview') { pf.view = t.dataset.v; render(); }
   else if (act === 'pdoing') { const p = state.problems[t.dataset.slug]; if (p) { setProblem(p.slug, { doing: !p.doing }); render(); } }
   else if (act === 'pstar') { const p = state.problems[t.dataset.slug]; if (p) { setProblem(p.slug, { starred: !p.starred }); render(); } }
@@ -4624,6 +5078,12 @@ document.addEventListener('submit', e => {
   e.preventDefault();
   const f = e.target, fd = new FormData(f);
   if (f.id === 'partychat') { postChat(f); return; }
+  if (f.id === 'jwform') { jSave(f); return; }
+  if (f.id === 'jsetup') { jSetup(f); return; }
+  if (f.id === 'junlock') { jUnlock(f); return; }
+  if (f.id === 'jrecover') { jRecover(f); return; }
+  if (f.id === 'jchange') { jChange(f); return; }
+  if (f.id === 'jnewcode') { jNewCode(f); return; }
   if (f.id === 'groupopen') { groupOpen(fd); return; }
   if (f.id === 'groupjoin') { groupJoin(fd); return; }
   if (f.classList.contains('wreject')) { sendVerdict(f.dataset.owner, f.dataset.cid, 'reject', String(fd.get('note') || ''), f.querySelector('button[type="submit"]')); return; }
@@ -4721,10 +5181,17 @@ document.addEventListener('input', e => {
   if (cf) { updateContractForm(cf, e.target.name === 'goal'); return; }
   if (e.target.id === 'gpq') { guard.pickQ = e.target.value; const box = $('.picker'); if (box) { const pos = e.target.selectionStart; box.outerHTML = appPicker(); const q = $('#gpq'); if (q) { q.focus(); q.setSelectionRange(pos, pos); } } return; }
   if (e.target.id === 'pchatin') { partyUI.draft = e.target.value; return; }
+  if (e.target.closest && e.target.closest('#jwform')) { jwInput(); return; }
   if (e.target.id === 'pq') { pf.q = e.target.value; const ul = $('#plist'); if (ul) ul.innerHTML = problemRows(compute()); }
+});
+document.addEventListener('keydown', e => {
+  if (!$('.jwv')) return;
+  if (e.key === 'Escape') { e.preventDefault(); jwClose(); }
+  else if (e.key === 'Enter' && e.target.name === 'newtag') { e.preventDefault(); jwAddTag(e.target); }
 });
 document.addEventListener('change', e => {
   const t = e.target;
+  if (t.closest && t.closest('#jwform')) { jwInput(); return; }
   if (t.classList.contains('pnote')) setProblem(t.dataset.slug, { note: t.value });
   else if (t.id === 'pdiff') { pf.diff = t.value; render(); }
   else if (t.id === 'ptag') { pf.tag = t.value; render(); }
