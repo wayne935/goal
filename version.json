@@ -1,5 +1,5 @@
 {
-  "build": 23,
+  "build": 24,
   "minNative": 6,
   "files": [
     "index.html",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "情侶隊：交換日記、每日一問、在一起的天數、彼此的心情和玫瑰外觀（要先在 Supabase 執行 sync/party-v4.sql）"
+  "notes": "影劇心得：用 TMDB 搜片、打分數、寫心得；情侶隊多了一起看的片和想一起看的片單（要先在 Supabase 建立 tmdb 函式、執行 sync/party-v5.sql）"
 }

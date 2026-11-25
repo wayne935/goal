@@ -32,8 +32,9 @@
 | 每日寶箱、外觀收藏、回歸獎勵（PLAN 10.1、10.2、10.4） | ✅ build 15 |
 | 4 週賽季通行證、每月回顧卡、季節 Boss（PLAN 10.3、10.5） | ✅ build 16、17 |
 | 日記：每天第一篇給 XP、心情與標籤、月曆、內容用日記密碼加密後才上雲（PLAN 11） | ✅ build 22 |
-| 情侶隊與交換日記：在一起的天數、彼此的心情、交換日記與回覆、每日一問、玫瑰外觀（PLAN 11.2） | ✅ build 23，🙋 要先執行 `sync/party-v4.sql` |
-| 影劇心得（TMDB）、記帳（PLAN 11） | ⏳ 下一步 |
+| 情侶隊與交換日記：在一起的天數、彼此的心情、交換日記與回覆、每日一問、玫瑰外觀（PLAN 11.2） | ✅ build 23（SQL 已執行） |
+| 影劇心得：用 TMDB 搜片、半顆星評分、寫心得給 XP；情侶隊的一起看的片（都寫完才揭曉）和想一起看的片單（PLAN 11.3） | ✅ build 24，🙋 要先建 Supabase 的 `tmdb` 函式、執行 `sync/party-v5.sql` |
+| 記帳（PLAN 11） | ⏳ 下一步 |
 
 ### B. AI 判題
 | 功能 | 狀態 |
@@ -107,6 +108,7 @@
 ---
 
 ## 三、執行紀錄
+- 2026-11-25：影劇心得（PLAN 11.3），build 24：「我的 → 影劇」用 TMDB 搜片（繁中片名和海報）、半顆星評分、寫心得，心得滿 30 字 +10 XP / +6 代幣（每部電影、每一季一次，一天最多 3 部），記完可以順便兌換「看一部電影」/「看一集劇」；新事件 `watch`、5 個徽章、「影劇」能力。TMDB 金鑰放在 Supabase Edge Function（`sync/tmdb-function.ts`），不在公開網頁裡。情侶隊多了一起看的片（兩人都寫完才看得到對方的分數和心得）和想一起看的片單，新的 SQL `sync/party-v5.sql`（已在本機 PostgreSQL 實測權限，`sync/test/run-party-v5-test.sh`）。只改網頁，不用重新建置 App。
 - 2026-11-25：情侶隊與交換日記（PLAN 11.2），build 23：隊伍可以選情侶隊（2 人）、設定在一起的日子、看到對方今天的心情；日記可以分享給另一半（複製一份明文到交換日記，可以收回）、用表情或文字回覆；每日一問兩人都答了才看得到對方的；分享、回覆、回答各一天 +5 XP / +3 代幣，新事件 `couple`、5 個徽章、玫瑰外觀。新的 SQL `sync/party-v4.sql`（已在本機 PostgreSQL 實測權限，`sync/test/run-party-v4-test.sh`），沒執行前這些功能自動隱藏。只改網頁，不用重新建置 App。
 - 2026-11-25：日記（PLAN 11），build 22：新事件 `journal`（日期、心情、標籤、字數是明文，標題和內文用日記密碼加密，AES-GCM + PBKDF2，金鑰放 `state.jkey` 跟著 `goal_meta` 同步、這台裝置解開後存在 IndexedDB），每天第一篇 50 字 +12 XP / +8 代幣、300 字再 +8 / +4，補寫只有昨天給分；「今天」頁日記面板、寫日記畫面（草稿存本機）、「我的 → 日記」月曆與標籤篩選、去年的今天；每日任務池多「寫一篇日記」（11/27 起）、6 個徽章、「日記」能力、每月回顧多一行。只改網頁，不用重新建置 App、不用動資料庫。
 - 2026-11-25（深夜）：一起專注（PLAN 8.6），build 21：開專注房、隊友用手機加入、開房的人按開始，大家的手機各自開始鎖機專注；大家都撐完每人 +10 XP、+15 代幣 × 人數，有人緊急解鎖團隊獎勵泡湯；新事件 `group_focus`、2 個徽章。新的 SQL `sync/party-v3.sql`（已在本機 PostgreSQL 實測權限）。不用改原生程式、不用重新建置 App；在瀏覽器用模擬的 Android 橋接測過完整流程，還沒在實機跑過。
@@ -145,6 +147,7 @@
 - 只有改原生程式（Java、小工具）時才需要重新建置：`GoalUpdater.NATIVE_VERSION` 與 `version.json` 的 `minNative` 一起 +1，再請你執行 `build-android.bat`。
 
 ## 五、下一步要你做的事 🙋
+0. **影劇心得（build 24）**：到 https://www.themoviedb.org/settings/api 申請 API → Supabase 建 `tmdb` 函式（照 `sync/tmdb-function.ts` 開頭的步驟）→ SQL Editor 執行 `sync/party-v5.sql`。
 1. **重新建置一次 App**（build 9 的鎖手機功能是原生程式）：雙擊 `android-appuild-android.bat`，在 Android Studio 按 ▶ Run。之前的版本（NATIVE_VERSION 3）不會自動拿到 build 9。
 2. 手機上：設定 → 鎖機與自動紀錄 → 開啟「Goal 專注守護」、允許通知、連結 Health Connect；選分心 App 和白名單；要的話打開宵禁。
 3. 到設定 → 習慣，確認每個任務的「紀錄方式」和「鎖機一段」分鐘數。

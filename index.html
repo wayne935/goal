@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Goal 成就板</title>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://cpfokqjomhznacezjpcx.supabase.co; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://image.tmdb.org; connect-src 'self' https://cpfokqjomhznacezjpcx.supabase.co; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#24473d">
 <link rel="manifest" href="manifest.json">
@@ -76,6 +76,7 @@ button{cursor:pointer}
 .subtabs{background:rgba(0,0,0,.24);border-radius:12px;padding:4px;gap:4px;margin:0 0 16px}
 .subtabs button{flex:1;background:none;border:0;border-radius:9px;padding:8px 6px;color:var(--chalk-dim);font-size:15px;font-weight:700;white-space:nowrap}
 .subtabs button[aria-current="page"]{background:var(--chalk);color:#183129}
+@media (max-width:400px){.subtabs button{min-width:0;padding:8px 2px;font-size:14px;overflow:hidden;text-overflow:ellipsis}.subtabs button>span{display:none}}   /* 「我的」有 5 個子分頁：窄螢幕只留文字 */
 .dot{width:8px;height:8px;border-radius:50%;background:var(--pewter);display:inline-block}
 .dot.on{background:var(--health);box-shadow:0 0 0 3px rgba(51,176,158,.25)}
 .dot.warn{background:var(--life)}
@@ -702,6 +703,71 @@ textarea.in.jwb{font-family:var(--ff-zh);font-size:17px;line-height:1.75;min-hei
   .cpt b{font-size:19px}
 }
 
+/* ---------- 影劇心得（build 24） ---------- */
+.went{display:flex;gap:12px;align-items:flex-start}
+.wpo{flex:none;width:46px;height:69px;border-radius:6px;object-fit:cover;background:rgba(0,0,0,.3);display:grid;place-items:center;font-size:22px}
+.wpo.big{width:92px;height:138px;border-radius:10px;font-size:40px}
+.wbody{flex:1;min-width:0}
+.wh{display:flex;align-items:baseline;gap:4px 8px;flex-wrap:wrap;font-size:16px}
+.wh b{overflow-wrap:anywhere}
+.wh .dim,.wmeta .dim{color:var(--chalk-dim);font-size:13.5px}
+.wmeta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px}
+.wmeta .jact{margin-left:auto;display:flex;gap:4px;align-items:center}
+.wst{display:inline-flex;gap:1px;font-size:16px;line-height:1}
+.wst i,.wsi i{font-style:normal;color:rgba(255,255,255,.18)}
+.wst i.f,.wsi.f i{color:var(--brass)}
+.wst i.h,.wsi.h i{background:linear-gradient(90deg,var(--brass) 50%,rgba(255,255,255,.18) 50%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.went .wrv{-webkit-line-clamp:4}
+.wwith{font-size:15px}
+.wres{display:grid;gap:6px}
+.wri{display:flex;gap:12px;align-items:flex-start;text-align:left;background:rgba(0,0,0,.2);border:0;border-radius:12px;padding:8px 10px;color:var(--chalk);cursor:pointer;width:100%;font:inherit}
+.wri:hover,.wri:focus-visible{background:rgba(0,0,0,.36)}
+.wrt{display:grid;gap:2px;min-width:0;flex:1}
+.wrt b{font-size:16px;overflow-wrap:anywhere}
+.wrt small{color:var(--chalk-dim);font-size:13.5px}
+.wrt em{font-style:normal;color:var(--brass-hi)}
+.wov{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.wsp{width:64px}
+.wwhead{display:flex;gap:14px;align-items:flex-start}
+.wwmeta{display:grid;gap:8px;flex:1;min-width:0}
+.wwt{font-size:20px;line-height:1.3;overflow-wrap:anywhere}
+.wwmeta>small{color:var(--chalk-dim);font-size:14px;margin-top:-4px}
+.wwtv{gap:8px;flex-wrap:nowrap}
+.wwtv[hidden]{display:none}
+.wwtv>span{flex:3 1 0;min-width:0}.wwtv>.in{flex:2 1 0;min-width:0}
+.wwtv .in{width:100%}.wwtv select.in{white-space:nowrap;text-overflow:ellipsis}
+@media (max-width:480px){.wwtv{flex-wrap:wrap}.wwtv>span,.wwtv>.in{flex:1 1 100%}}
+.wwday .in{width:auto}
+.wstars{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
+.wsi{position:relative;display:inline-block;width:1.1em;font-size:36px;line-height:1.15;text-align:center}
+.wsi i{pointer-events:none}
+.wsi label{position:absolute;top:0;bottom:0;width:50%;z-index:1;cursor:pointer}
+.wsi .l{left:0}
+.wsi .r{right:0}
+.wsi input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.wsi label:has(input:focus-visible){outline:2px solid var(--brass-hi);outline-offset:-2px;border-radius:4px}
+.wsv{margin:0 10px 0 8px;color:var(--chalk-dim);font-size:14.5px}
+textarea.in.wwb{min-height:26vh}
+.wtg{display:flex;gap:12px;align-items:center;background:rgba(0,0,0,.18);border-radius:14px;padding:10px 12px;margin-top:8px}
+.wtg.wait{box-shadow:inset 3px 0 0 var(--rose)}
+.wtg.done{display:block}
+.wtgh{display:flex;gap:12px;align-items:center}
+.wsides{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.wside{background:rgba(0,0,0,.18);border-radius:10px;padding:8px 10px;min-width:0}
+.wside>b{display:block;font-size:14px;color:var(--rose-hi);margin-bottom:4px}
+.wside p{margin:6px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14.5px;line-height:1.6}
+.wtwait{margin:10px 0 0;font-size:14px}
+.wlst{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.wli{display:flex;gap:12px;align-items:center;background:rgba(0,0,0,.18);border-radius:12px;padding:8px 10px}
+.wli .jact{display:flex;gap:4px;align-items:center}
+.tmdbc{display:flex;align-items:center;gap:10px;color:var(--chalk-dim);font-size:12.5px;margin:6px 2px 0;line-height:1.5}
+.tmdbl{flex:none;width:92px;height:auto}
+@media (max-width:720px){
+  .wsides{grid-template-columns:1fr}
+  .wpo.big{width:72px;height:108px}
+  .wsi{font-size:32px}
+}
+
 /* ---------- settings ---------- */
 .hab-edit{display:grid;gap:8px}
 .hab-row{display:grid;grid-template-columns:56px minmax(140px,360px) 72px 72px 84px 110px 110px 92px 30px;gap:8px;align-items:center}
@@ -967,12 +1033,12 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 23;
+const APP_BUILD = 24;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
-/* 手機底部只放 5 個分頁：日記、徽章牆、紀錄、設定收進「我的」，頁面上方有子分頁 */
+/* 手機底部只放 5 個分頁：日記、影劇、徽章牆、紀錄、設定收進「我的」，頁面上方有子分頁 */
 const SKILL_SEEN = 'goal.skillSeen', SBOSS_SEEN = 'goal.sbossSeen';
-const ME_TABS = ['journal', 'badges', 'history', 'settings'], ME_KEY = 'goal.meTab';
+const ME_TABS = ['journal', 'watch', 'badges', 'history', 'settings'], ME_KEY = 'goal.meTab';
 const meTab = () => { const t = lsGet(ME_KEY); return ME_TABS.includes(t) ? t : 'badges'; };
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -997,6 +1063,8 @@ const CUSTOM_CAP = { xp: 30, coins: 20 };
 const JOURNAL = { min: 50, long: 300, xp: 12, coins: 8, longXp: 8, longCoins: 4, maxLen: 5000, titleLen: 60, tags: 5, tagLen: 12, since: '2026-11-27', iter: 600000 };
 const MOODS = [null, ['😣', '很糟'], ['😕', '不太好'], ['😐', '普通'], ['🙂', '不錯'], ['😄', '很好']];
 const JTAGS = ['工作', '研究', '約會', '家人', '朋友', '運動', '練琴', '下棋', '電影', '美食', '旅行', '休息'];
+/* 影劇心得（build 24）：獎勵給「寫心得」不給「看片」。心得滿 min 字給分；每部電影、影集的每一季只給一次，一天最多 daily 部；不算「有紀錄」 */
+const WATCH = { min: 30, xp: 10, coins: 6, daily: 3, maxLen: 3000, titleLen: 100, more: 30, pull: 100, list: 100 };
 
 const DEFAULT_HABITS = [
   { id: 'exercise', name: '運動',            icon: '🏃', cat: 'health',   xp: 15, coins: 10, dailyMax: 2 },
@@ -1183,7 +1251,8 @@ const pqTier = id => { const roll = hashStr('pq:' + id) % 1000; let acc = 0; ret
 // 隊伍資料是別人的：只放在記憶體與 localStorage，不進 state、也不進 goal_meta
 const partyUI = { pick: null, rejectFor: '', chatOpen: false, draft: '', poll: null };   // 隊伍面板的暫時狀態；pick：{ uid, mode: 'cheer' | 'gift' }
 const party = { status: 'off', info: null, members: [], days: {}, cheers: [], raw: null, error: '', busy: false, pushed: '', leaveArm: 0,
-  v4: false, kind: 'friends', since: null, exchange: [], replies: [], answers: [], shared: new Set() };   // 情侶隊（build 23）
+  v4: false, kind: 'friends', since: null, exchange: [], replies: [], answers: [], shared: new Set(),   // 情侶隊（build 23）
+  v5: false, wTitles: [], wRows: [], wList: [] };   // 一起看的片、想一起看的片單（build 24）
 const cpUI = { drafts: {}, ans: '' };   // 交換日記的回覆、每日一問還沒送出的字（重新整理畫面時保留）
 const bossMaxHp = (b, L) => Math.round(b.days * BOSS.dayDmg * (1 + 0.5 * (L - 1)));
 function hashStr(str) { let h = 2166136261; for (const ch of str) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -1314,6 +1383,12 @@ const ACH = [
   { id:'cp_reply30', cat:'life', icon:'💬', name:'有回應的人', desc:'有 30 天回覆另一半的日記',          goal:30,  coins:200, v:s=>s.couple.reply },
   { id:'cp_ans7',    cat:'life', icon:'❓', name:'多認識你一點', desc:'回答 7 天每日一問',               goal:7,   coins:60,  v:s=>s.couple.answer },
   { id:'cp_ans100',  cat:'life', icon:'💞', name:'百問百答',   desc:'回答 100 天每日一問',               goal:100, coins:600, v:s=>s.couple.answer, legend:true },
+  // 影劇心得（build 24）
+  { id:'w_first',    cat:'hobby', icon:'🎟️', name:'第一張票根', desc:'寫第一篇影劇心得（30 字以上）',     goal:1,   coins:20,  v:s=>s.watch.reviews },
+  { id:'w_10',       cat:'hobby', icon:'🍿', name:'影迷',       desc:'記錄 10 部不同的電影或影集',        goal:10,  coins:80,  v:s=>s.watch.titles },
+  { id:'w_rev30',    cat:'hobby', icon:'✍️', name:'影評人',     desc:'寫 30 篇影劇心得',                  goal:30,  coins:250, v:s=>s.watch.reviews },
+  { id:'w_100',      cat:'hobby', icon:'🎞️', name:'百部片單',   desc:'記錄 100 部不同的電影或影集',       goal:100, coins:500, v:s=>s.watch.titles, legend:true },
+  { id:'w_with10',   cat:'hobby', icon:'🛋️', name:'一起看的片', desc:'和另一半一起看 10 部',              goal:10,  coins:120, v:s=>s.watch.with },
 ];
 const ACH_BY_ID = Object.fromEntries(ACH.map(a => [a.id, a]));
 
@@ -1387,8 +1462,8 @@ function save() {
 /* ---------- ledger: everything derived from events ---------- */
 function probKey(p) { return p.slug || (p.id != null ? 'lc-' + p.id : p.title); }
 /* ---------- 各領域等級（只看紀錄的 XP，不給額外獎勵；每日任務、Boss 等加成不算） ---------- */
-const skillKey = (e, cat) => e.type === 'journal' ? 'journal' : cat === 'hobby' && e.habit ? 'h:' + e.habit : cat;
-const SKILL_EXTRA = { journal: { name: '日記', icon: '📔', color: 'var(--life)' } };   // 不是分類也不是習慣的能力
+const skillKey = (e, cat) => e.type === 'journal' ? 'journal' : e.type === 'watch' ? 'watch' : cat === 'hobby' && e.habit ? 'h:' + e.habit : cat;
+const SKILL_EXTRA = { journal: { name: '日記', icon: '📔', color: 'var(--life)' }, watch: { name: '影劇', icon: '🎬', color: 'var(--hobby)' } };   // 不是分類也不是習慣的能力
 function skillLevel(xp) {   // 比總等級快一倍：Lv2 要 60、之後每級多 20
   let L = 1, rem = xp;
   while (rem >= 40 + 20 * L) { rem -= 40 + 20 * L; L++; }
@@ -1403,6 +1478,7 @@ const SKILL_TITLES = {
   'h:chess':['棋盤新手', '認得戰術', '戰術獵人', '開局研究者', '中局指揮官', '殘局行者', '大師候選', '棋盤之王'],
   hobby:    ['剛入門', '上手了', '熟練', '進階', '高手', '職人', '大師', '傳奇'],
   journal:  ['寫下第一頁', '日記新手', '記錄者', '自我觀察者', '文字工匠', '生活作家', '回憶收藏家', '人生史官'],
+  watch:    ['第一張票根', '電影新手', '追劇族', '影迷', '影評人', '片單策展人', '電影學者', '影史守護者'],
 };
 const skillTitle = (key, L) => { const t = SKILL_TITLES[key] || SKILL_TITLES[key.startsWith('h:') ? 'hobby' : 'life'] || SKILL_TITLES.hobby; return t[Math.min(t.length - 1, Math.floor((L - 1) / 3))]; };
 function skillList(S) {
@@ -1470,6 +1546,7 @@ function compute() {
   const skillXp = {};   // 各領域等級：興趣類每個習慣各算一條，其他照分類
   const jScored = {}, jStat = { n: 0, words: 0 };   // 日記：日記的日期 → 拿到獎勵的那一篇
   const cpDone = new Set(), cp = { share: 0, reply: 0, answer: 0 };   // 情侶隊：每種一天一次
+  const wScored = {}, wTitles = new Set(), wWith = new Set(), wStat = { n: 0, reviews: 0, words: 0 };   // 影劇：watchKey → 拿到獎勵的那一筆
   for (const e of evs) {
     const dk = dayKey(e.ts), hit = { ms: tms(e.ts), day: dk };
     const d = days[dk] ||= emptyDay();
@@ -1569,6 +1646,12 @@ function compute() {
       const k = `${e.act}|${e.day}`;
       if (cpDone.has(k) || (e.day !== dk && e.day !== addDays(dk, -1))) r.tag = '這天已經拿過這個獎勵，只記錄';
       else { cpDone.add(k); cp[e.act]++; r = { xp: COUPLE.xp, coins: COUPLE.coins, tag: '' }; }
+    } else if (e.type === 'watch') {           // 影劇心得：心得滿字數才給分；每部（影集每季）一次、一天最多 WATCH.daily 部；不算「有紀錄」
+      const k = watchKey(e), w = e.words || 0; wStat.n++; wStat.words += w; wTitles.add(watchTitleKey(e)); if (e.with) wWith.add(watchTitleKey(e));
+      if (w < WATCH.min) r.tag = e.review ? `心得不到 ${WATCH.min} 字，只記錄` : '';
+      else if (wScored[k]) r.tag = '這部已經拿過心得獎勵，只記錄';
+      else if ((d.watchXp || 0) >= WATCH.daily) r.tag = `這天已經有 ${WATCH.daily} 部拿過獎勵，只記錄`;
+      else { d.watchXp = (d.watchXp || 0) + 1; wScored[k] = e.id; wStat.reviews++; r = { xp: WATCH.xp, coins: WATCH.coins, tag: '' }; cat = 'hobby'; }
     } else if (e.type === 'gate') {            // 分心 App：放行只記錄（加買的扣代幣）；選「算了」給一點代幣
       if (e.skipped) { const c = d.skips = (d.skips || 0) + 1; fo.skips++;
         r = c > FOCUS.skipMax ? { xp: 0, coins: 0, tag: '今天的「算了」獎勵已領完，只記錄' } : { xp: 0, coins: FOCUS.skipCoins, tag: `+${FOCUS.skipCoins} 代幣` }; }
@@ -1698,6 +1781,7 @@ function compute() {
     bosses, bossKills, bestClean, bossComebacks, crits: critIds.size, saved,
     skills: skillXp, owned, chests, comeback: cb, seasons, seasonsDone, sboss, sbossKills,
     couple: cp,
+    watch: { ...wStat, titles: wTitles.size, with: wWith.size, scoredBy: wScored },
     journal: { ...jStat, scored: new Set(Object.keys(jScored)), scoredBy: jScored, best: longestRun(new Set(Object.keys(jScored))), run: currentRun(new Set(Object.keys(jScored))) },
     chestsOpened: Object.keys(chests).length, chestLegend: Object.values(chests).filter(c => c.tier.id === 'legend').length,
     habit: id => habitCount[id] || 0,
@@ -1793,6 +1877,7 @@ function removeEvent(id) {
   if (locked(state.events[i])) { toast(state.events[i].type === 'focus' ? '緊急解鎖的紀錄不能刪除。' : '契約簽下超過 1 小時，不能取消了。'); return; }
   const [ev] = state.events.splice(i, 1); state.deleted.push(id); commit();
   if (ev.type === 'journal' && party.shared.has(id)) cpUnshare(id, null, true);   // 刪掉的日記也從交換日記收回
+  if (ev.type === 'watch' && ev.with && isCouple() && party.v5) cwUnshare(ev, true);   // 一起看的心得也收回
   toast(`已刪除「${esc(eventTitle(ev))}」`, { label: '復原', fn: () => {
     state.deleted = state.deleted.filter(x => x !== id); state.events.push(ev); commit(); } });
 }
@@ -1842,6 +1927,7 @@ function eventTitle(e) {
   if (e.type === 'gate') return e.skipped ? `忍住沒打開 ${e.app || ''}` : `放行 ${e.app || '分心 App'} ${e.minutes} 分鐘`;
   if (e.type === 'journal') return `${e.day === dayKey(e.ts) ? '' : `補寫${dayLabel(e.day)}的`}日記・${fmt(e.words || 0)} 字`;
   if (e.type === 'couple') return COUPLE_ACTS[e.act]?.[1] || '情侶隊';
+  if (e.type === 'watch') return `${e.media === 'tv' ? '追劇' : '看電影'}：${e.title}${watchPart(e)}${e.rating ? `（${e.rating / 2} 顆星）` : ''}`;
   return e.title || '紀錄';
 }
 function eventIcon(e) {
@@ -1864,6 +1950,7 @@ function eventIcon(e) {
   if (e.type === 'gate') return e.skipped ? '🫁' : '🔑';
   if (e.type === 'journal') return MOODS[e.mood]?.[0] || '📔';
   if (e.type === 'couple') return COUPLE_ACTS[e.act]?.[0] || '💞';
+  if (e.type === 'watch') return e.media === 'tv' ? '📺' : '🎬';
   return e.icon || '⭐';
 }
 /* ---------- 資料檢查 ----------
@@ -1908,6 +1995,16 @@ function validEvent(e) {
     }
     // 情侶隊的獎勵只由網頁自己產生（normalize 不接受）；id 固定，一天一種只會有一筆
     case 'couple': return Object.hasOwn(COUPLE_ACTS, e.act) && dayOk(e.day) && e.id === `cp-${e.act}-${e.day}` ? e : null;
+    // 影劇心得只由網頁自己產生（normalize 不接受）；格式不對就整筆不收（不在這裡改內容，同步時才不會一直重推）
+    case 'watch': {
+      const intIn = (v, lo, hi) => v == null || (Number.isInteger(v) && v >= lo && v <= hi), strIn = (v, n) => v == null || (typeof v === 'string' && cut(v, n) === v && v !== '');
+      if ((e.media !== 'movie' && e.media !== 'tv') || !dayOk(e.day) || e.title == null || !strIn(e.title, WATCH.titleLen) || !strIn(e.orig, WATCH.titleLen)) return null;
+      if (!intIn(e.tmdb, 1, 999999999) || !intIn(e.year, 1870, 2100) || !intIn(e.season, 0, 200) || !intIn(e.episode, 1, 5000) || !intIn(e.rating, 1, 10)) return null;
+      if ((e.season != null || e.episode != null) && e.media !== 'tv') return null;
+      if (e.poster != null && !posterOk(e.poster)) return null;
+      if (e.review != null && !(typeof e.review === 'string' && e.review && e.review.length <= WATCH.maxLen)) return null;
+      return Number.isInteger(e.words) && e.words >= 0 && e.words <= 20000 && (e.with == null || (e.with === true && e.tmdb != null)) && (e.editedAt == null || isoOk(e.editedAt)) ? e : null;
+    }
     // 寶箱、外觀只由網頁自己產生（normalize 不接受），這裡只檢查格式
     case 'chest_open': return dayOk(e.day) ? e : null;
     case 'cosmetic_buy': return COSMETIC_BY_ID[e.cosmetic] && Number.isInteger(e.cost) && e.cost >= 0 && e.cost <= 1e4 ? e : null;
@@ -2227,6 +2324,7 @@ const TABS = [
   { id: 'boss',     name: '惡習',   icon: '⚔️' },
   { id: 'problems', name: '題單',   icon: '📋' },
   { id: 'journal',  name: '日記',   icon: '📔' },
+  { id: 'watch',    name: '影劇',   icon: '🎬' },
   { id: 'badges',   name: '徽章牆', icon: '🏅' },
   { id: 'shop',     name: '商店',   icon: '🎟️' },
   { id: 'history',  name: '紀錄',   icon: '📒' },
@@ -2242,7 +2340,7 @@ function render() {
   applyTheme(S); renderHeader(S); renderTabs();
   const v = $('#view');
   try {
-  v.innerHTML = tab === 'today' ? viewToday(S) : tab === 'badges' ? viewBadges(S) : tab === 'shop' ? viewShop(S) : tab === 'journal' ? viewJournal(S)
+  v.innerHTML = tab === 'today' ? viewToday(S) : tab === 'badges' ? viewBadges(S) : tab === 'shop' ? viewShop(S) : tab === 'journal' ? viewJournal(S) : tab === 'watch' ? viewWatch(S)
               : tab === 'history' ? viewHistory(S) : tab === 'problems' ? viewProblems(S) : tab === 'boss' ? viewBoss(S) : viewSettings(S);
   if (ME_TABS.includes(tab)) v.insertAdjacentHTML('afterbegin', `<nav class="subtabs" aria-label="我的">${TABS.filter(t => ME_TABS.includes(t.id)).map(t => `<button data-tab="${t.id}" ${t.id === tab ? 'aria-current="page"' : ''}><span aria-hidden="true">${t.icon}</span> ${t.name}</button>`).join('')}</nav>`);
   } catch (err) {
@@ -2328,7 +2426,7 @@ function viewToday(S) {
   const nudgeNote = nz.length ? `<div class="note"><span>👉 ${esc(nzNames.join('、'))} 戳了你一下：今天還沒有紀錄喔，做一件小事就好。</span></div>` : '';
   const boostMin = Math.ceil((S.boostUntil - Date.now()) / 60e3);
   const boostNote = boostMin > 0 ? `<div class="note"><span>⚡ 隊友送的雙倍 XP 還有 <b class="num">${boostMin}</b> 分鐘：打卡、解題、鎖機專注的 XP ×2。</span></div>` : '';
-  const notes = [...coupleNotes(tk), boostNote, nudgeNote, cbNote, chestNote, reviewPanel(S, tk), contractNudge(S, tk), linkTip].filter(x => x.startsWith('<div class="note')).join('');
+  const notes = [...coupleNotes(tk), ...watchNotes(tk), boostNote, nudgeNote, cbNote, chestNote, reviewPanel(S, tk), contractNudge(S, tk), linkTip].filter(x => x.startsWith('<div class="note')).join('');
   const review = guard.review ? reviewPanel(S, tk) : '';
   const ci = contractInfo(S, tk), contract = contractPanel(S, tk);
   const focusLive = IS_NATIVE && !!guard.status?.session, focus = focusPanel(S, tk);
@@ -3153,6 +3251,7 @@ function monthRecap(S, mk) {
   const js = state.events.filter(e => e.type === 'journal' && e.day.startsWith(mk)), mc = {};
   for (const e of js) if (e.mood) mc[e.mood] = (mc[e.mood] || 0) + 1;
   o.journal = js.length; o.mood = Number(Object.entries(mc).sort((a, b) => b[1] - a[1])[0]?.[0]) || 0;
+  o.watch = new Set(state.events.filter(e => e.type === 'watch' && e.day.startsWith(mk)).map(watchTitleKey)).size;
   const top = Object.entries(o.habits).sort((a, b) => b[1] - a[1])[0]; o.topHabit = top ? { h: state.habits.find(h => h.id === top[0]), n: top[1] } : null;
   return o;
 }
@@ -3164,7 +3263,7 @@ function recapPanel(S) {
       <div class="seg zh" role="radiogroup" aria-label="哪個月">${['這個月', '上個月'].map((n, i) => `<label style="--dc:var(--chalk)"><input type="radio" name="recapm" value="${i}" ${recapOffset === i ? 'checked' : ''}><span>${n}</span></label>`).join('')}</div></div>
     ${o.active ? `<div class="stats rstats">${stat(fmt(o.xp), 'XP')}${stat(o.active, '有紀錄的天數')}${stat(o.bestRun, '最長連續')}${stat(o.newLc, '新解的題')}${stat(o.quests, '任務全清的天')}${stat(o.badges.length, '新徽章')}</div>
     ${tot ? `<div class="wbar">${used.map(([c, m]) => `<i style="width:${o.catXp[c] / tot * 100}%;background:${m.color}" title="${m.name}"></i>`).join('')}</div>` : ''}
-    <p class="hint" style="margin:10px 0 0">${o.topHabit?.h ? `最常做：${esc(o.topHabit.h.icon)} ${esc(o.topHabit.h.name)} ${o.topHabit.n} 次。` : ''}${o.journal ? `寫了 ${o.journal} 篇日記${o.mood ? `，最常的心情是 ${MOODS[o.mood][0]}` : ''}。` : ''}${o.badges.length ? `拿到 ${o.badges.slice(0, 6).map(a => esc(a.icon)).join('')}${o.badges.length > 6 ? '…' : ''}` : ''}</p>
+    <p class="hint" style="margin:10px 0 0">${o.topHabit?.h ? `最常做：${esc(o.topHabit.h.icon)} ${esc(o.topHabit.h.name)} ${o.topHabit.n} 次。` : ''}${o.journal ? `寫了 ${o.journal} 篇日記${o.mood ? `，最常的心情是 ${MOODS[o.mood][0]}` : ''}。` : ''}${o.watch ? `看了 ${o.watch} 部片。` : ''}${o.badges.length ? `拿到 ${o.badges.slice(0, 6).map(a => esc(a.icon)).join('')}${o.badges.length > 6 ? '…' : ''}` : ''}</p>
     <div class="btns" style="margin-top:12px"><button class="btn btn-brass" data-act="recapimg">做成圖片</button></div>` : '<p class="empty">這個月還沒有紀錄。</p>'}</section>`;
 }
 async function recapImage() {
@@ -4124,6 +4223,306 @@ function fillJournal() {
   });
 }
 
+/* ---------- 影劇心得（build 24） ----------
+   一部片 = 一筆 watch 事件（片名、TMDB id、海報路徑、分數、心得）。心得是明文，跟備註一樣。
+   搜片走 Supabase Edge Function 代轉（sync/tmdb-function.ts），TMDB 金鑰不在網頁裡；回來的資料一律經過 validTmdb*()。
+   海報只存 TMDB 的圖片路徑（/xxxx.jpg），網址由 posterUrl() 組，不會用到外部給的網址。 */
+const WREDEEM = { movie: 'r-movie', tv: 'r-drama' };   // 記完一部，順便問要不要兌換的商店獎勵
+const TMDB_LOGO = '<svg class="tmdbl" viewBox="0 0 273.42 35.52" role="img" aria-label="TMDB"><defs><linearGradient id="tmdbg" y1="17.76" x2="273.42" y2="17.76" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#90cea1"/><stop offset=".56" stop-color="#3cbec9"/><stop offset="1" stop-color="#00b3e5"/></linearGradient></defs><path fill="url(#tmdbg)" d="M191.85,35.37h63.9A17.67,17.67,0,0,0,273.42,17.7h0A17.67,17.67,0,0,0,255.75,0h-63.9A17.67,17.67,0,0,0,174.18,17.7h0A17.67,17.67,0,0,0,191.85,35.37ZM10.1,35.42h7.8V6.92H28V0H0v6.9H10.1Zm28.1,0H46V8.25h.1L55.05,35.4h6L70.3,8.25h.1V35.4h7.8V0H66.45l-8.2,23.1h-.1L50,0H38.2ZM89.14.12h11.7a33.56,33.56,0,0,1,8.08,1,18.52,18.52,0,0,1,6.67,3.08,15.09,15.09,0,0,1,4.53,5.52,18.5,18.5,0,0,1,1.67,8.25,16.91,16.91,0,0,1-1.62,7.58,16.3,16.3,0,0,1-4.38,5.5,19.24,19.24,0,0,1-6.35,3.37,24.53,24.53,0,0,1-7.55,1.15H89.14Zm7.8,28.2h4a21.66,21.66,0,0,0,5-.55A10.58,10.58,0,0,0,110,26a8.73,8.73,0,0,0,2.68-3.35,11.9,11.9,0,0,0,1-5.08,9.87,9.87,0,0,0-1-4.52,9.17,9.17,0,0,0-2.63-3.18A11.61,11.61,0,0,0,106.22,8a17.06,17.06,0,0,0-4.68-.63h-4.6ZM133.09.12h13.2a32.87,32.87,0,0,1,4.63.33,12.66,12.66,0,0,1,4.17,1.3,7.94,7.94,0,0,1,3,2.72,8.34,8.34,0,0,1,1.15,4.65,7.48,7.48,0,0,1-1.67,5,9.13,9.13,0,0,1-4.43,2.82V17a10.28,10.28,0,0,1,3.18,1,8.51,8.51,0,0,1,2.45,1.85,7.79,7.79,0,0,1,1.57,2.62,9.16,9.16,0,0,1,.55,3.2,8.52,8.52,0,0,1-1.2,4.68,9.32,9.32,0,0,1-3.1,3A13.38,13.38,0,0,1,152.32,35a22.5,22.5,0,0,1-4.73.5h-14.5Zm7.8,14.15h5.65a7.65,7.65,0,0,0,1.78-.2,4.78,4.78,0,0,0,1.57-.65,3.43,3.43,0,0,0,1.13-1.2,3.63,3.63,0,0,0,.42-1.8A3.3,3.3,0,0,0,151,8.6a3.42,3.42,0,0,0-1.23-1.13A6.07,6.07,0,0,0,148,6.9a9.9,9.9,0,0,0-1.85-.18h-5.3Zm0,14.65h7a8.27,8.27,0,0,0,1.83-.2,4.67,4.67,0,0,0,1.67-.7,3.93,3.93,0,0,0,1.23-1.3,3.8,3.8,0,0,0,.47-1.95,3.16,3.16,0,0,0-.62-2,4,4,0,0,0-1.58-1.18,8.23,8.23,0,0,0-2-.55,15.12,15.12,0,0,0-2.05-.15h-5.9Z"/></svg>';
+const tmdbCredit = () => `<p class="tmdbc">${TMDB_LOGO}<span>片名和海報來自 TMDB。本 App 使用 TMDB API，但未經 TMDB 認可或認證。</span></p>`;
+const posterOk = p => typeof p === 'string' && /^\/[A-Za-z0-9_-]{6,64}\.(jpg|jpeg|png|webp)$/.test(p);
+const posterUrl = (p, w = 'w185') => posterOk(p) ? `https://image.tmdb.org/t/p/${w}${p}` : '';
+const normTitle = t => String(t || '').trim().toLowerCase().replace(/\s+/g, ' ');
+const watchKey = e => `${e.media}:${e.tmdb || 't:' + normTitle(e.title)}${e.media === 'tv' ? ':' + (e.season || 0) : ''}`;   // 獎勵：一部電影、影集的一季各一次
+const watchTitleKey = e => `${e.media}:${e.tmdb || 't:' + normTitle(e.title)}`;   // 「看過幾部」：影集不分季
+const wItem = x => `${x.media}:${x.tmdb}:${x.media === 'tv' ? x.season || 0 : 0}`;   // 一起看的片：同一部（影集是同一季）
+const seasonName = n => n === 0 ? '特別篇' : `第 ${n} 季`;
+const watchPart = e => e.media !== 'tv' ? '' : e.season != null ? `・${seasonName(e.season)}${e.episode ? `第 ${e.episode} 集` : ''}` : e.episode ? `・第 ${e.episode} 集` : '';
+const mediaName = m => m === 'tv' ? '影集' : '電影';
+function starsHTML(r) {
+  if (!r) return '';
+  let h = ''; for (let i = 1; i <= 5; i++) h += `<i class="${r >= i * 2 ? 'f' : r === i * 2 - 1 ? 'h' : ''}">★</i>`;
+  return `<span class="wst" role="img" aria-label="${r / 2} 顆星">${h}</span>`;
+}
+const posterHTML = (p, media, w = 'w92', cls = 'wpo') => posterOk(p) ? `<img class="${cls}" src="${posterUrl(p, w)}" alt="" loading="lazy" decoding="async">` : `<span class="${cls} none" aria-hidden="true">${media === 'tv' ? '📺' : '🎬'}</span>`;
+const watches = () => state.events.filter(e => e.type === 'watch').sort((a, b) => a.day < b.day ? 1 : a.day > b.day ? -1 : tms(b.ts) - tms(a.ts));
+const wf = { media: 'all', more: WATCH.more, togMore: 6 };   // 影劇分頁的篩選（不存）
+
+const tmdbApi = {   // 測試時可以在 Console 換成假資料：window.__goal.tmdbApi.search = async q => ({ results: [...] })
+  async get(path, params = {}) {
+    const tok = await sbToken();
+    const r = await fetch(`${SB.url}/functions/v1/tmdb?${new URLSearchParams({ path, language: 'zh-TW', ...params })}`, { headers: { apikey: SB.key, Authorization: `Bearer ${tok}` } });
+    if (!r.ok) { const err = new Error(`TMDB ${r.status}`); err.status = r.status; try { err.code = String((await r.json()).error || ''); } catch (e) { /* not JSON */ } throw err; }
+    return r.json();
+  },
+  search: q => tmdbApi.get('/search/multi', { query: q }),
+  tv: id => tmdbApi.get(`/tv/${id}`),
+};
+const tmdbErr = e => e.status === 404 ? '還沒設定 TMDB：要先在 Supabase 建立 tmdb 函式（步驟在 sync/tmdb-function.ts）。'
+  : e.code === 'no_key' ? '還沒在 Supabase 存 TMDB 金鑰（Edge Functions → Secrets → TMDB_KEY）。'
+  : e.status === 401 || /登入/.test(e.message || '') ? '要先登入雲端同步才能搜片。' : !navigator.onLine ? '沒有網路，搜不到。' : `TMDB 暫時連不上（${e.message || e}）。`;
+const tmdbYear = d => { const y = /^\d{4}/.test(d || '') ? Number(String(d).slice(0, 4)) : 0; return y >= 1870 && y <= 2100 ? y : null; };
+const validTmdbItem = (x, media) => {
+  const m = media || (x && x.media_type);
+  if (!x || typeof x !== 'object' || !Number.isInteger(x.id) || x.id < 1 || x.id > 999999999 || (m !== 'movie' && m !== 'tv')) return null;
+  const title = cut(x.title || x.name, WATCH.titleLen), orig = cut(x.original_title || x.original_name, WATCH.titleLen); if (!title) return null;
+  return { media: m, tmdb: x.id, title, orig: orig !== title ? orig : '', year: tmdbYear(x.release_date || x.first_air_date), poster: posterOk(x.poster_path) ? x.poster_path : null, overview: cut(x.overview, 120) };
+};
+const validTmdbSeasons = x => (x && Array.isArray(x.seasons) ? x.seasons : []).filter(s => s && Number.isInteger(s.season_number) && s.season_number >= 0 && s.season_number <= 200)
+  .map(s => ({ n: s.season_number, eps: Number.isInteger(s.episode_count) && s.episode_count > 0 && s.episode_count <= 5000 ? s.episode_count : 0 })).slice(0, 100);
+
+/* ---------- 記一部片（放在 #view 外面，跟寫日記一樣不會被重新整理打斷） ---------- */
+const ww = { mode: 'log', id: null, q: '', results: null, busy: false, err: '', seq: 0, pick: null, seasons: null, together: false, listId: null, season: null };
+function wwShell(label) {
+  wwClose();
+  const ov = document.createElement('div'); ov.className = 'jwv wwv'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', label);
+  document.body.append(ov); document.body.classList.add('jw-open'); return ov;
+}
+// o：{ id } 編輯；{ mode: 'list' } 加到想一起看；{ pick, together, listId, season } 從片單或另一半的片開始寫
+function wwOpen(o = {}) {
+  const old = o.id ? state.events.find(e => e.id === o.id && e.type === 'watch') : null; if (o.id && !old) return;
+  Object.assign(ww, { mode: o.mode === 'list' ? 'list' : 'log', id: old ? old.id : null, q: '', results: null, busy: false, err: '', pick: null, seasons: null, together: !!o.together, listId: o.listId || null, season: o.season ?? null });
+  wwShell(old ? '編輯影劇紀錄' : ww.mode === 'list' ? '加到想一起看' : '記一部片');
+  if (old) { ww.pick = { media: old.media, tmdb: old.tmdb || null, title: old.title, orig: old.orig || '', year: old.year || null, poster: old.poster || null }; wwForm(old); }
+  else if (o.pick) { ww.pick = o.pick; wwForm(null); }
+  else wwFind();
+}
+function wwFind() {
+  const ov = $('.wwv'); if (!ov) return;
+  const list = ww.mode === 'list';
+  ov.innerHTML = `<div class="jw ww"><div class="jwh"><button type="button" class="btn btn-ghost" data-act="wwclose">取消</button><b>${list ? '🍿 加到想一起看' : '🎬 記一部片'}</b><span class="wsp"></span></div>
+    <form id="wwsearch" class="row" autocomplete="off" role="search"><label class="field grow"><span class="sr">片名</span><input class="in" id="wwq" name="q" maxlength="80" enterkeyhint="search" placeholder="搜尋電影或影集（中文、英文片名都可以）" value="${esc(ww.q)}"></label><button class="btn btn-brass" type="submit">搜尋</button></form>
+    <div id="wwres" aria-live="polite">${wwResultsHTML()}</div>
+    ${list ? '' : '<div><button type="button" class="mini" data-act="wwmanual">找不到？自己輸入片名</button></div>'}
+    ${tmdbCredit()}</div>`;
+  const q = $('#wwq'); if (q) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
+}
+function wwResultsHTML() {
+  if (ww.busy) return '<p class="empty">搜尋中…</p>';
+  if (ww.err) return `<p class="hint">${esc(ww.err)}</p>`;
+  if (!ww.results) return `<p class="hint">${ww.mode === 'list' ? '找到想一起看的片，按一下就加進片單。' : '找到那部片，按一下開始寫。'}</p>`;
+  if (!ww.results.length) return '<p class="empty">找不到，換個關鍵字試試看。</p>';
+  const seen = new Set(watches().map(watchTitleKey)), listed = new Set((party.wList || []).map(x => `${x.media}:${x.tmdb}`));
+  return `<div class="wres">${ww.results.map((x, i) => `<button type="button" class="wri" data-act="wwpick" data-i="${i}">${posterHTML(x.poster, x.media)}<span class="wrt"><b>${esc(x.title)}</b>
+      <small>${x.year ? `${x.year}・` : ''}${mediaName(x.media)}${x.orig ? `・${esc(x.orig)}` : ''}${seen.has(watchTitleKey(x)) ? '・<em>看過了</em>' : ''}${ww.mode === 'list' && listed.has(`${x.media}:${x.tmdb}`) ? '・<em>已在片單</em>' : ''}</small>
+      ${x.overview ? `<small class="wov">${esc(x.overview)}</small>` : ''}</span></button>`).join('')}</div>`;
+}
+async function wwSearch(q) {
+  q = cut(q, 80); if (!q) return;
+  const seq = ++ww.seq; Object.assign(ww, { q, busy: true, err: '' });
+  const box = $('#wwres'); if (box) box.innerHTML = wwResultsHTML();
+  try { const j = await tmdbApi.search(q); if (seq !== ww.seq) return; ww.results = (j && Array.isArray(j.results) ? j.results : []).map(x => validTmdbItem(x)).filter(Boolean).slice(0, 12); }
+  catch (e) { if (seq !== ww.seq) return; ww.results = null; ww.err = tmdbErr(e); console.warn('tmdb', e); }
+  ww.busy = false; const b = $('#wwres'); if (b) b.innerHTML = wwResultsHTML();
+}
+function wwPick(i) {
+  const x = ww.results && ww.results[i]; if (!x) return;
+  if (ww.mode === 'list') { wwClose(); listAdd(x); return; }
+  ww.pick = x; wwForm(null);
+}
+function wwManual() { ww.pick = { media: 'movie', tmdb: null, title: cut(ww.q, WATCH.titleLen), orig: '', year: null, poster: null, manual: true }; wwForm(null); }
+async function wwLoadSeasons() {
+  const p = ww.pick; if (!p || p.media !== 'tv' || !p.tmdb) return;
+  try { const j = await tmdbApi.tv(p.tmdb); if (ww.pick !== p) return; ww.seasons = validTmdbSeasons(j); }
+  catch (e) { console.warn('tmdb', e); return; }
+  const box = $('#wwseason'); if (box) { const cur = $('#wwform [name="season"]')?.value ?? ''; box.innerHTML = wwSeasonHTML(cur === '' ? null : Number(cur)); }
+}
+function wwSeasonHTML(cur) {
+  if (ww.seasons && ww.seasons.length) return `<select class="in" name="season" aria-label="第幾季"><option value="">不分季</option>${ww.seasons.map(s => `<option value="${s.n}" ${cur === s.n ? 'selected' : ''}>${seasonName(s.n)}${s.eps ? `（${s.eps} 集）` : ''}</option>`).join('')}</select>`;
+  return `<input class="in num" type="number" name="season" min="0" max="200" inputmode="numeric" placeholder="第幾季" aria-label="第幾季" value="${cur ?? ''}">`;
+}
+function wwForm(old) {
+  const ov = $('.wwv'), p = ww.pick; if (!ov || !p) return;
+  const tk = todayKey(), manual = !p.tmdb, media = old ? old.media : p.media, me = myUid(), pt = partner(), pn = esc(pt ? pt.name : '另一半');
+  const season = old ? old.season ?? null : ww.season, canTogether = isCouple() && party.v5 && !!p.tmdb;
+  const theyDid = canTogether && pt && party.wTitles.some(t => t.uid === pt.uid && t.media === p.media && t.tmdb === p.tmdb && (p.media !== 'tv' || season == null || t.season === season));
+  const withOn = old ? !!old.with : ww.together || theyDid;
+  const stars = [1, 2, 3, 4, 5].map(i => `<span class="wsi"><label class="l"><input type="radio" name="rating" value="${i * 2 - 1}" ${old && old.rating === i * 2 - 1 ? 'checked' : ''} aria-label="${i - 0.5} 顆星"></label><label class="r"><input type="radio" name="rating" value="${i * 2}" ${old && old.rating === i * 2 ? 'checked' : ''} aria-label="${i} 顆星"></label><i aria-hidden="true">★</i></span>`).join('');
+  ov.innerHTML = `<form id="wwform" class="jw ww" autocomplete="off">
+    <div class="jwh"><button type="button" class="btn btn-ghost" data-act="${old || ww.listId || ww.together ? 'wwclose' : 'wwback'}">${old || ww.listId || ww.together ? '取消' : '‹ 換一部'}</button><b>${old ? '編輯' : '寫心得'}</b><button class="btn btn-brass" type="submit">存檔</button></div>
+    <div class="wwhead">${posterHTML(p.poster, media, 'w154', 'wpo big')}<div class="wwmeta">
+      ${manual ? `<label class="field">片名<input class="in" name="title" maxlength="${WATCH.titleLen}" required value="${esc(old ? old.title : p.title)}"></label>
+        <div class="seg zh" role="radiogroup" aria-label="類型">${['movie', 'tv'].map(m => `<label style="--dc:var(--chalk)"><input type="radio" name="media" value="${m}" ${media === m ? 'checked' : ''}><span>${mediaName(m)}</span></label>`).join('')}</div>`
+        : `<b class="wwt">${esc(p.title)}</b><small>${p.year ? `${p.year}・` : ''}${mediaName(media)}${p.orig ? `・${esc(p.orig)}` : ''}</small>`}
+      <div class="row wwtv" ${media === 'tv' ? '' : 'hidden'}><span id="wwseason">${wwSeasonHTML(season)}</span><input class="in num" type="number" name="episode" min="1" max="5000" inputmode="numeric" placeholder="第幾集（可不填）" aria-label="第幾集" value="${old && old.episode ? old.episode : ''}"></div>
+      <label class="field wwday">哪一天看的<input class="in num" type="date" name="day" value="${esc(old ? old.day : tk)}" max="${tk}" required></label></div></div>
+    <div class="wstars" role="radiogroup" aria-label="分數（可以給半顆星）">${stars}<span class="wsv" id="wwsv"></span><button type="button" class="mini" data-act="wwnostar">不打分數</button></div>
+    <textarea class="in jwb wwb" name="review" maxlength="${WATCH.maxLen}" placeholder="喜歡哪裡？不喜歡哪裡？哪一幕最難忘？（寫滿 ${WATCH.min} 字有獎勵）" aria-label="心得">${esc(old ? old.review || '' : '')}</textarea>
+    ${canTogether ? `<label class="jwshare">${sw('name="with"', withOn)}<span>🛋️ 和${pn}一起看的<small>${theyDid ? `${pn}已經寫好了，存檔就揭曉彼此的分數和心得` : `${pn}也寫完心得，你們才看得到彼此的分數和心得`}</small></span></label>`
+      : isCouple() && party.v5 && manual ? `<p class="hint" style="margin:0">自己輸入的片沒辦法跟${pn}一起揭曉，要用搜尋找到的片才行。</p>` : ''}
+    <div class="jwf"><span class="num" id="wwc"></span><span id="wwhint"></span></div>
+  </form>`;
+  wwStars(); wwCount();
+  if (media === 'tv' && p.tmdb && !ww.seasons) wwLoadSeasons();
+  const b = ov.querySelector('.wwb'); if (b && !manual) { b.focus(); b.setSelectionRange(b.value.length, b.value.length); }
+}
+function wwStars() {
+  const f = $('#wwform'); if (!f) return;
+  const v = Number(new FormData(f).get('rating')) || 0;
+  f.querySelectorAll('.wsi').forEach((s, i) => { s.classList.toggle('f', v >= (i + 1) * 2); s.classList.toggle('h', v === (i + 1) * 2 - 1); });
+  const o = $('#wwsv'); if (o) o.textContent = v ? `${v / 2} 顆星` : '還沒打分數';
+}
+function wwCount() {
+  const f = $('#wwform'); if (!f) return;
+  const fd = new FormData(f), w = countWords(String(fd.get('review') || '')), S = compute(), old = ww.id ? state.events.find(e => e.id === ww.id) : null;
+  const tv = f.querySelector('.wwtv'), media = ww.pick.tmdb ? ww.pick.media : fd.get('media') === 'tv' ? 'tv' : 'movie'; if (tv) tv.hidden = media !== 'tv';
+  const sv = String(fd.get('season') ?? ''), probe = { media, tmdb: ww.pick.tmdb, title: ww.pick.tmdb ? ww.pick.title : String(fd.get('title') || ''), season: sv === '' ? null : Number(sv) };
+  const by = S.watch.scoredBy[watchKey(probe)], dk = old ? dayKey(old.ts) : todayKey(), used = (S.days[dk]?.watchXp || 0) - (old && S.per[old.id]?.xp ? 1 : 0);
+  const hint = by && by !== ww.id ? '這部已經拿過心得獎勵，這篇只記錄'
+    : used >= WATCH.daily ? `${old ? '那天' : '今天'}已經有 ${WATCH.daily} 部拿過獎勵，這篇只記錄`
+    : w < WATCH.min ? `再寫 ${WATCH.min - w} 字拿 +${WATCH.xp} XP` : `這篇 +${WATCH.xp} XP、+${WATCH.coins} 代幣`;
+  $('#wwc').textContent = `${fmt(w)} 字`; $('#wwhint').textContent = hint;
+}
+function wwClose() { ww.seq++; document.querySelector('.wwv')?.remove(); if (!document.querySelector('.jwv')) document.body.classList.remove('jw-open'); }
+const posInt = (v, lo, hi) => { const s = String(v ?? '').trim(), n = Number(s); return s !== '' && Number.isInteger(n) && n >= lo && n <= hi ? n : null; };
+function wwSave(f) {
+  const fd = new FormData(f), p = ww.pick; if (!p) return;
+  const manual = !p.tmdb, title = manual ? cut(fd.get('title'), WATCH.titleLen) : p.title; if (!title) { toast('先填片名喔。'); return; }
+  const media = manual ? (fd.get('media') === 'tv' ? 'tv' : 'movie') : p.media, tk = todayKey(), dv = String(fd.get('day') || ''), day = dayOk(dv) && dv <= tk ? dv : tk;
+  const rating = posInt(fd.get('rating'), 1, 10), season = media === 'tv' ? posInt(fd.get('season'), 0, 200) : null, episode = media === 'tv' ? posInt(fd.get('episode'), 1, 5000) : null;
+  const review = str(fd.get('review'), WATCH.maxLen).trim(), words = countWords(review);
+  const old = ww.id ? state.events.find(e => e.id === ww.id && e.type === 'watch') : null, id = old ? old.id : uid('w');
+  const wSw = f.querySelector('[name="with"]'), withOn = wSw ? wSw.checked : !!(old && old.with && old.tmdb === p.tmdb);
+  const ev = { id, type: 'watch', ts: old ? old.ts : nowISO(), day, media, title, ...(p.tmdb ? { tmdb: p.tmdb } : {}), ...(p.year ? { year: p.year } : {}), ...(p.poster ? { poster: p.poster } : {}),
+    ...(p.orig ? { orig: p.orig } : {}), ...(season != null ? { season } : {}), ...(episode ? { episode } : {}), ...(rating ? { rating } : {}), ...(review ? { review } : {}), words,
+    ...(withOn && p.tmdb ? { with: true } : {}), ...(old ? { editedAt: nowISO() } : {}) };
+  if (!validEvent(ev)) { toast('資料格式不對，沒有存。'); return; }
+  const before = old ? compute().per[id] : null, rect = $('#wwhint')?.getBoundingClientRect(), listId = ww.listId;
+  if (old) state.events[state.events.indexOf(old)] = ev; else addEvent(ev);
+  wwClose(); commit();
+  const r = compute().per[id], gained = r && r.xp > (before ? before.xp : 0);
+  if (gained) { chime('tick'); haptic('tap'); flyXp(rect, `+${r.xp} XP`); }
+  const msg = `${old ? '改好了' : `記好了《${esc(title)}》`}${gained ? `：+${r.xp} XP、+${r.coins} 代幣` : r && r.tag && !old ? `（${esc(r.tag)}）` : ''}。`;
+  const rw = !old && state.rewards.find(x => x.id === WREDEEM[media]);
+  const redeemed = rw && state.events.some(e => e.type === 'redeem' && e.reward?.id === rw.id && dayKey(e.ts) === tk);
+  if (rw && !redeemed && compute().balance >= rw.cost) toast(msg, { label: `順便兌換「${rw.name}」（${rw.cost} 幣）`, fn: () => wwRedeem(rw.id) });
+  else toast(msg);
+  if (isCouple() && party.v5) {
+    if (old && old.with && old.tmdb && (!ev.with || wItem(old) !== wItem(ev))) cwUnshare(old, true);
+    if (ev.with) cwShare(ev);
+    if (listId) listDel(listId, true);
+  }
+}
+function wwRedeem(rid) {
+  const r = state.rewards.find(x => x.id === rid); if (!r) return;
+  if (compute().balance < r.cost) { toast('代幣不夠了。'); return; }
+  addEvent({ id: uid('rd'), type: 'redeem', ts: nowISO(), reward: { id: r.id, name: r.name, icon: r.icon, cost: r.cost }, source: 'watch' });
+  commit(); chime('tick'); toast(`已兌換「${esc(r.name)}」。`);
+}
+
+/* ---------- 「我的 → 影劇」 ---------- */
+function watchEntryHTML(e, S) {
+  const r = S.per[e.id] || {}, long = (e.review || '').length > 140 || (e.review || '').split('\n').length > 4;
+  return `<article class="jent went">${posterHTML(e.poster, e.media)}<div class="wbody">
+      <div class="wh"><b>${esc(e.title)}</b><span class="dim">${e.year ? `${e.year}・` : ''}${mediaName(e.media)}${esc(watchPart(e))}</span>${e.with ? '<span class="wwith" title="和另一半一起看的">🛋️</span>' : ''}</div>
+      <div class="wmeta">${starsHTML(e.rating)}<span class="dim">${esc(dayLabel(e.day))}${r.xp ? `，+${r.xp} XP` : r.tag ? `，${esc(r.tag)}` : ''}</span>
+        <span class="jact"><button class="mini" data-act="wwedit" data-id="${esc(e.id)}">編輯</button><button class="btn-x" data-act="del" data-id="${esc(e.id)}" aria-label="刪除這筆影劇紀錄" title="刪除">×</button></span></div>
+      ${e.review ? `<p class="jb wrv">${esc(e.review)}</p>${long ? '<button class="mini jmore" data-act="jmore">展開</button>' : ''}` : ''}</div></article>`;
+}
+function viewWatch(S) {
+  const all = watches(), list = all.filter(e => wf.media === 'all' || e.media === wf.media), rated = all.filter(e => e.rating);
+  const avg = rated.length ? (rated.reduce((s, e) => s + e.rating, 0) / rated.length / 2).toFixed(1) : '—', yr = todayKey().slice(0, 4);
+  const thisYear = new Set(all.filter(e => e.day.startsWith(yr)).map(watchTitleKey)).size;
+  const stat = (v, l) => `<div class="stat"><span class="num">${v}</span><small>${l}</small></div>`;
+  const seg = `<div class="seg zh" role="radiogroup" aria-label="類型">${[['all', '全部'], ['movie', '電影'], ['tv', '影集']].map(([v, n]) => `<label style="--dc:var(--chalk)"><input type="radio" name="wmedia" value="${v}" ${wf.media === v ? 'checked' : ''}><span>${n}</span></label>`).join('')}</div>`;
+  return `<section class="panel"><div class="rhead"><h2>影劇</h2><button class="btn btn-brass" data-act="wwopen">記一部</button></div>
+      <p class="hint" style="margin:0 0 6px">心得寫滿 ${WATCH.min} 字 +${WATCH.xp} XP、+${WATCH.coins} 代幣：每部電影、影集的每一季一次，一天最多 ${WATCH.daily} 部。只打分數也可以記，只是不給分。</p>
+      <div class="stats jstats">${stat(fmt(S.watch.titles), '部')}${stat(fmt(S.watch.reviews), '篇心得')}${stat(avg, '平均幾顆星')}${stat(fmt(thisYear), `${yr} 年看了`)}</div></section>
+    ${watchTogetherPanel()}${watchlistPanel()}
+    <section class="panel"><div class="rhead"><h2>看過的</h2>${seg}</div>
+      ${list.length ? list.slice(0, wf.more).map(e => watchEntryHTML(e, S)).join('') : `<p class="empty">${all.length ? '這一類還沒有紀錄。' : '還沒有紀錄。看完一部片，記下分數和一句話就好。'}</p>`}
+      ${list.length > wf.more ? '<div class="btns" style="margin-top:12px"><button class="btn btn-ghost" data-act="wwmorelist">顯示更多</button></div>' : ''}</section>
+    ${tmdbCredit()}`;
+}
+
+/* ---------- 情侶隊：一起看的片、想一起看的片單（build 24，sync/party-v5.sql） ----------
+   勾了「一起看的」那一筆會複製一份分數和心得到 goal_watch_together；兩個人都寫了同一部（影集是同一季）才看得到對方的（RLS 擋）。
+   還沒寫的人只拿得到片名（goal_watch_titles()）。別人寫的字一律 esc()，海報一律經過 posterOk()。 */
+function watchTogether() {
+  const me = myUid(), p = partner(), items = {};
+  for (const t of party.wTitles) (items[wItem(t)] ||= { k: wItem(t), t, by: {} }).by[t.uid] = t;
+  const rows = {}; for (const r of party.wRows) rows[`${wItem(r)}|${r.uid}`] = r;
+  const waitMe = [], waitThem = [], both = [];
+  for (const it of Object.values(items)) {
+    const mine = it.by[me], theirs = p && it.by[p.uid];
+    if (mine && theirs) both.push({ ...it, mine: rows[`${it.k}|${me}`], theirs: rows[`${it.k}|${p.uid}`], at: mine.at > theirs.at ? mine.at : theirs.at });
+    else if (theirs) waitMe.push({ ...it, t: theirs }); else if (mine) waitThem.push({ ...it, t: mine });
+  }
+  both.sort((a, b) => tms(b.at) - tms(a.at)); waitMe.sort((a, b) => tms(b.t.at) - tms(a.t.at));
+  return { waitMe, waitThem, both };
+}
+function watchTogetherPanel() {
+  if (!isCouple() || !party.v5) return '';
+  const p = partner(), pn = esc(p ? p.name : '另一半'), w = watchTogether();
+  const head = t => `${posterHTML(t.poster, t.media)}<span class="wrt"><b>${esc(t.title)}</b><small>${t.year ? `${t.year}・` : ''}${mediaName(t.media)}${t.media === 'tv' && t.season ? `・${seasonName(t.season)}` : ''}</small></span>`;
+  const side = (who, r) => `<div class="wside"><b>${who}</b>${r ? `${starsHTML(r.rating) || '<span class="dim">沒打分數</span>'}${r.review ? `<p>${esc(r.review)}</p>` : ''}` : '<span class="dim">讀取中…</span>'}</div>`;
+  const waitMe = w.waitMe.map(x => `<div class="wtg wait">${head(x.t)}<button class="btn btn-brass btn-sm" data-act="wwtogether" data-k="${esc(x.k)}">寫我的心得</button></div>`).join('');
+  const both = w.both.slice(0, wf.togMore).map(x => `<article class="wtg done"><div class="wtgh">${head(x.t)}</div><div class="wsides">${side('你', x.mine)}${side(pn, x.theirs)}</div></article>`).join('');
+  const waitThem = w.waitThem.length ? `<p class="dim wtwait">等${pn}寫：${w.waitThem.slice(0, 5).map(x => `《${esc(x.t.title)}》`).join('')}${w.waitThem.length > 5 ? ` 等 ${w.waitThem.length} 部` : ''}</p>` : '';
+  return `<section class="panel couplep"><div class="rhead"><h2>🛋️ 一起看的片</h2><button class="btn btn-ghost" data-act="wwsync">重新整理</button></div>
+    ${waitMe ? `<p class="hint" style="margin:0 0 8px">${pn}寫好心得了，換你寫，寫完就揭曉。</p>${waitMe}` : ''}
+    ${both || ''}${w.both.length > wf.togMore ? '<div class="btns" style="margin-top:10px"><button class="btn btn-ghost" data-act="wwtogmore">顯示更多</button></div>' : ''}
+    ${waitThem}
+    ${!waitMe && !both && !waitThem ? `<p class="hint" style="margin:0">一起看完一部片，寫心得時打開「和${pn}一起看的」。兩個人都寫了，才看得到彼此給幾顆星、寫了什麼。</p>` : ''}</section>`;
+}
+function watchlistPanel() {
+  if (!isCouple() || !party.v5) return '';
+  const me = myUid(), names = Object.fromEntries(party.members.map(m => [m.uid, m.name]));
+  const rows = party.wList.map(x => `<li class="wli">${posterHTML(x.poster, x.media)}<span class="wrt"><b>${esc(x.title)}</b><small>${x.year ? `${x.year}・` : ''}${mediaName(x.media)}・${x.by === me ? '你' : esc(names[x.by] || '前隊友')}加的</small></span>
+      <span class="jact"><button class="mini" data-act="wwfromlist" data-id="${esc(x.id)}">看完了</button><button class="btn-x" data-act="wwlistdel" data-id="${esc(x.id)}" aria-label="從片單拿掉" title="拿掉">×</button></span></li>`).join('');
+  return `<section class="panel"><div class="rhead"><h2>🍿 想一起看</h2><button class="btn btn-ghost" data-act="wwlist">＋ 加一部</button></div>
+    ${rows ? `<ul class="wlst">${rows}</ul>` : '<p class="hint" style="margin:0">兩個人共用的片單：看到想一起看的片就加進來，看完按「看完了」寫心得。</p>'}</section>`;
+}
+// 「今天」頁的提示：另一半寫好一起看的片了，換你寫（14 天內的）
+function watchNotes(tk) {
+  if (!isCouple() || !party.v5) return [];
+  const p = partner(); if (!p) return [];
+  const w = watchTogether().waitMe.filter(x => daysBetween(x.t.day, tk) <= 14), pn = esc(p.name);
+  if (!w.length) return [];
+  return [`<div class="note cpnote"><span>🛋️ ${pn}寫好${w.length > 1 ? ` ${w.length} 部` : `《${esc(w[0].t.title)}》`}一起看的心得了，換你寫，寫完就揭曉。</span><span class="btns">${w.length > 1 ? '<button class="btn btn-brass btn-sm" data-tab="watch">去看看</button>' : `<button class="btn btn-brass btn-sm" data-act="wwtogether" data-k="${esc(w[0].k)}">寫心得</button>`}</span></div>`];
+}
+async function cwShare(e) {
+  if (!isCouple() || !party.v5 || !e.tmdb) return;
+  try {
+    await partyApi.watchShare({ party_id: party.info.id, media: e.media, tmdb: e.tmdb, season: e.media === 'tv' ? e.season || 0 : 0, title: e.title, year: e.year || null, poster: e.poster || null,
+      rating: e.rating || null, review: e.review || '', day: e.day });
+    const p = partner(), done = p && party.wTitles.some(t => t.uid === p.uid && wItem(t) === wItem(e));
+    if (done) toast(`🛋️ 揭曉了！去看看${esc(p.name)}給幾顆星。`, { label: '去看看', fn: () => { tab = 'watch'; lsSet(TAB_KEY, tab); lsSet(ME_KEY, tab); render(); scrollTo({ top: 0 }); } });
+    await syncParty();
+  } catch (err) { toast(`一起看的心得沒有傳出去：${esc(partyErr(err))}`); }
+}
+async function cwUnshare(e, quiet) {
+  const me = myUid(); if (!me || !party.info || !e.tmdb) return;
+  const season = e.media === 'tv' ? e.season || 0 : 0;
+  try {
+    await partyApi.watchUnshare(me, e.media, e.tmdb, season);
+    if (party.raw) { const keep = x => !(x && x.user_id === me && wItem(x) === wItem({ ...e, season })); party.raw.wTitles = (party.raw.wTitles || []).filter(keep); party.raw.wRows = (party.raw.wRows || []).filter(keep); }
+    applyParty(party.raw); saveParty(); if (!quiet) toast('收回了，另一半看不到這部的心得了。'); render();
+  } catch (err) { toast(esc(partyErr(err))); }
+}
+async function listAdd(x) {
+  if (!isCouple() || !party.v5) return;
+  try {
+    await partyApi.listAdd({ party_id: party.info.id, media: x.media, tmdb: x.tmdb, title: x.title, year: x.year || null, poster: x.poster || null });
+    toast(`加進想一起看了：《${esc(x.title)}》`); await syncParty(); render();
+  } catch (e) { toast(esc(e.code === '23505' ? '片單裡已經有這部了' : partyErr(e))); }
+}
+async function listDel(id, quiet) {
+  try {
+    await partyApi.listDel(id);
+    if (party.raw) party.raw.wList = (party.raw.wList || []).filter(x => !(x && String(x.id).toLowerCase() === id)); applyParty(party.raw); saveParty();
+    if (!quiet) toast('從片單拿掉了。'); render();
+  } catch (e) { toast(esc(partyErr(e))); }
+}
+function wwFromTitle(k) {   // 另一半寫好的片：帶著片名、季數開始寫
+  const p = partner(), t = party.wTitles.find(x => x.uid === p?.uid && wItem(x) === k) || party.wTitles.find(x => wItem(x) === k); if (!t) return;
+  wwOpen({ pick: { media: t.media, tmdb: t.tmdb, title: t.title, orig: '', year: t.year, poster: t.poster }, together: true, season: t.media === 'tv' ? t.season : null });
+}
+function wwFromList(id) {
+  const x = party.wList.find(y => y.id === id); if (!x) return;
+  wwOpen({ pick: { media: x.media, tmdb: x.tmdb, title: x.title, orig: '', year: x.year, poster: x.poster }, together: true, listId: x.id });
+}
+
 /* ---------- cloud sync (Supabase) ----------
    事件一筆一列存在 goal_events（刪除用 deleted=true 的墓碑），
    習慣、獎勵、題單、徽章等放在 goal_meta 一列。
@@ -4418,6 +4817,14 @@ const partyApi = {   // 測試時可以在 Console 換成假資料：window.__go
   delReply: id => sbRest(`goal_exchange_replies?id=eq.${id}`, { method: 'DELETE' }),
   pullAnswers: since => sbRest(`goal_daily_answers?select=user_id,day,qid,body,created_at&day=gte.${since}`),
   answer: (pid, day, qid, body) => sbRest('goal_daily_answers', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ party_id: pid, day, qid, body }) }),
+  // build 24（sync/party-v5.sql）一起看的片、想一起看的片單
+  watchTitles: () => sbRest('rpc/goal_watch_titles', { method: 'POST', body: '{}' }),
+  watchPull: () => sbRest(`goal_watch_together?select=user_id,media,tmdb,season,title,year,poster,rating,review,day,created_at,updated_at&order=created_at.desc&limit=${WATCH.pull}`),
+  watchShare: row => sbRest('goal_watch_together?on_conflict=user_id,media,tmdb,season', { method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify(row) }),
+  watchUnshare: (me, media, tmdb, season) => sbRest(`goal_watch_together?user_id=eq.${me}&media=eq.${media}&tmdb=eq.${tmdb}&season=eq.${season}`, { method: 'DELETE' }),
+  listPull: () => sbRest(`goal_watchlist?select=id,added_by,media,tmdb,title,year,poster,created_at&order=created_at.desc&limit=${WATCH.list}`),
+  listAdd: row => sbRest('goal_watchlist', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify(row) }),
+  listDel: id => sbRest(`goal_watchlist?id=eq.${id}`, { method: 'DELETE' }),
 };
 const PARTY_ERR = { already_in_party: '你已經在一個隊伍裡了', party_not_found: '找不到這個邀請碼', party_full: '這個隊伍已經滿了（朋友隊 4 人、情侶隊 2 人）',
   too_many_for_couple: '隊伍超過 2 個人，不能改成情侶隊', bad_kind: '隊伍類型不對', bad_since: '日期不對（不能是未來）',
@@ -4443,6 +4850,14 @@ const validReply = r => r && typeof r === 'object' && uuidOk(r.id) && uuidOk(r.e
   ? { id: r.id.toLowerCase(), entry: r.entry.toLowerCase(), author: r.author, body: cut(r.body, COUPLE.reply), emoji: COUPLE.emojis.includes(r.emoji) ? r.emoji : '', at: r.created_at } : null;
 const validAnswer = a => a && typeof a === 'object' && uuidOk(a.user_id) && dayOk(a.day) && Number.isInteger(a.qid) && a.qid >= 0 && a.qid <= 999 && cut(a.body, COUPLE.answer)
   ? { uid: a.user_id, day: a.day, qid: a.qid, body: cut(a.body, COUPLE.answer) } : null;
+// 一起看的片（build 24）：片名、心得是別人寫的字，畫面上一律 esc()；海報只收 TMDB 的圖片路徑
+const wIntOk = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
+const validWatchTitle = t => t && typeof t === 'object' && uuidOk(t.user_id) && (t.media === 'movie' || t.media === 'tv') && wIntOk(t.tmdb, 1, 999999999) && wIntOk(t.season, 0, 200)
+  && cut(t.title, WATCH.titleLen) && dayOk(t.day) && isoOk(t.created_at)
+  ? { uid: t.user_id, media: t.media, tmdb: t.tmdb, season: t.season, title: cut(t.title, WATCH.titleLen), year: wIntOk(t.year, 1870, 2100) ? t.year : null, poster: posterOk(t.poster) ? t.poster : null, day: t.day, at: t.created_at } : null;
+const validWatchRow = t => { const v = validWatchTitle(t); return v && { ...v, rating: wIntOk(t.rating, 1, 10) ? t.rating : null, review: cut(t.review, WATCH.maxLen) }; };
+const validWatchItem = x => x && typeof x === 'object' && uuidOk(x.id) && uuidOk(x.added_by) && (x.media === 'movie' || x.media === 'tv') && wIntOk(x.tmdb, 1, 999999999) && cut(x.title, WATCH.titleLen) && isoOk(x.created_at)
+  ? { id: x.id.toLowerCase(), by: x.added_by, media: x.media, tmdb: x.tmdb, title: cut(x.title, WATCH.titleLen), year: wIntOk(x.year, 1870, 2100) ? x.year : null, poster: posterOk(x.poster) ? x.poster : null, at: x.created_at } : null;
 function isCouple() { return !!(party.info && party.v4 && party.kind === 'couple'); }
 function partner() { const me = myUid(); return party.members.find(m => m.uid !== me) || null; }
 function partyCap() { return isCouple() ? COUPLE.size : PARTY.size; }
@@ -4476,10 +4891,11 @@ function applyParty(raw) {   // raw 是雲端原樣的資料（也存在 localSt
   party.exchange = listOf(raw.exchange, validExchange).sort((a, b) => tms(b.at) - tms(a.at));
   party.replies = listOf(raw.replies, validReply).sort((a, b) => tms(a.at) - tms(b.at)); party.answers = listOf(raw.answers, validAnswer);
   party.shared = new Set(listOf(raw.myShared, x => x && typeof x.entry_id === 'string' && safeKey(x.entry_id) === x.entry_id ? x.entry_id : null));
+  party.v5 = party.v4 && raw.v5 === true; party.wTitles = listOf(raw.wTitles, validWatchTitle); party.wRows = listOf(raw.wRows, validWatchRow); party.wList = listOf(raw.wList, validWatchItem);
   party.raw = raw;
 }
-// 對方分享的日記、回覆、每日一問的答案只放在記憶體，不存進 localStorage
-function saveParty() { const { exchange, replies, answers, ...keep } = party.raw || {}; lsSet(PARTY_LS, JSON.stringify({ owner: myUid(), status: party.status, raw: keep })); }
+// 對方分享的日記、回覆、每日一問的答案、一起看的心得只放在記憶體，不存進 localStorage
+function saveParty() { const { exchange, replies, answers, wRows, ...keep } = party.raw || {}; lsSet(PARTY_LS, JSON.stringify({ owner: myUid(), status: party.status, raw: keep })); }
 function loadParty() {
   let o = null; try { o = JSON.parse(lsGet(PARTY_LS)); } catch (e) { /* ignore */ }
   if (!o || !myUid() || o.owner !== myUid()) return;
@@ -4543,6 +4959,9 @@ async function pullCouple(raw, me, tk) {
   [raw.exchange, raw.myShared, raw.answers] = await Promise.all([partyApi.pullExchange(), partyApi.myShared(me), partyApi.pullAnswers(addDays(tk, -1))]);
   const ids = (Array.isArray(raw.exchange) ? raw.exchange : []).map(x => x && x.id).filter(uuidOk);
   raw.replies = ids.length ? await partyApi.pullReplies(ids) : [];
+  // build 24 的資料表：還沒執行 party-v5.sql 時略過，一起看的片和片單自動隱藏
+  try { [raw.wTitles, raw.wRows, raw.wList] = await Promise.all([partyApi.watchTitles(), partyApi.watchPull(), partyApi.listPull()]); raw.v5 = true; }
+  catch (e) { if (!partyMissing(e) && e.code !== '42703') throw e; raw.v5 = false; }
 }
 // 收到的加油變成本機的 cheer 事件；id 固定，換裝置或重複拉取都不會重複入帳
 function ingestCheers(me) {
@@ -5289,6 +5708,20 @@ document.addEventListener('click', e => {
   else if (act === 'jmon') { jf.month = Math.max(0, jf.month + Number(t.dataset.d)); render(); }
   else if (act === 'jmorelist') { jf.more += 20; render(); }
   else if (act === 'jmore') { const a = t.closest('.jent'); a.classList.toggle('open'); t.textContent = a.classList.contains('open') ? '收起' : '展開'; }
+  else if (act === 'wwopen') wwOpen();
+  else if (act === 'wwclose') wwClose();
+  else if (act === 'wwback') { ww.pick = null; ww.seasons = null; wwFind(); }
+  else if (act === 'wwpick') wwPick(Number(t.dataset.i));
+  else if (act === 'wwmanual') wwManual();
+  else if (act === 'wwnostar') { $('#wwform')?.querySelectorAll('[name="rating"]').forEach(i => { i.checked = false; }); wwStars(); }
+  else if (act === 'wwedit') wwOpen({ id });
+  else if (act === 'wwmorelist') { wf.more += WATCH.more; render(); }
+  else if (act === 'wwtogmore') { wf.togMore += 6; render(); }
+  else if (act === 'wwlist') wwOpen({ mode: 'list' });
+  else if (act === 'wwlistdel') listDel(id);
+  else if (act === 'wwfromlist') wwFromList(id);
+  else if (act === 'wwtogether') wwFromTitle(t.dataset.k);
+  else if (act === 'wwsync') { t.disabled = true; syncParty().then(() => { render(); toast('更新好了'); }); }
   else if (act === 'jcopy') navigator.clipboard?.writeText(jc.newCode).then(() => toast('複製好了，記得貼到安全的地方。'), () => toast('沒辦法複製，請手動抄下來。'));
   else if (act === 'jcodeok') { jc.newCode = ''; render(); }
   else if (act === 'jlock') jLock();
@@ -5394,6 +5827,8 @@ document.addEventListener('submit', e => {
   const f = e.target, fd = new FormData(f);
   if (f.id === 'partychat') { postChat(f); return; }
   if (f.id === 'jwform') { jSave(f); return; }
+  if (f.id === 'wwsearch') { wwSearch(fd.get('q')); return; }
+  if (f.id === 'wwform') { wwSave(f); return; }
   if (f.id === 'jsetup') { jSetup(f); return; }
   if (f.id === 'junlock') { jUnlock(f); return; }
   if (f.id === 'jrecover') { jRecover(f); return; }
@@ -5478,6 +5913,7 @@ document.addEventListener('change', e => {
   else if (t.name === 'minutes' && t.closest('#groupopen')) { group.min = Number(t.value) || 25; t.closest('.fmins').querySelectorAll('.chipbtn').forEach(l => l.classList.toggle('on', l.contains(t))); }
   else if (t.name === 'prepw') { partyRep.off = Number(t.value) ? 1 : 0; render(); }
   else if (t.name === 'jview') { jf.view = t.value === 'ex' ? 'ex' : 'mine'; render(); }
+  else if (t.name === 'wmedia') { wf.media = t.value === 'movie' || t.value === 'tv' ? t.value : 'all'; wf.more = WATCH.more; render(); }
   else if (t.name === 'pkind') { const k = t.value === 'couple' ? 'couple' : 'friends'; partyAction(() => partyApi.setKind(k), k === 'couple' ? '改成情侶隊了：交換日記、每日一問、紀念日都打開了，商店裡的「玫瑰」外觀也能用了。' : '改回朋友隊了。').then(render); }
   else if (t.id === 'psince') { const v = t.value; if (v && (!dayOk(v) || v > todayKey())) { toast('日期不能是未來'); t.value = party.since || ''; return; } partyAction(() => partyApi.setSince(v || null), v ? '紀念日存好了' : '清掉紀念日了'); }
   else if (t.id === 'cpmood') { state.settings.coupleMood = t.checked; touchMeta(); save(); party.pushed = ''; if (!t.checked && party.v4 && party.info) partyApi.clearMood(myUid()).catch(e => console.warn('party', e)); syncParty(); toast(t.checked ? '另一半會看到你每天的心情' : '不再分享心情，已上傳的會清掉'); }
@@ -5506,9 +5942,11 @@ document.addEventListener('input', e => {
   if (e.target.id === 'cpans') { cpUI.ans = e.target.value; return; }
   if (e.target.closest && e.target.closest('.xreply')) { cpUI.drafts[e.target.closest('.xreply').dataset.entry] = e.target.value; return; }
   if (e.target.closest && e.target.closest('#jwform')) { jwInput(); return; }
+  if (e.target.closest && e.target.closest('#wwform')) { wwCount(); return; }
   if (e.target.id === 'pq') { pf.q = e.target.value; const ul = $('#plist'); if (ul) ul.innerHTML = problemRows(compute()); }
 });
 document.addEventListener('keydown', e => {
+  if ($('.wwv')) { if (e.key === 'Escape') { e.preventDefault(); wwClose(); } return; }
   if (!$('.jwv')) return;
   if (e.key === 'Escape') { e.preventDefault(); jwClose(); }
   else if (e.key === 'Enter' && e.target.name === 'newtag') { e.preventDefault(); jwAddTag(e.target); }
@@ -5516,6 +5954,7 @@ document.addEventListener('keydown', e => {
 document.addEventListener('change', e => {
   const t = e.target;
   if (t.closest && t.closest('#jwform')) { jwInput(); return; }
+  if (t.closest && t.closest('#wwform')) { wwStars(); wwCount(); return; }
   if (t.classList.contains('pnote')) setProblem(t.dataset.slug, { note: t.value });
   else if (t.id === 'pdiff') { pf.diff = t.value; render(); }
   else if (t.id === 'ptag') { pf.tag = t.value; render(); }
@@ -5547,7 +5986,7 @@ render();
 })();
 setInterval(() => { if (tab === 'today' && !document.hidden) renderHeader(compute()); }, 60000);
 setInterval(() => { if (tab === 'today' && !document.hidden && !guard.review && reviewDue(todayKey()) && !$('.notes [data-act="rvopen"]')) render(); }, 5 * 60000);
-window.__goal = { get state() { return state; }, compute, chestRoll, celebrations, ingest, extractJSON, render, checkUnlocks, partyApi, party, syncParty, partyBoss, guard, addEvent, validEvent, focusPenalty, G,
+window.__goal = { get state() { return state; }, compute, chestRoll, celebrations, ingest, extractJSON, render, checkUnlocks, partyApi, tmdbApi, party, syncParty, partyBoss, guard, addEvent, validEvent, focusPenalty, G,
   celebrate: c => { celebrations.push(c); if ($('#overlay').hidden) showNextCelebration(); } };
 </script>
 </body>
