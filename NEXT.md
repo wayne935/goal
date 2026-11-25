@@ -1,6 +1,6 @@
 # 接下來要實作的事
 
-> 更新：2026-11-25　｜　目前網頁 build 22，原生 NATIVE_VERSION 6（`version.json` 的 minNative 6）
+> 更新：2026-11-25　｜　目前網頁 build 23，原生 NATIVE_VERSION 6（`version.json` 的 minNative 6）
 > 先讀 `CLAUDE.md`（架構、發佈規則、測試方法）。設計理由與研究依據在 `PLAN.md` 第 8 節。
 
 ## 目前狀態
@@ -56,4 +56,8 @@
 - **build 22 日記（2026-11-25，PLAN 11）**：設計文件（Claude Doc）https://claude.ai/artifact/9jvb6X4exJg6T1ndg7biK8 。`journal` 事件、`JOURNAL` / `MOODS` / `JTAGS` 常數、加密在 `jSeal()` / `jDecrypt()`（事件 id 當 AES-GCM 附加資料），金鑰 `state.jkey`（`validJkey()`、兩台裝置衝突用 `pickJkey()`：同一把取 `at` 比較新的，不同把留 `created` 比較早的），這台裝置的金鑰在 IndexedDB `goal-journal`（`<帳號 id>:<kid>`）。寫日記畫面 `.jwv` 放在 `#view` 外面（重新整理畫面不會打斷輸入）。`QUEST_POOL` 的任務可以有 `since`，`q_journal` 從 `JOURNAL.since`（2026-11-27）才加入，舊日子的任務不變。
   - 使用者的決定：先做日記、要跟 XP / 代幣掛勾、用日記密碼加密（不然 Supabase 後台看得到對方的日記）、情侶隊是重點（兩人每天開、都用 Pixel、對方已有帳號）、目前沒有朋友隊所以維持一人一隊、要做每日一問、心情預設給對方看。不串 Pixel Journal。
   - 已知取捨：搜尋只能用標籤和日期（內文是加密的）；兩台裝置在同步前各自設定了不同的日記密碼時，後設定的那台寫的日記只能在那台打開；草稿沒有加密（只在這台裝置）。
-  - **下一步：情侶隊與交換日記**（設計文件「情侶隊與交換日記」那節）：`goal_parties` 加 `kind` / `since`、`goal_exchange` / `goal_exchange_replies`（`sync/party-v4.sql`，`party.v4`）、在一起的天數、彼此的心情、每日一問、玫瑰主題、分享 / 回覆的獎勵（各 +5 XP / +3 代幣，每天一次）。
+
+- **build 23 情侶隊與交換日記（2026-11-25，PLAN 11.2）**：`sync/party-v4.sql`（`goal_parties.kind` / `since`、`goal_party_days.mood`、`goal_exchange`、`goal_exchange_replies`、`goal_daily_answers`、`goal_create_party_kind()`、`goal_set_party_kind()`、`goal_set_party_since()`、`goal_answered()`、新版 `goal_join_party()`（情侶隊 2 人）、離開隊伍時收回自己分享的東西的 trigger），權限測試 `sync/test/run-party-v4-test.sh`。網頁：`COUPLE`、`COUPLE_ACTS`、`QUESTIONS` / `qOf()`；`partyApi.kind/createKind/setKind/setSince/pullExchange/myShared/share/unshare/pullReplies/reply/delReply/pullAnswers/answer/clearMood`；`party.v4` / `kind` / `since` / `exchange` / `replies` / `answers` / `shared`；`couplePanel()`（「今天」頁 slot 2：在一起第幾天、兩人今天的心情、每日一問）、`coupleNotes()`、`coupleSettingsHTML()`、日記分頁的「我的日記 | 交換日記」（`jf.view`、`viewExchange()`）、寫日記畫面的「分享給對方」開關；新事件 `couple`、5 個徽章、玫瑰外觀（情侶隊限定）。在瀏覽器用假的 Supabase 測過：分享 / 收回 / 編輯後更新 / 刪掉日記會收回、表情與文字回覆、每日一問兩人都答才看得到、紀念日與 100 天提示、心情開關、朋友隊 ↔ 情侶隊、沒執行 SQL、手機版、`<script>` 名字和內容。
+  - 🙋 使用者要做：在 Supabase SQL Editor 執行 `sync/party-v4.sql`；兩個人其中一個建立情侶隊（或在設定把現有的隊伍改成情侶隊），另一個用邀請碼加入，設定在一起的日子。
+  - 已知取捨：分享出去的那一份是明文（Supabase 後台看得到，跟隊伍聊天一樣），自己原本的日記還是加密的；改日記時要在寫日記畫面保持「分享」打開才會更新對方看到的內容；對方先回答每日一問時看不到「對方已經答了」（RLS 連有沒有答都擋住）；每日一問只顯示今天和昨天；交換日記一次拉最新 60 篇。
+  - **下一步：影劇心得（TMDB）或記帳**（PLAN 11 的第 3 步），等使用者用幾天情侶隊後決定先做哪個。
