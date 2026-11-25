@@ -18,7 +18,7 @@
 
 ## 架構（全部在單一 `index.html`）
 - **Event sourcing**：`state.events` 是唯一的真相，XP、代幣、徽章進度、Boss 血量全部由 `compute()` 推算；刪除事件後數字會自動回推。新功能也要這樣做，不要另外存計算結果。
-- 事件類型：`leetcode`、`habit`、`custom`、`redeem`、`restraint`（忍住）、`relapse`（犯了）、`contract_open`（承諾契約）、`freeze_buy`（保護卡）、`cheer`（加油：收到的有 `from`、送出的有 `to`）、`party_reward`（共同 Boss 獎勵）、`party_quest`（每週隊伍任務）、`gift_send` / `gift`（送禮 / 收到禮物）、`witness_verdict`（契約見證結果）、`group_focus`（一起專注的團隊獎勵）、`focus`（鎖機專注 / 宵禁，`kind` + `result`）、`gate`（分心 App 放行）、`chest_open`（寶箱，`day`）、`cosmetic_buy`（外觀）。新增類型要同時改：`compute()`、`validEvent()`、`normalize()`（給 inbox / AI 用）、`eventTitle()` / `eventIcon()`。`cheer`、`party_reward`、`party_quest`、`gift_send`、`gift`、`witness_verdict`、`group_focus`、`chest_open`、`cosmetic_buy` 只由網頁自己產生，`focus`、`gate` 只由原生端產生（`drainWidgetQueue()` 直接用 `validEvent()` 收），`normalize()` 故意都不接受。
+- 事件類型：`leetcode`、`habit`、`custom`、`redeem`、`restraint`（忍住）、`relapse`（犯了）、`contract_open`（承諾契約）、`freeze_buy`（保護卡）、`cheer`（加油：收到的有 `from`、送出的有 `to`）、`party_reward`（共同 Boss 獎勵）、`party_quest`（每週隊伍任務）、`gift_send` / `gift`（送禮 / 收到禮物）、`witness_verdict`（契約見證結果）、`group_focus`（一起專注的團隊獎勵）、`focus`（鎖機專注 / 宵禁，`kind` + `result`）、`gate`（分心 App 放行）、`chest_open`（寶箱，`day`）、`cosmetic_buy`（外觀）、`journal`（日記，`day`、`words`、`mood`、`tags`，內容在加密的 `enc`）。新增類型要同時改：`compute()`、`validEvent()`、`normalize()`（給 inbox / AI 用）、`eventTitle()` / `eventIcon()`。`cheer`、`party_reward`、`party_quest`、`gift_send`、`gift`、`witness_verdict`、`group_focus`、`chest_open`、`cosmetic_buy`、`journal` 只由網頁自己產生，`focus`、`gate` 只由原生端產生（`drainWidgetQueue()` 直接用 `validEvent()` 收），`normalize()` 故意都不接受。
 - 設定類資料（`habits`、`rewards`、`bosses`、`settings`、`problems`、`unlocked`）放在 `goal_meta` 同步：新增欄位要加進 `metaPayload()`、`syncNow()` 的拉取合併、`mergeState()`（備份匯入）、`migrate()`，並寫一個 `validXxx()` 檢查函式。舊版 App 推上來的設定可能缺欄位，缺的時候保留本機的。
 - 一天從凌晨 `dayStartHour`（預設 4）點開始：日期一律用 `dayKey(ts)` / `todayKey()`，不要用原生 Date 的日期。
 - 慶祝動畫：`celebrations` 佇列 + `showNextCelebration()`（徽章 `badge`、升級 `level`、打倒 Boss `boss`、季節 Boss `sboss`、寶箱 `chest`、Health Connect `health`、共同 Boss `party`）。每台裝置「看過了沒」記在 localStorage（`goal.levelSeen`、`goal.bossSeen`…），第一次看到的東西只記錄不播放。
@@ -26,6 +26,7 @@
 - 主要常數在檔案開頭：`DEFAULT_HABITS`、`DIFF`、`QUEST_POOL`、`WEEK_GOALS`、`BOSS`、`ACH`（徽章，`v: s => ...` 從 `compute()` 的結果取值，`legend: true` 是傳說級）。
 - Android 橋接：`IS_NATIVE`、`nat(method, opts)` 呼叫 `GoalWidgetPlugin.java`；小工具資料由 `pushWidget()` 送出，小工具的打卡由 `drainWidgetQueue()` 收回。
 - **鎖手機（build 9）**：原生端 `GuardState.java` 是規則的來源（專注、宵禁、分心 App 放行、守護服務開著的時段），事件走 GoalStore 佇列並直接上傳雲端；網頁用 `pushGuard()` 送設定（`state.settings.guard`，`validGuard()`）、`refreshGuard()` 讀狀態（`guard` 物件，不進 `state`）。習慣的 `log`（`manual` / `focus` / `both`）決定能不能用按的：`logMode(h) === 'focus'` 的習慣在 `logHabit()`、`normalize()`、小工具都會被擋，只有 `focus` 事件能記。懲罰算法 `focusPenalty()`，緊急解鎖的事件 `locked()` 不能刪。
+- **日記（build 22）**：標題和內文用日記密碼加密（`jSeal()` / `jDecrypt()`），網頁其他地方只能用明文的 `day` / `words` / `mood` / `tags`，不要把內文放進事件的其他欄位或 `partyDayRows()`。金鑰 `state.jkey` 在 `goal_meta` 同步、合併用 `pickJkey()`（不看 `metaAt`）；這台裝置的金鑰在 IndexedDB。寫日記畫面 `.jwv` 放在 `#view` 外面，`render()` 不會打斷輸入。每日任務加新任務要給 `since`（`questsFor()` 用雜湊挑任務，池子變大會改到以前的日子、讓寶箱失效）。
 - 雲端：Supabase（`SB` 常數，publishable key 本來就公開，靠 RLS 保護），資料表見 `sync/supabase-setup.sql`。
 - **本機紀錄屬於某一個帳號**（`state.owner`，build 8）：`bindAccount()` 在開機與登入時檢查，換另一個帳號登入時把目前的 `state` 收進 localStorage `goal.v1@<帳號 id>`、換成新帳號自己的紀錄；`syncNow()` 只在 `state.owner === myUid()` 時同步，連結的 Goal 資料夾也只給 `data/goal-data.json` 裡記的那個帳號讀寫（`folderMine()`）。新增同步路徑時要守住這條規則，不然會把一個人的紀錄傳到另一個帳號。
 - 隊友副本：資料表與政策在 `sync/party-setup.sql`（build 20 的聊天、送禮、戳一下、見證人在 `sync/party-v2.sql`，沒執行時 `party.v2 = false`、功能自動隱藏；build 21 的一起專注在 `sync/party-v3.sql`，`party.v3`）（雲端 session 不能動資料庫，SQL 要使用者自己到 SQL Editor 執行）。網頁的所有隊伍 API 都包在 `partyApi`；隊伍資料（別人的資料）放在記憶體的 `party` 物件與 localStorage `goal.party`，**不進 `state`、也不進 `goal_meta`**。隊友只讀得到 `goal_party_days` 的每日摘要（`partyDayRows()` 在本機算好上傳），從雲端拉回來的一律經過 `validParty*()` / `validCheer()`，名字一律 `esc()`。共同 Boss 由 `partyBoss()` 在前端推算。
@@ -37,12 +38,13 @@
 - 選項的寫法：只有開 / 關用 `sw(attrs, on)` 開關（讀 `t.checked`）；2～4 個短選項用 `.seg` 分段按鈕（中文字加 `zh`）；長清單才用 `<select class="in">`（已用 `base-select` 美化，不支援的瀏覽器退回原生）。
 - 字體：`--ff-zh` 是 Nunito（英文）→ 昭源甜圓（中文），數字 `--ff-num` 是 Barlow Condensed。
 - 「今天」頁（`viewToday()`）：新面板要包進 `slot(順序, html)`，手機一欄時照順序排；一次性的提示寫成一行的 `.note` 放進 `.notes`，不要再做整塊的 callout 把打卡格往下擠。
-- 顏色用 `:root` 的 CSS 變數；手機版斷點是 720px，手機底部分頁列是 5 個（徽章牆、紀錄、設定收在「我的」，`ME_TABS`），桌面是 7 個；新增分頁前先想能不能收進「我的」。
+- 顏色用 `:root` 的 CSS 變數；手機版斷點是 720px，手機底部分頁列是 5 個（日記、徽章牆、紀錄、設定收在「我的」，`ME_TABS`），桌面是 8 個；新增分頁前先想能不能收進「我的」。
 - 動畫都要尊重 `reducedMotion()`；音效用 `chime(kind)`，震動用 `haptic(kind)`。
 
 ## 怎麼測試
 - `python serve.py` → http://localhost:8765/（只提供網頁檔案）。用瀏覽器開，不要登入雲端同步（那是使用者的真實資料）。
-- Console 裡有 `window.__goal`（`state`、`compute()`、`ingest()`、`render()`、`checkUnlocks()`、`celebrate()`、`partyApi`、`party`、`syncParty()`、`partyBoss()`、`guard`、`addEvent()`、`validEvent()`、`focusPenalty()`、`G()`）。
+- Console 裡有 `window.__goal`（`state`、`compute()`、`ingest()`、`render()`、`checkUnlocks()`、`celebrate()`、`partyApi`、`party`、`syncParty()`、`partyBoss()`、`guard`、`addEvent()`、`validEvent()`、`focusPenalty()`、`G()`）。頂層的函式（`jSeal()`、`validJkey()`、`mergeState()`…）也可以直接在 Console 呼叫。
+- 測日記：在日記分頁設定一組測試密碼，寫完看 `__goal.state.events` 裡沒有明文；「日記密碼」裡的「在這台裝置上鎖起來」可以測輸入密碼和備用碼。
 - 測鎖機功能：在 `addInitScript` 裡放一個假的 `window.Capacitor`（`isNativePlatform: () => true`、`nativePromise` 依方法名稱回傳假資料：`guardStatus`、`focusStart`、`drainQueue`、`healthRead`…），就能在瀏覽器裡測專注面板、緊急解鎖、Health Connect 轉換。
 - 原生程式在雲端可以做編譯檢查：從 GitHub raw 下載 `Reginer/aosp-android-jar` 的 `android-36/android.jar`，Capacitor 類別寫幾個空殼，`javac -cp android.jar` 編譯 `com/wayne/goal/*.java`（Google Maven 連不到，不能跑 Gradle）。空殼要跟真的 Capacitor 一樣：`JSObject.fromJSONObject()` 會丟 checked `JSONException`，呼叫的地方都要包 try-catch（build 9 的 `guardStatus()` 漏了，空殼又沒丟例外，所以一直沒抓到）。
 - 測隊伍時把 `__goal.partyApi` 的方法換成回傳假資料的函式，再呼叫 `__goal.syncParty()`。
