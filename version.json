@@ -1,5 +1,5 @@
 {
-  "build": 22,
+  "build": 23,
   "minNative": 6,
   "files": [
     "index.html",
@@ -10,5 +10,5 @@
     "icons/icon-maskable-512.png",
     "icons/apple-touch-icon.png"
   ],
-  "notes": "日記：每天寫一篇拿 XP，內容用日記密碼加密後才上傳（在「我的 → 日記」設定密碼）"
+  "notes": "情侶隊：交換日記、每日一問、在一起的天數、彼此的心情和玫瑰外觀（要先在 Supabase 執行 sync/party-v4.sql）"
 }

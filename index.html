@@ -643,6 +643,65 @@ textarea.in.jwb{font-family:var(--ff-zh);font-size:17px;line-height:1.75;min-hei
   .stats.jstats{grid-template-columns:repeat(2,1fr)}
 }
 
+/* ---------- 情侶隊（build 23） ---------- */
+:root{--rose:#ef8fa6;--rose-hi:#ffc6d3;--rose-lo:rgba(239,143,166,.13);--rose-line:rgba(239,143,166,.4)}
+.couplep{background:linear-gradient(160deg,var(--rose-lo),rgba(8,26,20,.26) 60%)}
+.partyp.couple{box-shadow:inset 0 3px 0 var(--rose-line)}
+.cphead{display:flex;align-items:center;gap:14px}
+.cpheart{font-size:38px;line-height:1}
+.cpt b{display:block;font-size:21px;line-height:1.3}
+.cpt b .num{font-size:28px;color:var(--rose-hi)}
+.cpt small{display:block;color:var(--chalk-dim);font-size:14.5px;margin-top:2px}
+.cpmoods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 0}
+.cpm{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.2);border-radius:14px;padding:10px 12px;min-width:0}
+.cpm b{display:block;font-size:15.5px;overflow-wrap:anywhere}
+.cpm small{display:block;color:var(--chalk-dim);font-size:13.5px}
+.cpme{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:26px;background:var(--mc,rgba(0,0,0,.25));box-shadow:0 0 0 3px rgba(0,0,0,.15)}
+.cpm.wait{opacity:.8}
+.cpq{margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(0,0,0,.2);border-left:4px solid var(--rose)}
+.cpq .pqh{font-size:14px;color:var(--chalk-dim)}
+.cpqt{font-size:17px;font-weight:700;margin:4px 0 10px;line-height:1.5}
+.cptip{font-size:13px;margin:6px 0 0}
+.cpans{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.cpans li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:baseline;font-size:15.5px}
+.cpans b{color:var(--rose-hi)}
+.cpans span{white-space:pre-wrap;overflow-wrap:anywhere}
+.cpdot{display:inline-block;min-width:20px;padding:0 6px;border-radius:99px;background:var(--rose);color:#3a1020;font-size:14px;line-height:20px;text-align:center;margin-left:2px}
+.cpnote{background:var(--rose-lo);border-color:var(--rose-line)}
+.jview input:checked+span .cpdot{background:#3a1020;color:var(--rose-hi)}
+.cpy{margin-top:10px;font-size:14.5px}
+.cpy summary{cursor:pointer;color:var(--chalk-dim);margin-bottom:6px}
+.cpset{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--rose-lo)}
+.cpmoodsw{margin-top:10px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;max-width:520px}
+.pkinds{margin-bottom:12px}
+.jview{margin-bottom:16px}
+.xshared{font-size:13px;color:var(--rose-hi);white-space:nowrap}
+.jwshare{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:12px;background:var(--rose-lo)}
+.jwshare small{display:block;color:var(--chalk-dim);font-size:13px}
+.jwshare .switch input:checked+i{background:rgba(239,143,166,.6)}
+.xent.mine{background:rgba(0,0,0,.12)}
+.xent.new{box-shadow:inset 3px 0 0 var(--rose)}
+.xent .jh b{color:var(--rose-hi)}
+.xent.mine .jh b{color:var(--chalk)}
+.xnew{font-size:12px;padding:0 8px;border-radius:99px;background:var(--rose);color:#3a1020;font-weight:700}
+.xreps{list-style:none;margin:10px 0 0;padding:8px 0 0;border-top:1px dashed var(--chalk-faint);display:grid;gap:4px}
+.xreps li{display:flex;align-items:baseline;gap:8px;font-size:14.5px;line-height:1.5}
+.xreps li b{flex:none;color:var(--rose-hi)}
+.xreps li.me b{color:var(--chalk-dim)}
+.xreps li span:not(.xemo){overflow-wrap:anywhere;min-width:0}
+.xreps li.new{color:var(--rose-hi)}
+.xreps .btn-x{width:24px;height:24px;font-size:15px;margin-left:auto}
+.xemo{font-size:18px;line-height:1}
+.xreply{margin-top:10px}
+.xemos{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+.xemob{background:rgba(0,0,0,.22);border:0;border-radius:99px;font-size:18px;line-height:1;padding:6px 10px;cursor:pointer}
+.xemob:hover{background:var(--rose-lo)}
+.xreply .row{gap:8px}
+@media (max-width:720px){
+  .cpmoods{grid-template-columns:1fr}
+  .cpt b{font-size:19px}
+}
+
 /* ---------- settings ---------- */
 .hab-edit{display:grid;gap:8px}
 .hab-row{display:grid;grid-template-columns:56px minmax(140px,360px) 72px 72px 84px 110px 110px 92px 30px;gap:8px;align-items:center}
@@ -908,7 +967,7 @@ if (window.top !== window.self) { document.documentElement.innerHTML = ''; throw
    ========================================================= */
 /* 版本號：每次修改這個檔案都要 +1，並同步更新 version.json 的 build。
    Android App 會比對這個數字，有新版就自動下載。 */
-const APP_BUILD = 22;
+const APP_BUILD = 23;
 const LS_KEY = 'goal.v1';
 const TAB_KEY = 'goal.tab';
 /* 手機底部只放 5 個分頁：日記、徽章牆、紀錄、設定收進「我的」，頁面上方有子分頁 */
@@ -1035,6 +1094,7 @@ const COSMETICS = [
   { id: 'obsidian', name: '黑曜石',     price: 600, colors: ['#1e2422', '#131716', '#2a3230', '#323b39'] },
   { id: 'aurora',   name: '極光',       chest: true, colors: ['#1d3b45', '#12262d', '#27505c', '#2e5d6a'] },
   { id: 'sakura',   name: '櫻花夜',     chest: true, colors: ['#3d2a38', '#2a1c27', '#4b3445', '#563c50'] },
+  { id: 'rose',     name: '玫瑰',       couple: true, colors: ['#5a3341', '#3d212c', '#6e4152', '#7d4b5e'] },   // 情侶隊專屬：在情侶隊裡就能用，不用買
 ];
 const COSMETIC_BY_ID = Object.fromEntries(COSMETICS.map(c => [c.id, c]));
 function chestRoll(day, owned) {
@@ -1076,6 +1136,24 @@ const focusPenalty = (base, k) => Math.max(FOCUS.minPenalty, Math.round(base * F
    每天幫隊友加油是額外任務；每週一個隊伍任務（hashStr 決定題目，完成記一筆 party_quest）；隊伍連續天數（全員都有紀錄的天）。 */
 const PARTY = { hpPer: 150, dmg: 10, weakDmg: 20, dayMax: 50, heal: 15, v2: '2026-11-25', size: 4, reward: { xp: 40, coins: 60 }, cheer: { coins: 5, dailyMax: 3 },
   cheerQuest: { xp: 5, coins: 5 }, quest: { xp: 25, coins: { common: 30, rare: 50, epic: 80, legend: 150 } }, push: 8, pull: 59, keep: 60 };   // pull：拉 60 天，隊伍連續天數才算得出來
+/* 情侶隊（build 23，sync/party-v4.sql）：最多 2 人，多了交換日記、每日一問、紀念日、彼此的心情。
+   分享日記、回覆對方、回答每日一問各一天給一次獎勵（couple 事件，id 固定是 cp-<act>-<day>） */
+const COUPLE = { size: 2, xp: 5, coins: 3, reply: 500, answer: 300, pull: 60, emojis: ['❤️', '😂', '🥺', '👍', '🤗', '😮'] };
+const COUPLE_ACTS = { share: ['💌', '分享日記給另一半'], reply: ['💬', '回覆另一半的日記'], answer: ['❓', '回答每日一問'] };
+// 每日一問：照日期挑（兩個人同一題）；答案記題號，之後加題目不會改到以前的答案
+const QUESTIONS = ['今天最想跟對方分享的一件小事是什麼？', '最近一次被對方逗笑是什麼時候？', '如果明天放假一天，你想怎麼跟對方過？', '對方做過最讓你感動的一件事？',
+  '你最喜歡對方身上的哪個小習慣？', '下一次旅行最想去哪裡？', '最近有什麼想一起看的電影或影集？', '第一次見面時，你對對方的第一印象是什麼？', '這週最想謝謝對方的一件事？',
+  '有什麼一直想跟對方一起學的東西？', '你覺得你們最像的地方是什麼？', '你覺得你們最不一樣的地方是什麼？', '如果幫你們挑一首主題曲，會是哪首？', '最近壓力最大的事是什麼？希望對方怎麼陪你？',
+  '理想的週末早上長什麼樣子？', '有沒有一道菜想學會做給對方吃？', '小時候的夢想是什麼？', '今天的心情用一種天氣形容會是？', '最想跟對方一起完成的一件事？',
+  '最近一次覺得「有你真好」是什麼時候？', '你最喜歡的一次約會是哪一次？', '如果可以一起住在任何城市一年，你選哪裡？', '你覺得對方最近最辛苦的是什麼？', '有什麼話一直想說但還沒說的？',
+  '你最喜歡對方叫你的哪個稱呼？', '五年後的某個平常日子，你希望我們在做什麼？', '今天有沒有什麼小確幸？', '最近學到最有趣的一件事是什麼？', '如果一起養寵物，你想養什麼、取什麼名字？',
+  '你最想重溫的一個回憶？', '吵架之後，你最希望對方怎麼做？', '什麼時候最需要被抱一下？', '最近讓你很有成就感的事是什麼？', '有沒有一首歌會讓你想到對方？',
+  '一起去過最好吃的一家店？', '下一個紀念日想怎麼過？', '這個月最棒的一天是哪天？為什麼？', '如果中了一百萬，第一件想跟對方做的事？', '你最喜歡哪個季節？為什麼？',
+  '對方做了什麼小事，你會偷偷開心很久？', '用三個詞形容今天，會是哪三個？', '最近有什麼新的興趣或想嘗試的事？', '你覺得對方最大的優點是什麼？', '一起變老的時候，最想保留的習慣是什麼？',
+  '有沒有一本書或一部作品想推薦給對方？', '最想跟對方一起挑戰的運動或活動？', '理想的一天幾點睡、幾點起？', '這個月最想要對方陪你一起堅持的目標？', '最近一次覺得自己長大了是什麼時候？',
+  '如果回到認識的那天，你想對當時的自己說什麼？', '下雨天最想跟對方做什麼？', '最近有什麼想吃但還沒吃到的東西？', '你最喜歡我們的哪一張合照？為什麼？', '有什麼事是因為有對方，你才敢去做的？',
+  '你覺得我們最有默契的時刻是什麼時候？', '今年結束前，想一起完成的一個小目標？', '你最近最常想到的一件事是什麼？', '如果今晚可以隨便點外送，你點什麼？', '「被愛」的感覺最像什麼？', '明天最期待的一件事是什麼？'];
+const qOf = day => hashStr('cq:' + day) % QUESTIONS.length;
 const PARTY_BOSSES = [['🐲', '拖延龍', 'research'], ['🗿', '懶散巨人', 'health'], ['👾', '三分鐘熱度怪', 'hobby'], ['🦑', '分心章魚', 'code'], ['🐌', '明天再說蝸牛', 'life'], ['🦇', '熬夜蝙蝠', 'health']];
 /* 每週隊伍任務：n = 隊伍人數；v(B) 從 partyBoss() 的結果算進度。「每個人」類的進度單位是人 */
 const pqDays = r => r.days.filter(d => d.cats.length).length;
@@ -1104,7 +1182,9 @@ const GROUP_STATE = { joined: ['⏳', '等開始'], running: ['🔒', '專注中
 const pqTier = id => { const roll = hashStr('pq:' + id) % 1000; let acc = 0; return CHEST.tiers.find(t => (acc += t.p) > roll) || CHEST.tiers[0]; };
 // 隊伍資料是別人的：只放在記憶體與 localStorage，不進 state、也不進 goal_meta
 const partyUI = { pick: null, rejectFor: '', chatOpen: false, draft: '', poll: null };   // 隊伍面板的暫時狀態；pick：{ uid, mode: 'cheer' | 'gift' }
-const party = { status: 'off', info: null, members: [], days: {}, cheers: [], raw: null, error: '', busy: false, pushed: '', leaveArm: 0 };
+const party = { status: 'off', info: null, members: [], days: {}, cheers: [], raw: null, error: '', busy: false, pushed: '', leaveArm: 0,
+  v4: false, kind: 'friends', since: null, exchange: [], replies: [], answers: [], shared: new Set() };   // 情侶隊（build 23）
+const cpUI = { drafts: {}, ans: '' };   // 交換日記的回覆、每日一問還沒送出的字（重新整理畫面時保留）
 const bossMaxHp = (b, L) => Math.round(b.days * BOSS.dayDmg * (1 + 0.5 * (L - 1)));
 function hashStr(str) { let h = 2166136261; for (const ch of str) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
 const hasHabit = id => state.habits.some(h => h.id === id);
@@ -1228,6 +1308,12 @@ const ACH = [
   { id:'j_100d',     cat:'life', icon:'🏛️', name:'百日日記',   desc:'連續 100 天寫日記',                 goal:100, coins:600, v:s=>s.journal.best, legend:true },
   { id:'j_100',      cat:'life', icon:'🗂️', name:'百篇',       desc:'累計寫 100 篇日記（50 字以上）',    goal:100, coins:300, v:s=>s.journal.n },
   { id:'j_words',    cat:'life', icon:'🪶', name:'十萬字',     desc:'日記累計寫 10 萬字',                goal:100000, coins:800, v:s=>s.journal.words, legend:true },
+  // 情侶隊（build 23）
+  { id:'cp_share1',  cat:'life', icon:'💌', name:'交換日記',   desc:'第一次把日記分享給另一半',          goal:1,   coins:30,  v:s=>s.couple.share },
+  { id:'cp_share30', cat:'life', icon:'📮', name:'寫給你的信', desc:'有 30 天分享日記給另一半',          goal:30,  coins:250, v:s=>s.couple.share },
+  { id:'cp_reply30', cat:'life', icon:'💬', name:'有回應的人', desc:'有 30 天回覆另一半的日記',          goal:30,  coins:200, v:s=>s.couple.reply },
+  { id:'cp_ans7',    cat:'life', icon:'❓', name:'多認識你一點', desc:'回答 7 天每日一問',               goal:7,   coins:60,  v:s=>s.couple.answer },
+  { id:'cp_ans100',  cat:'life', icon:'💞', name:'百問百答',   desc:'回答 100 天每日一問',               goal:100, coins:600, v:s=>s.couple.answer, legend:true },
 ];
 const ACH_BY_ID = Object.fromEntries(ACH.map(a => [a.id, a]));
 
@@ -1383,6 +1469,7 @@ function compute() {
   const owned = new Set(['felt']);   // 擁有的外觀
   const skillXp = {};   // 各領域等級：興趣類每個習慣各算一條，其他照分類
   const jScored = {}, jStat = { n: 0, words: 0 };   // 日記：日記的日期 → 拿到獎勵的那一篇
+  const cpDone = new Set(), cp = { share: 0, reply: 0, answer: 0 };   // 情侶隊：每種一天一次
   for (const e of evs) {
     const dk = dayKey(e.ts), hit = { ms: tms(e.ts), day: dk };
     const d = days[dk] ||= emptyDay();
@@ -1429,7 +1516,7 @@ function compute() {
       r = { xp: 0, coins: -(e.cost || 0), tag: '' }; spent += e.cost || 0; freezeBuys.push(dk);
     } else if (e.type === 'cosmetic_buy') {   // 外觀：只有商店賣的才能買；價格照事件記的（之後調價不影響已經買的）
       const c = COSMETIC_BY_ID[e.cosmetic];
-      if (!c || c.chest || owned.has(e.cosmetic)) r.tag = '已經有了，沒有扣代幣';
+      if (!c || c.chest || c.couple || owned.has(e.cosmetic)) r.tag = '已經有了，沒有扣代幣';
       else { r = { xp: 0, coins: -e.cost, tag: '' }; spent += e.cost; owned.add(e.cosmetic); }
     } else if (e.type === 'cheer') {           // 收到的加油給代幣（每天有上限）；送出的只記錄
       if (e.from) { const c = d.cheers = (d.cheers || 0) + 1; cheersIn++;
@@ -1478,6 +1565,10 @@ function compute() {
         cat = 'life'; d.cats.add('life'); if (!back) d.journal = (d.journal || 0) + 1;
       } else r.tag = w < JOURNAL.min ? `不到 ${JOURNAL.min} 字，只記錄` : back === 2 ? '補寫太久以前的日子，只記錄' : '這天的日記已經拿過獎勵，只記錄';
       d.any = true;
+    } else if (e.type === 'couple') {          // 情侶隊：分享日記、回覆對方、回答每日一問，各一天一次（不算「有紀錄」）
+      const k = `${e.act}|${e.day}`;
+      if (cpDone.has(k) || (e.day !== dk && e.day !== addDays(dk, -1))) r.tag = '這天已經拿過這個獎勵，只記錄';
+      else { cpDone.add(k); cp[e.act]++; r = { xp: COUPLE.xp, coins: COUPLE.coins, tag: '' }; }
     } else if (e.type === 'gate') {            // 分心 App：放行只記錄（加買的扣代幣）；選「算了」給一點代幣
       if (e.skipped) { const c = d.skips = (d.skips || 0) + 1; fo.skips++;
         r = c > FOCUS.skipMax ? { xp: 0, coins: 0, tag: '今天的「算了」獎勵已領完，只記錄' } : { xp: 0, coins: FOCUS.skipCoins, tag: `+${FOCUS.skipCoins} 代幣` }; }
@@ -1606,6 +1697,7 @@ function compute() {
     bestWeekCats, questDays, weeksDone, weeks, solvedKeys: solved, solvedIds,
     bosses, bossKills, bestClean, bossComebacks, crits: critIds.size, saved,
     skills: skillXp, owned, chests, comeback: cb, seasons, seasonsDone, sboss, sbossKills,
+    couple: cp,
     journal: { ...jStat, scored: new Set(Object.keys(jScored)), scoredBy: jScored, best: longestRun(new Set(Object.keys(jScored))), run: currentRun(new Set(Object.keys(jScored))) },
     chestsOpened: Object.keys(chests).length, chestLegend: Object.values(chests).filter(c => c.tier.id === 'legend').length,
     habit: id => habitCount[id] || 0,
@@ -1700,6 +1792,7 @@ function removeEvent(id) {
   const i = state.events.findIndex(e => e.id === id); if (i < 0) return;
   if (locked(state.events[i])) { toast(state.events[i].type === 'focus' ? '緊急解鎖的紀錄不能刪除。' : '契約簽下超過 1 小時，不能取消了。'); return; }
   const [ev] = state.events.splice(i, 1); state.deleted.push(id); commit();
+  if (ev.type === 'journal' && party.shared.has(id)) cpUnshare(id, null, true);   // 刪掉的日記也從交換日記收回
   toast(`已刪除「${esc(eventTitle(ev))}」`, { label: '復原', fn: () => {
     state.deleted = state.deleted.filter(x => x !== id); state.events.push(ev); commit(); } });
 }
@@ -1748,6 +1841,7 @@ function eventTitle(e) {
   }
   if (e.type === 'gate') return e.skipped ? `忍住沒打開 ${e.app || ''}` : `放行 ${e.app || '分心 App'} ${e.minutes} 分鐘`;
   if (e.type === 'journal') return `${e.day === dayKey(e.ts) ? '' : `補寫${dayLabel(e.day)}的`}日記・${fmt(e.words || 0)} 字`;
+  if (e.type === 'couple') return COUPLE_ACTS[e.act]?.[1] || '情侶隊';
   return e.title || '紀錄';
 }
 function eventIcon(e) {
@@ -1769,6 +1863,7 @@ function eventIcon(e) {
   if (e.type === 'focus') return e.result === 'aborted' ? '🔓' : e.result === 'cancelled' ? '↩️' : e.kind === 'curfew' ? '🌙' : state.habits.find(h => h.id === e.habit)?.icon || '🎯';
   if (e.type === 'gate') return e.skipped ? '🫁' : '🔑';
   if (e.type === 'journal') return MOODS[e.mood]?.[0] || '📔';
+  if (e.type === 'couple') return COUPLE_ACTS[e.act]?.[0] || '💞';
   return e.icon || '⭐';
 }
 /* ---------- 資料檢查 ----------
@@ -1811,6 +1906,8 @@ function validEvent(e) {
       if (e.tags != null && !(Array.isArray(e.tags) && e.tags.length <= JOURNAL.tags && e.tags.every(t => typeof t === 'string' && t && cleanTag(t) === t))) return null;
       return n && typeof n === 'object' && safeKey(n.k) && n.k.length <= 40 && b64ok(n.iv, 16, 16) && b64ok(n.ct, 24, 40000) ? e : null;
     }
+    // 情侶隊的獎勵只由網頁自己產生（normalize 不接受）；id 固定，一天一種只會有一筆
+    case 'couple': return Object.hasOwn(COUPLE_ACTS, e.act) && dayOk(e.day) && e.id === `cp-${e.act}-${e.day}` ? e : null;
     // 寶箱、外觀只由網頁自己產生（normalize 不接受），這裡只檢查格式
     case 'chest_open': return dayOk(e.day) ? e : null;
     case 'cosmetic_buy': return COSMETIC_BY_ID[e.cosmetic] && Number.isInteger(e.cost) && e.cost >= 0 && e.cost <= 1e4 ? e : null;
@@ -1888,6 +1985,7 @@ function validSettings(o) {
   if (Array.isArray(o.widgetHabits)) out.widgetHabits = o.widgetHabits.map(x => safeKey(x)).filter(Boolean).slice(0, 3);
   if (o.birthday === '' || validMMDD(o.birthday)) out.birthday = o.birthday;
   if (o.partyShare === 'basic' || o.partyShare === 'xp') out.partyShare = o.partyShare;
+  if (typeof o.coupleMood === 'boolean') out.coupleMood = o.coupleMood;
   if (typeof o.theme === 'string' && COSMETIC_BY_ID[o.theme]) out.theme = o.theme;
   if (o.guard && typeof o.guard === 'object') out.guard = validGuard(o.guard);
   return out;
@@ -2139,7 +2237,7 @@ if (!TABS.some(t => t.id === tab)) tab = 'today';
 let historyDays = 21;
 
 function render() {
-  const S = compute(), chatFocus = document.activeElement?.id === 'pchatin';
+  const S = compute(), chatFocus = document.activeElement?.id === 'pchatin', keepId = /^(cpr-|cpans$)/.test(document.activeElement?.id || '') ? document.activeElement.id : '';
   if (typeof pushWidget === 'function') { pushWidget(); pushGuard(); }
   applyTheme(S); renderHeader(S); renderTabs();
   const v = $('#view');
@@ -2151,7 +2249,8 @@ function render() {
     console.error(err);
     v.innerHTML = `<section class="panel"><h2>這一頁顯示不出來</h2><p class="hint">發生錯誤：${esc(err.message)}。其他分頁和資料不受影響，請把這段訊息告訴 Claude。</p></section>`;
   }
-  if (tab === 'journal') fillJournal();
+  if (tab === 'journal') { fillJournal(); if (jf.view === 'ex' && isCouple()) cpMarkSeen(); }
+  if (keepId) { const i = document.getElementById(keepId); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
   if (pendingStamp && tab === 'today') requestAnimationFrame(playStamp);
   if (chatFocus) { const i = $('#pchatin'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
   const cl = $('#pchatlist'); if (cl) { cl.scrollTop = cl.scrollHeight; chatMarkSeen(); }
@@ -2172,8 +2271,9 @@ function renderHeader(S) {
     </div>`;
   if (prev && prev.balance !== S.balance) animateCount($('#hdr .counter .num'), prev.balance, S.balance);
 }
+const ownsTheme = (S, id) => S.owned.has(id) || (!!COSMETIC_BY_ID[id]?.couple && isCouple());   // 情侶隊專屬的外觀：在情侶隊裡才能用
 function applyTheme(S) {   // 外觀：換桌面配色（只能用擁有的）
-  const id = S.owned.has(state.settings.theme) ? state.settings.theme : 'felt', c = COSMETIC_BY_ID[id].colors, st = document.documentElement.style;
+  const id = ownsTheme(S, state.settings.theme) ? state.settings.theme : 'felt', c = COSMETIC_BY_ID[id].colors, st = document.documentElement.style;
   ['--felt', '--felt-deep', '--felt-hi', '--felt-hi2'].forEach((v, i) => st.setProperty(v, c[i]));
   const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = c[0];
 }
@@ -2228,7 +2328,7 @@ function viewToday(S) {
   const nudgeNote = nz.length ? `<div class="note"><span>👉 ${esc(nzNames.join('、'))} 戳了你一下：今天還沒有紀錄喔，做一件小事就好。</span></div>` : '';
   const boostMin = Math.ceil((S.boostUntil - Date.now()) / 60e3);
   const boostNote = boostMin > 0 ? `<div class="note"><span>⚡ 隊友送的雙倍 XP 還有 <b class="num">${boostMin}</b> 分鐘：打卡、解題、鎖機專注的 XP ×2。</span></div>` : '';
-  const notes = [boostNote, nudgeNote, cbNote, chestNote, reviewPanel(S, tk), contractNudge(S, tk), linkTip].filter(x => x.startsWith('<div class="note')).join('');
+  const notes = [...coupleNotes(tk), boostNote, nudgeNote, cbNote, chestNote, reviewPanel(S, tk), contractNudge(S, tk), linkTip].filter(x => x.startsWith('<div class="note')).join('');
   const review = guard.review ? reviewPanel(S, tk) : '';
   const ci = contractInfo(S, tk), contract = contractPanel(S, tk);
   const focusLive = IS_NATIVE && !!guard.status?.session, focus = focusPanel(S, tk);
@@ -2238,6 +2338,7 @@ function viewToday(S) {
   return `${notes ? `<div class="notes">${notes}</div>` : ''}${review}${focusLive ? focus : ''}${ci.showForm ? contract : ''}<div class="grid2 tgrid"><div>
     ${slot(1, `<section class="panel"><h2>今天做了什麼？</h2><p class="hint">點一下記一次，圓點是今天的次數和上限。🔒 的任務只能用鎖機專注記錄。</p><div class="habits">${habits}</div></section>`)}
     ${slot(2, journalPanel(S, tk))}
+    ${slot(2, couplePanel(S, tk))}
     ${focusLive ? '' : slot(IS_NATIVE ? 2 : 8, focus)}
     ${slot(6, `<section class="panel"><h2>記錄解題</h2><p class="hint">用 AI 判題會自動入帳；這裡是手動補登。${rqDue ? `<br>🔁 今天有 <b class="num">${rqDue}</b> 題該複習 <button class="mini" data-tab="problems">看是哪幾題</button>` : ''}</p>
       <form id="lcform" autocomplete="off">
@@ -2334,15 +2435,15 @@ function viewShop(S) {
     <div><section class="panel"><h2>兌換紀錄</h2>${history.length ? `<ul class="log">${history.map(e => logItem(e, S)).join('')}</ul>` : '<p class="empty">還沒有兌換過。</p>'}</section></div></div>`;
 }
 function cosmeticsPanel(S) {
-  const cur = S.owned.has(state.settings.theme) ? state.settings.theme : 'felt';
+  const cur = ownsTheme(S, state.settings.theme) ? state.settings.theme : 'felt';
   const cards = COSMETICS.map(c => {
-    const own = S.owned.has(c.id), short = (c.price || 0) - S.balance;
+    const own = ownsTheme(S, c.id), short = (c.price || 0) - S.balance;
     const act = c.id === cur ? '<span class="cuse">使用中</span>' : own ? `<button class="btn btn-ghost btn-sm" data-act="cosuse" data-id="${c.id}">套用</button>`
-      : c.chest ? '<span class="dim">寶箱限定</span>' : `<button class="btn btn-brass btn-sm" data-act="cosbuy" data-id="${c.id}" ${short > 0 ? 'disabled' : ''}>${short > 0 ? `還差 ${fmt(short)}` : `<i class="coin sm"></i> ${fmt(c.price)}`}</button>`;
+      : c.couple ? '<span class="dim">情侶隊限定</span>' : c.chest ? '<span class="dim">寶箱限定</span>' : `<button class="btn btn-brass btn-sm" data-act="cosbuy" data-id="${c.id}" ${short > 0 ? 'disabled' : ''}>${short > 0 ? `還差 ${fmt(short)}` : `<i class="coin sm"></i> ${fmt(c.price)}`}</button>`;
     return `<div class="cos${c.id === cur ? ' on' : ''}"><div class="swatch" aria-hidden="true" style="background:linear-gradient(135deg,${c.colors[2]},${c.colors[0]} 55%,${c.colors[1]})"><i></i></div>
       <b>${esc(c.name)}</b><div class="cact">${act}</div></div>`;
   }).join('');
-  return `<section class="panel"><h2>外觀</h2><p class="hint">換一張桌面。買過的隨時可以換回來；「寶箱限定」只有開寶箱開得到。</p><div class="coslist">${cards}</div></section>`;
+  return `<section class="panel"><h2>外觀</h2><p class="hint">換一張桌面。買過的隨時可以換回來；「寶箱限定」只有開寶箱開得到，「情侶隊限定」在情侶隊裡就能用。</p><div class="coslist">${cards}</div></section>`;
 }
 /* ---------- 惡習 Boss ---------- */
 function bossCard(b, S, tk) {
@@ -2548,9 +2649,10 @@ function partyPanel(S, tk) {
     return `${head}<p class="hint" style="margin:0">${party.status === 'off' ? '讀取隊伍中…' : `讀不到隊伍：${esc(party.error)}`}</p></section>`;
   if (!party.info) {
     const dn = esc(lsGet(PARTY_DN) || '');
-    return `${head}<p class="hint">和 1～3 個朋友組隊：每週一起打一隻共同 Boss，看得到彼此今天有沒有動，還能互相加油。隊友只看得到你每天有沒有紀錄、做了哪些分類。</p>
-      <form id="partycreate" autocomplete="off"><div class="row">
-        <label class="field grow">隊名<input class="in" name="name" maxlength="30" placeholder="實驗室刷題隊" required></label>
+    const kinds = party.v4 ? `<div class="seg zh pkinds" role="radiogroup" aria-label="隊伍類型">${[['friends', '朋友隊（最多 4 人）'], ['couple', '💞 情侶隊（2 人）']].map(([v, n], i) => `<label style="--dc:${v === 'couple' ? 'var(--rose)' : 'var(--chalk)'}"><input type="radio" name="kind" value="${v}" ${i ? '' : 'checked'}><span>${n}</span></label>`).join('')}</div>` : '';
+    return `${head}<p class="hint">和 1～3 個朋友組隊：每週一起打一隻共同 Boss，看得到彼此今天有沒有動，還能互相加油。隊友只看得到你每天有沒有紀錄、做了哪些分類。${party.v4 ? '<br>情侶隊多了交換日記、每日一問、紀念日和玫瑰外觀。' : ''}</p>
+      <form id="partycreate" autocomplete="off">${kinds}<div class="row">
+        <label class="field grow">隊名<input class="in" name="name" maxlength="30" placeholder="${party.v4 ? '我們' : '實驗室刷題隊'}" required></label>
         <label class="field" style="width:150px">你的顯示名稱<input class="in" name="dn" maxlength="20" value="${dn}" required></label>
         <button class="btn btn-brass" type="submit">建立隊伍</button></div></form>
       <p class="por">或用朋友給你的邀請碼加入</p>
@@ -2583,7 +2685,7 @@ function partyPanel(S, tk) {
   const streak = party.members.length < 2 ? '' : `<div class="pstreak${ps.left.length ? '' : ' all'}"><span class="pfire" aria-hidden="true">🔥</span>
       <span>隊伍連續 <b class="num">${ps.cur}${ps.capped ? '+' : ''}</b> 天全員有紀錄${ps.best > ps.cur ? `<small>（最長 ${ps.best}）</small>` : ''}</span>
       <span class="dim">${ps.left.length ? `今天還差：${ps.left.map(esc).join('、')}` : '今天全員到齊！'}</span></div>`;
-  return `<section class="panel partyp"><div class="phead"><h2>${esc(party.info.name)}</h2><span class="dim num">${party.members.length} / ${PARTY.size} 人</span></div>
+  return `<section class="panel partyp${isCouple() ? ' couple' : ''}"><div class="phead"><h2>${isCouple() ? '💞 ' : ''}${esc(party.info.name)}</h2><span class="dim num">${party.members.length} / ${partyCap()} 人</span></div>
     ${streak}
     <div class="pboss${B.killDay ? ' dead' : ''}"><span class="bico" aria-hidden="true">${B.icon}</span><div class="pbm"><b>本週共同 Boss：${B.name}${W ? `<span class="pweak">弱點 <i style="background:${W.color}"></i>${W.name}</span>` : ''}</b>
       <div class="hp" role="progressbar" aria-label="共同 Boss 血量" aria-valuenow="${B.hp}" aria-valuemin="0" aria-valuemax="${B.max}"><i style="width:${B.hp / B.max * 100}%"></i></div>
@@ -2738,13 +2840,164 @@ function partySettingsHTML() {
   if (!party.info) return `<p class="hint">還沒有隊伍。到「今天」分頁建立隊伍或輸入邀請碼加入。</p>${share}`;
   const me = myUid(), self = party.members.find(m => m.uid === me);
   return `<div class="status" style="flex-wrap:wrap"><span>邀請碼 <code class="k num pcodebig">${esc(party.info.code)}</code></span><button class="mini" data-act="partycopy">複製</button>
-      <span class="dim" style="font-size:14px">傳給朋友，在「今天」分頁輸入就能加入（最多 ${PARTY.size} 人）。</span></div>
+      <span class="dim" style="font-size:14px">傳給${isCouple() ? '另一半' : '朋友'}，在「今天」分頁輸入就能加入（最多 ${partyCap()} 人）。</span></div>
     <ul class="bsaved">${party.members.map(m => `<li><span>${esc(m.name)}${m.uid === me ? '（你）' : ''}</span><span class="dim num">${m.joined ? dayKey(m.joined) + ' 加入' : ''}</span></li>`).join('')}</ul>
+    ${coupleSettingsHTML()}
     <form id="partyrename" autocomplete="off"><div class="row" style="margin-top:14px">
       <label class="field grow">你的顯示名稱<input class="in" name="dn" maxlength="20" value="${esc(self?.name || '')}" required></label>
       <button class="btn btn-ghost" type="submit">改名稱</button></div></form>
     <div class="row" style="margin-top:14px;justify-content:space-between">${share}
       <button class="btn btn-ghost pleave" data-act="partyleave">${Date.now() - party.leaveArm < 4000 ? '再按一次確定退出' : '退出隊伍'}</button></div>`;
+}
+
+/* ---------- 情侶隊（build 23，sync/party-v4.sql） ----------
+   交換日記：自己的日記是加密的；按「分享」才把那一篇的明文複製一份到 goal_exchange，只有同隊的另一半讀得到，可以隨時收回。
+   每日一問：兩個人都回答了才看得到對方的答案（資料庫的 RLS 擋）。別人寫的字一律 esc()。 */
+const EX_SEEN = () => `goal.exSeen@${myUid() || ''}`;
+function coupleSettingsHTML() {
+  if (!party.v4) return '';
+  const tk = todayKey(), p = partner();
+  const kinds = `<div class="seg zh" role="radiogroup" aria-label="隊伍類型">${[['friends', '朋友隊'], ['couple', '💞 情侶隊']].map(([v, n]) => `<label style="--dc:${v === 'couple' ? 'var(--rose)' : 'var(--chalk)'}"><input type="radio" name="pkind" value="${v}" ${party.kind === v ? 'checked' : ''} ${v === 'couple' && party.members.length > COUPLE.size ? 'disabled' : ''}><span>${n}</span></label>`).join('')}</div>`;
+  return `<div class="cpset"><div class="row" style="align-items:flex-end;gap:12px 18px">
+      <div class="field">隊伍類型${kinds}</div>
+      ${isCouple() ? `<label class="field" style="width:180px">在一起的日子<input class="in num" type="date" id="psince" value="${esc(party.since || '')}" max="${tk}"></label>` : ''}</div>
+    ${isCouple() ? `<label class="field cpmoodsw">讓${esc(p ? p.name : '另一半')}看到我每天的心情（寫日記時選的表情）${sw('id="cpmood"', state.settings.coupleMood !== false)}</label>` : ''}
+    <p class="hint" style="margin:8px 0 0">${isCouple() ? '情侶隊最多 2 人，多了交換日記、每日一問、紀念日和玫瑰外觀。改回朋友隊後交換日記會先藏起來，改回來就看得到。'
+      : party.members.length > COUPLE.size ? '情侶隊只能有 2 個人。' : '只有兩個人的話可以改成情侶隊：多了交換日記、每日一問、紀念日和玫瑰外觀。'}</p></div>`;
+}
+const annivDay = (y, mmdd) => mmdd === '02-29' && !(y % 4 === 0 && (y % 100 !== 0 || y % 400 === 0)) ? `${y}-02-28` : `${y}-${mmdd}`;
+function annivText(since, tk) {
+  const n = daysBetween(since, tk) + 1, mmdd = since.slice(5), y0 = Number(since.slice(0, 4)), y = Number(tk.slice(0, 4));
+  if (annivDay(y, mmdd) === tk && y > y0) return `今天是 ${y - y0} 週年 🎉`;
+  if (n % 100 === 0) return `今天是第 ${fmt(n)} 天 🎉`;
+  const next = annivDay(y, mmdd) > tk ? annivDay(y, mmdd) : annivDay(y + 1, mmdd), toYear = daysBetween(tk, next), toHundred = 100 - n % 100;
+  return toYear < toHundred ? `再 ${toYear} 天就是 ${Number(next.slice(0, 4)) - y0} 週年` : `再 ${toHundred} 天就是第 ${fmt(n + toHundred)} 天`;
+}
+const coupleDays = tk => party.since && party.since <= tk ? daysBetween(party.since, tk) + 1 : 0;
+function cpNew() {
+  const me = myUid(), seen = lsGet(EX_SEEN()) || '';
+  const ents = party.exchange.filter(x => x.author !== me && x.upd > seen), reps = party.replies.filter(r => r.author !== me && r.at > seen);
+  return { ents, reps, n: ents.length + reps.length };
+}
+function cpMarkSeen() {
+  const me = myUid(), old = lsGet(EX_SEEN()) || ''; let m = old;
+  for (const x of party.exchange) if (x.author !== me && x.upd > m) m = x.upd;
+  for (const r of party.replies) if (r.author !== me && r.at > m) m = r.at;
+  if (m !== old) lsSet(EX_SEEN(), m);
+}
+// 「今天」頁的提示：紀念日、對方分享了新日記或回覆
+function coupleNotes(tk) {
+  if (!isCouple()) return [];
+  const out = [], n = coupleDays(tk), p = partner(), pn = esc(p ? p.name : '另一半');
+  if (n > 0) { const t = annivText(party.since, tk); if (t.startsWith('今天')) out.push(`<div class="note cpnote"><span>💞 ${t.replace('今天是', `今天是你們在一起的`)}</span></div>`); }
+  const nw = cpNew();
+  if (nw.n) out.push(`<div class="note cpnote"><span>💌 ${pn}${nw.ents.length ? `分享了 ${nw.ents.length} 篇日記` : ''}${nw.ents.length && nw.reps.length ? '，還' : ''}${nw.reps.length ? `回了 ${nw.reps.length} 則` : ''}給你。</span><span class="btns"><button class="btn btn-brass btn-sm" data-act="cpex">看看</button></span></div>`);
+  return out;
+}
+function couplePanel(S, tk) {
+  if (!isCouple()) return '';
+  const p = partner(), pn = esc(p ? p.name : '另一半'), n = coupleDays(tk), pd = p ? party.days[p.uid]?.[tk] : null, mm = dayMoods()[tk] || 0, nw = cpNew();
+  const card = (who, m, sub) => `<div class="cpm"><span class="cpme" ${m ? `style="--mc:var(--m${m})"` : ''} aria-hidden="true">${m ? MOODS[m][0] : '·'}</span><div><b>${who}</b><small>${sub}</small></div></div>`;
+  const mySub = mm ? `今天${MOODS[mm][1]}${state.settings.coupleMood === false ? '（沒有分享）' : ''}` : S.days[tk]?.any ? '今天有紀錄，寫日記時可以選心情' : '今天還沒動';
+  const pSub = pd?.mood ? `今天${MOODS[pd.mood][1]}` : pd?.active ? '今天有紀錄' : '今天還沒動';
+  return `<section class="panel couplep"><div class="cphead"><span class="cpheart" aria-hidden="true">💞</span><div class="cpt">
+      ${n ? `<b>在一起第 <span class="num">${fmt(n)}</span> 天</b><small>${esc(annivText(party.since, tk))}</small>`
+        : `<b>${esc(party.info.name)}</b><small>設定在一起的日子，就會幫你們數天數 <button class="mini" data-tab="settings">設定</button></small>`}</div></div>
+    <div class="cpmoods">${card('你', mm, esc(mySub))}${p ? card(pn, pd?.mood || 0, esc(pSub)) : '<div class="cpm wait"><span class="cpme" aria-hidden="true">💌</span><div><b>等另一半加入</b><small>到設定複製邀請碼傳給對方</small></div></div>'}</div>
+    ${p ? cpQuestionHTML(tk, p) : ''}
+    <div class="btns" style="margin-top:12px"><button class="btn btn-ghost" data-act="cpex">💌 交換日記${nw.n ? ` <b class="cpdot num">${nw.n}</b>` : ''}</button><button class="btn btn-ghost" data-act="jwrite">寫日記</button></div>
+    <p class="hint" style="margin:10px 0 0">每天第一次分享日記、回覆另一半、回答每日一問，各 +${COUPLE.xp} XP、+${COUPLE.coins} 代幣。</p></section>`;
+}
+function cpQuestionHTML(tk, p) {
+  const me = myUid(), mine = party.answers.find(a => a.uid === me && a.day === tk), theirs = party.answers.find(a => a.uid === p.uid && a.day === tk);
+  const q = QUESTIONS[mine ? mine.qid : qOf(tk)] || QUESTIONS[qOf(tk)];
+  const body = !mine ? `<form id="cpanswer" autocomplete="off"><div class="row"><label class="field grow"><span class="sr">你的答案</span><input class="in" id="cpans" name="body" maxlength="${COUPLE.answer}" placeholder="寫下你的答案…" value="${esc(cpUI.ans)}" required></label>
+        <button class="btn btn-brass" type="submit">回答</button></div></form><p class="dim cptip">兩個人都回答了，才看得到對方的答案。答了就不能改喔。</p>`
+    : `<ul class="cpans"><li><b>你</b><span>${esc(mine.body)}</span></li>${theirs ? `<li><b>${esc(p.name)}</b><span>${esc(theirs.body)}</span></li>` : `<li class="wait"><b>${esc(p.name)}</b><span class="dim">還沒回答，答了就看得到</span></li>`}</ul>`;
+  const y = addDays(tk, -1), ym = party.answers.find(a => a.uid === me && a.day === y), yt = party.answers.find(a => a.uid === p.uid && a.day === y);
+  const yday = ym && yt ? `<details class="cpy"><summary>昨天的問題：${esc(QUESTIONS[ym.qid] || '')}</summary><ul class="cpans"><li><b>你</b><span>${esc(ym.body)}</span></li><li><b>${esc(p.name)}</b><span>${esc(yt.body)}</span></li></ul></details>` : '';
+  return `<div class="cpq"><div class="pqh"><span>❓ 今天的問題</span></div><p class="cpqt">${esc(q)}</p>${body}${yday}</div>`;
+}
+// 情侶隊的獎勵：每種一天一次（id 固定，換裝置也不會重複）
+function coupleReward(act) {
+  const day = todayKey(), id = `cp-${act}-${day}`;
+  if (!addEvent({ id, type: 'couple', ts: nowISO(), act, day })) return '';
+  commit(); const r = compute().per[id];
+  if (r && r.xp) { chime('tick'); haptic('tap'); return `+${r.xp} XP、+${r.coins} 代幣`; }
+  return '';
+}
+async function cpShare(id, btn, quiet) {
+  const e = state.events.find(x => x.id === id && x.type === 'journal'); if (!e || !isCouple()) return;
+  let v; try { v = await jDecrypt(e); } catch (err) { toast('這篇解不開，沒辦法分享。'); return; }
+  const body = cut(v.b, JOURNAL.maxLen) ? v.b.slice(0, JOURNAL.maxLen) : cut(v.t, JOURNAL.titleLen); if (!body.trim()) { toast('這篇沒有內容可以分享。'); return; }
+  if (btn) btn.disabled = true;
+  try {
+    await partyApi.share({ party_id: party.info.id, entry_id: e.id, day: e.day, mood: e.mood || null, title: cut(v.t, JOURNAL.titleLen), body });
+    const again = party.shared.has(e.id); party.shared.add(e.id); (party.raw.myShared ||= []).push({ entry_id: e.id });
+    const got = again ? '' : coupleReward('share'), pn = esc(partner()?.name || '另一半');
+    if (!quiet || got) toast(again ? `更新了分享給${pn}的那一篇。` : `分享給${pn}了${got ? `：${got}` : '。'}`);
+    render(); syncParty();
+  } catch (err) { toast(esc(partyErr(err))); if (btn && btn.isConnected) btn.disabled = false; }
+}
+async function cpUnshare(entry, btn, quiet) {
+  const me = myUid(); if (!me || !party.info) return;
+  if (btn) btn.disabled = true;
+  try {
+    await partyApi.unshare(me, entry); party.shared.delete(entry);
+    if (party.raw) { party.raw.myShared = (party.raw.myShared || []).filter(x => x && x.entry_id !== entry); party.raw.exchange = (party.raw.exchange || []).filter(x => !(x && x.author === me && x.entry_id === entry)); }
+    applyParty(party.raw); saveParty();
+    if (!quiet) toast('收回了，另一半看不到這篇了。'); render();
+  } catch (err) { toast(esc(partyErr(err))); if (btn && btn.isConnected) btn.disabled = false; }
+}
+async function cpReply(entry, body, emoji, btn) {
+  body = cut(body, COUPLE.reply); if (!body && !emoji) return;
+  const x = party.exchange.find(y => y.id === entry); if (!x) return;
+  if (btn) btn.disabled = true;
+  try {
+    await partyApi.reply(entry, body, emoji || null); delete cpUI.drafts[entry];
+    const got = x.author !== myUid() ? coupleReward('reply') : '';
+    if (got) toast(`回覆好了：${got}`);
+    await syncParty(); render();
+  } catch (err) { toast(esc(partyErr(err))); if (btn && btn.isConnected) btn.disabled = false; }
+}
+async function cpDelReply(id) {
+  try { await partyApi.delReply(id); if (party.raw) party.raw.replies = (party.raw.replies || []).filter(r => !(r && String(r.id).toLowerCase() === id)); applyParty(party.raw); render(); }
+  catch (err) { toast(esc(partyErr(err))); }
+}
+async function cpAnswer(f) {
+  const body = cut(new FormData(f).get('body'), COUPLE.answer); if (!body) { toast('先寫答案喔。'); return; }
+  const tk = todayKey(), btn = f.querySelector('[type="submit"]'); if (btn) btn.disabled = true;
+  try {
+    await partyApi.answer(party.info.id, tk, qOf(tk), body); cpUI.ans = '';
+    const got = coupleReward('answer'); toast(`回答好了${got ? `：${got}` : '。'}`);
+    await syncParty(); render();
+  } catch (e) { toast(esc(e.code === '23505' ? '今天已經回答過了' : partyErr(e))); if (btn && btn.isConnected) btn.disabled = false; }
+}
+/* 「日記」分頁：我的日記 | 交換日記 */
+function jViewSeg() {
+  if (!isCouple()) return '';
+  const n = cpNew().n;
+  return `<div class="seg zh jview" role="radiogroup" aria-label="要看哪一種日記">${[['mine', '我的日記'], ['ex', '💌 交換日記']].map(([v, t]) => `<label style="--dc:${v === 'ex' ? 'var(--rose)' : 'var(--chalk)'}"><input type="radio" name="jview" value="${v}" ${(jf.view === 'ex') === (v === 'ex') ? 'checked' : ''}><span>${t}${v === 'ex' && n ? ` <b class="cpdot num">${n}</b>` : ''}</span></label>`).join('')}</div>`;
+}
+function viewExchange() {
+  const me = myUid(), p = partner(), pn = esc(p ? p.name : '另一半'), names = Object.fromEntries(party.members.map(m => [m.uid, m.name])), seen = lsGet(EX_SEEN()) || '';
+  const who = u => u === me ? '你' : esc(names[u] || '前隊友');
+  const item = x => {
+    const mine = x.author === me, m = MOODS[x.mood], reps = party.replies.filter(r => r.entry === x.id), isNew = !mine && x.upd > seen;
+    const repList = reps.map(r => `<li class="${r.author === me ? 'me' : ''}${r.author !== me && r.at > seen ? ' new' : ''}"><b>${who(r.author)}</b>${r.emoji ? `<span class="xemo">${esc(r.emoji)}</span>` : ''}${r.body ? `<span>${esc(r.body)}</span>` : ''}
+        ${r.author === me ? `<button class="btn-x" data-act="cpdelrep" data-id="${esc(r.id)}" aria-label="刪除這則回覆" title="刪除">×</button>` : ''}</li>`).join('');
+    return `<article class="jent xent${mine ? ' mine' : ''}${isNew ? ' new' : ''}">
+      <div class="jh"><span class="jm" ${m ? `title="${m[1]}"` : 'aria-hidden="true"'}>${m ? m[0] : '📔'}</span><b>${who(x.author)}</b><span class="dim">${esc(dayLabel(x.day))}${x.upd !== x.at ? '・改過' : ''}</span>${isNew ? '<span class="xnew">新的</span>' : ''}
+        ${mine ? `<span class="jact"><button class="mini" data-act="cpunshare" data-id="${esc(x.entry)}">收回</button></span>` : ''}</div>
+      ${x.title ? `<h3 class="jt">${esc(x.title)}</h3>` : ''}<p class="jb">${esc(x.body)}</p>${x.body.length > 160 || x.body.split('\n').length > 6 ? '<button class="mini jmore" data-act="jmore">展開</button>' : ''}
+      ${repList ? `<ul class="xreps">${repList}</ul>` : ''}
+      <form class="xreply" data-entry="${esc(x.id)}" autocomplete="off"><div class="xemos" role="group" aria-label="用表情回覆">${COUPLE.emojis.map(em => `<button type="button" class="xemob" data-act="cpemo" data-id="${esc(x.id)}" data-e="${esc(em)}" aria-label="回覆 ${esc(em)}">${esc(em)}</button>`).join('')}</div>
+        <div class="row"><label class="field grow"><span class="sr">回覆</span><input class="in" id="cpr-${esc(x.id)}" name="body" maxlength="${COUPLE.reply}" placeholder="${mine ? '補充一句…' : `回覆${pn}…`}" value="${esc(cpUI.drafts[x.id] || '')}"></label><button class="btn btn-ghost" type="submit">送出</button></div></form></article>`;
+  };
+  const list = party.exchange;
+  return `<section class="panel couplep"><div class="rhead"><h2>💌 交換日記</h2><button class="btn btn-ghost" data-act="cpsync">重新整理</button></div>
+      <p class="hint" style="margin:0">在「我的日記」按「💌 分享」，那一篇會複製一份給${pn}看（這份不加密，可以隨時收回）。每天第一次分享、第一次回覆${pn}各 +${COUPLE.xp} XP、+${COUPLE.coins} 代幣。</p></section>
+    <section class="panel">${list.length ? list.map(item).join('') : `<p class="empty">還沒有交換日記。寫日記時打開「分享給${pn}」，或在「我的日記」按「💌 分享」。</p>`}</section>`;
 }
 
 /* ---------- 今日任務 ---------- */
@@ -3535,7 +3788,7 @@ const b64d = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 const b64ok = (v, lo, hi) => typeof v === 'string' && v.length >= lo && v.length <= hi && /^[A-Za-z0-9+/]+={0,2}$/.test(v);
 const rnd = n => crypto.getRandomValues(new Uint8Array(n));
 const jc = { slot: '', key: null, loading: false, plain: new Map(), other: {}, newCode: '', busy: false };
-const jf = { month: 0, tag: '', day: '', more: 20 };   // 日記分頁的篩選（不存）
+const jf = { month: 0, tag: '', day: '', more: 20, view: 'mine' };   // 日記分頁的篩選（不存）；view：mine / ex（交換日記）
 const jw = { id: null, scored: new Set() };              // 寫日記畫面
 const jCryptoOk = () => !!(globalThis.crypto && crypto.subtle && globalThis.indexedDB);
 const jSlot = kid => `${state.owner || 'local'}:${kid}`;
@@ -3708,6 +3961,7 @@ async function jOpenWriter(id, day) {
     <input class="in jwt" name="title" maxlength="${JOURNAL.titleLen}" placeholder="標題（可以不寫）" value="${esc(d.title)}">
     <textarea class="in jwb" name="body" maxlength="${JOURNAL.maxLen}" placeholder="今天發生了什麼？有什麼感覺？" aria-label="日記內容">${esc(d.body)}</textarea>
     <fieldset class="chips jwtags"><legend>標籤（最多 ${JOURNAL.tags} 個）</legend>${tagOpts.map(t => `<label><input type="checkbox" name="tags" value="${esc(t)}" ${d.tags.includes(t) ? 'checked' : ''}><span>${esc(t)}</span></label>`).join('')}<input class="in jwnt" name="newtag" maxlength="${JOURNAL.tagLen}" placeholder="+ 新標籤" aria-label="新標籤"></fieldset>
+    ${isCouple() ? `<label class="jwshare">${sw('name="share"', !!(old && party.shared.has(old.id)))}<span>💌 分享給${esc(partner()?.name || '另一半')}<small>存檔後對方就看得到這篇的內容，之後可以收回</small></span></label>` : ''}
     <div class="jwf"><span class="num" id="jwc"></span><span id="jwhint"></span></div>
   </form>`;
   document.body.append(ov); document.body.classList.add('jw-open');
@@ -3745,6 +3999,7 @@ async function jSave(f) {
   const btn = f.querySelector('[type="submit"]');
   await jBusy(btn, async () => {
     const old = jw.id ? state.events.find(e => e.id === jw.id) : null, id = old ? old.id : uid('j');
+    const sh = f.querySelector('[name="share"]'), wantShare = sh && isCouple() ? sh.checked : null;   // null：不是情侶隊，不動分享
     const enc = await jSeal(id, { t: d.title, b: d.body }), w = countWords(`${d.title}\n${d.body}`);
     const extra = { ...(d.mood ? { mood: d.mood } : {}), ...(d.tags.length ? { tags: d.tags } : {}) };
     if (old) {   // 同一天內修改會重算字數；之後再改就只改內容，獎勵不變
@@ -3758,6 +4013,8 @@ async function jSave(f) {
     const r = compute().per[id];
     if (!old && r && r.xp > 0) { chime('tick'); haptic('tap'); flyXp(rect, `+${r.xp} XP`); toast(`日記存好了：+${r.xp} XP、+${r.coins} 代幣`); }
     else toast(old ? '日記改好了。' : `日記存好了${r && r.tag ? `（${esc(r.tag)}）` : ''}。`);
+    if (wantShare) cpShare(id, null, true);   // 已經分享過的會更新成新的內容
+    else if (wantShare === false && party.shared.has(id)) cpUnshare(id, null, true);
   });
 }
 /* ---------- 「今天」頁的日記面板 ---------- */
@@ -3816,11 +4073,16 @@ function jEntryHTML(e, S) {
     <div class="jh"><span class="jm" ${m ? `title="${m[1]}"` : 'aria-hidden="true"'}>${m ? m[0] : '📔'}</span><b>${esc(dayLabel(e.day))}</b>
       <span class="dim"><span class="num">${fmt(e.words || 0)}</span> 字${r && r.xp ? `，+${r.xp} XP` : ''}</span>
       ${(e.tags || []).length ? `<span class="jtags">${e.tags.map(t => `#${esc(t)}`).join(' ')}</span>` : ''}
-      <span class="jact"><button class="mini" data-act="jedit" data-id="${esc(e.id)}">編輯</button><button class="btn-x" data-act="del" data-id="${esc(e.id)}" aria-label="刪除這篇日記" title="刪除">×</button></span></div>
+      <span class="jact">${isCouple() ? (party.shared.has(e.id) ? `<span class="xshared" title="另一半看得到這篇">💌 已分享</span><button class="mini" data-act="cpunshare" data-id="${esc(e.id)}">收回</button>`
+        : `<button class="mini" data-act="cpshare" data-id="${esc(e.id)}" title="分享給${esc(partner()?.name || '另一半')}">💌 分享</button>`) : ''}<button class="mini" data-act="jedit" data-id="${esc(e.id)}">編輯</button><button class="btn-x" data-act="del" data-id="${esc(e.id)}" aria-label="刪除這篇日記" title="刪除">×</button></span></div>
     <h3 class="jt">${c ? esc(c.t) : ''}</h3><p class="jb">${c ? esc(c.b) : '解密中…'}</p>
     <button class="mini jmore" data-act="jmore">展開</button></article>`;
 }
 function viewJournal(S) {
+  const seg = jViewSeg();
+  return seg + (seg && jf.view === 'ex' ? viewExchange() : viewJournalMine(S));
+}
+function viewJournalMine(S) {
   const st = jState();
   if (st === 'none') return jSetupPanel();
   if (jc.newCode) return jCodePanel();
@@ -4114,8 +4376,9 @@ const partyApi = {   // 測試時可以在 Console 換成假資料：window.__go
   rename: (me, dn) => sbRest(`goal_party_members?user_id=eq.${me}`, { method: 'PATCH', body: JSON.stringify({ display_name: dn }) }),
   pushDays: rows => sbRest('goal_party_days?on_conflict=user_id,day', { method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify(rows) }),
   clearStats: me => sbRest(`goal_party_days?user_id=eq.${me}`, { method: 'PATCH', body: JSON.stringify({ xp: null, streak: null }) }),
+  clearMood: me => sbRest(`goal_party_days?user_id=eq.${me}`, { method: 'PATCH', body: JSON.stringify({ mood: null }) }),
   pruneDays: (me, before) => sbRest(`goal_party_days?user_id=eq.${me}&day=lt.${before}`, { method: 'DELETE' }),
-  pullDays: since => sbRest(`goal_party_days?select=user_id,day,active,cats,xp,streak&day=gte.${since}`),
+  pullDays: (since, v4) => sbRest(`goal_party_days?select=user_id,day,active,cats,xp,streak${v4 ? ',mood' : ''}&day=gte.${since}`),
   cheer: (pid, to, day, kind) => sbRest('goal_cheers', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ party_id: pid, to_user: to, day, ...(kind ? { kind } : {}) }) }),
   pullCheers: (since, v2) => sbRest(`goal_cheers?select=id,from_user,to_user,day,created_at${v2 ? ',kind' : ''}&created_at=gte.${encodeURIComponent(since)}`),
   // build 20（sync/party-v2.sql）
@@ -4141,8 +4404,23 @@ const partyApi = {   // 測試時可以在 Console 換成假資料：window.__go
   roomLeave: (id, me) => sbRest(`goal_focus_members?room_id=eq.${id}&user_id=eq.${me}`, { method: 'DELETE' }),
   roomState: (id, me, st) => sbRest(`goal_focus_members?room_id=eq.${id}&user_id=eq.${me}`, { method: 'PATCH', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ state: st }) }),
   pruneMessages: (me, before) => sbRest(`goal_party_messages?from_user=eq.${me}&created_at=lt.${encodeURIComponent(before)}`, { method: 'DELETE' }),
+  // build 23（sync/party-v4.sql）情侶隊、交換日記、每日一問
+  kind: () => sbRest('goal_parties?select=kind,since'),
+  createKind: (name, dn, kind) => sbRest('rpc/goal_create_party_kind', { method: 'POST', body: JSON.stringify({ p_name: name, p_display_name: dn, p_kind: kind }) }),
+  setKind: kind => sbRest('rpc/goal_set_party_kind', { method: 'POST', body: JSON.stringify({ p_kind: kind }) }),
+  setSince: day => sbRest('rpc/goal_set_party_since', { method: 'POST', body: JSON.stringify({ p_since: day || null }) }),
+  pullExchange: () => sbRest(`goal_exchange?select=id,author,entry_id,day,mood,title,body,created_at,updated_at&order=created_at.desc&limit=${COUPLE.pull}`),
+  myShared: me => sbRest(`goal_exchange?select=entry_id&author=eq.${me}&limit=5000`),
+  share: row => sbRest('goal_exchange?on_conflict=author,entry_id', { method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify(row) }),
+  unshare: (me, entry) => sbRest(`goal_exchange?author=eq.${me}&entry_id=eq.${encodeURIComponent(entry)}`, { method: 'DELETE' }),
+  pullReplies: ids => sbRest(`goal_exchange_replies?select=id,entry,author,body,emoji,created_at&entry=in.(${ids.join(',')})&order=created_at.asc`),
+  reply: (entry, body, emoji) => sbRest('goal_exchange_replies', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ entry, body, ...(emoji ? { emoji } : {}) }) }),
+  delReply: id => sbRest(`goal_exchange_replies?id=eq.${id}`, { method: 'DELETE' }),
+  pullAnswers: since => sbRest(`goal_daily_answers?select=user_id,day,qid,body,created_at&day=gte.${since}`),
+  answer: (pid, day, qid, body) => sbRest('goal_daily_answers', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ party_id: pid, day, qid, body }) }),
 };
-const PARTY_ERR = { already_in_party: '你已經在一個隊伍裡了', party_not_found: '找不到這個邀請碼', party_full: `這個隊伍已經滿 ${PARTY.size} 人了`,
+const PARTY_ERR = { already_in_party: '你已經在一個隊伍裡了', party_not_found: '找不到這個邀請碼', party_full: '這個隊伍已經滿了（朋友隊 4 人、情侶隊 2 人）',
+  too_many_for_couple: '隊伍超過 2 個人，不能改成情侶隊', bad_kind: '隊伍類型不對', bad_since: '日期不對（不能是未來）',
   bad_name: '隊名要 1～30 個字', bad_display_name: '顯示名稱要 1～20 個字', not_logged_in: '請先登入雲端同步', 23505: '今天已經幫他加油過了', 42501: '對方已經不在隊伍裡了',
   verdict_closed: '已經按過了，或是超過可以見證的時間', bad_verdict: '見證結果不對',
   room_busy: '隊伍裡已經有一間專注房了', room_closed: '這間專注房已經開始、取消或過期了', need_two: '至少要 2 個人才能開始', not_in_party: '你還沒有隊伍', bad_minutes: '時間要 15～120 分鐘', bad_habit: '請選要做的事' };
@@ -4151,9 +4429,23 @@ const partyErr = e => PARTY_ERR[e.sbMsg] || PARTY_ERR[e.code] || (partyMissing(e
 const myUid = () => sessionUid(cloud.session);
 const validPartyInfo = p => p && typeof p === 'object' && uuidOk(p.id) ? { id: p.id, name: cut(p.name, 30) || '隊伍', code: /^[A-Z0-9]{8}$/.test(p.invite_code) ? p.invite_code : '' } : null;
 const validPartyMember = m => m && typeof m === 'object' && uuidOk(m.user_id) ? { uid: m.user_id, name: cut(m.display_name, 20) || '隊友', joined: isoOk(m.joined_at) ? m.joined_at : '' } : null;
+const moodOk = m => Number.isInteger(m) && m >= 1 && m <= 5;
 const validPartyDay = d => d && typeof d === 'object' && uuidOk(d.user_id) && dayOk(d.day) ? { uid: d.user_id, day: d.day, active: d.active === true,
   cats: Array.isArray(d.cats) ? [...new Set(d.cats.filter(c => typeof c === 'string' && Object.hasOwn(CATS, c)))] : [],
-  xp: d.xp == null ? null : Math.round(num(d.xp, 0, 5000)), streak: d.streak == null ? null : Math.round(num(d.streak, 0, 1e5)) } : null;
+  xp: d.xp == null ? null : Math.round(num(d.xp, 0, 5000)), streak: d.streak == null ? null : Math.round(num(d.streak, 0, 1e5)), mood: moodOk(d.mood) ? d.mood : null } : null;
+// 情侶隊（build 23）：對方分享的日記、回覆、每日一問的答案都是別人寫的字，畫面上一律 esc()
+const validPartyKind = k => k && typeof k === 'object' ? { kind: k.kind === 'couple' ? 'couple' : 'friends', since: dayOk(k.since) ? k.since : null } : null;
+const validExchange = x => x && typeof x === 'object' && uuidOk(x.id) && uuidOk(x.author) && typeof x.entry_id === 'string' && x.entry_id.length <= 60 && safeKey(x.entry_id) === x.entry_id
+  && dayOk(x.day) && isoOk(x.created_at) && cut(x.body, JOURNAL.maxLen)
+  ? { id: x.id.toLowerCase(), author: x.author, entry: x.entry_id, day: x.day, mood: moodOk(x.mood) ? x.mood : 0, title: cut(x.title, JOURNAL.titleLen), body: cut(x.body, JOURNAL.maxLen),
+      at: x.created_at, upd: isoOk(x.updated_at) ? x.updated_at : x.created_at } : null;
+const validReply = r => r && typeof r === 'object' && uuidOk(r.id) && uuidOk(r.entry) && uuidOk(r.author) && isoOk(r.created_at) && (cut(r.body, COUPLE.reply) || COUPLE.emojis.includes(r.emoji))
+  ? { id: r.id.toLowerCase(), entry: r.entry.toLowerCase(), author: r.author, body: cut(r.body, COUPLE.reply), emoji: COUPLE.emojis.includes(r.emoji) ? r.emoji : '', at: r.created_at } : null;
+const validAnswer = a => a && typeof a === 'object' && uuidOk(a.user_id) && dayOk(a.day) && Number.isInteger(a.qid) && a.qid >= 0 && a.qid <= 999 && cut(a.body, COUPLE.answer)
+  ? { uid: a.user_id, day: a.day, qid: a.qid, body: cut(a.body, COUPLE.answer) } : null;
+function isCouple() { return !!(party.info && party.v4 && party.kind === 'couple'); }
+function partner() { const me = myUid(); return party.members.find(m => m.uid !== me) || null; }
+function partyCap() { return isCouple() ? COUPLE.size : PARTY.size; }
 const validCheer = c => c && typeof c === 'object' && uuidOk(c.id) && uuidOk(c.from_user) && uuidOk(c.to_user) && dayOk(c.day) && isoOk(c.created_at)
   ? { id: c.id.toLowerCase(), from: c.from_user, to: c.to_user, day: c.day, at: c.created_at, kind: Object.hasOwn(CHEER_BY, c.kind) ? c.kind : null } : null;
 const validNudge = c => { const v = validCheer(c); return v && { id: v.id, from: v.from, to: v.to, day: v.day, at: v.at }; };
@@ -4180,9 +4472,14 @@ function applyParty(raw) {   // raw 是雲端原樣的資料（也存在 localSt
   party.nudges = listOf(raw.nudges, validNudge); party.gifts = listOf(raw.gifts, validGift);
   party.v3 = raw.v3 === true; party.rooms = listOf(raw.rooms, validRoom); party.roomMembers = listOf(raw.roomMembers, validRoomMember);
   party.witness = listOf(raw.witness, validWitness); party.msgs = listOf(raw.msgs, validMessage).sort((a, b) => tms(a.at) - tms(b.at));
+  const k = validPartyKind(raw.kind); party.v4 = raw.v4 === true; party.kind = party.v4 && k ? k.kind : 'friends'; party.since = party.v4 && k ? k.since : null;
+  party.exchange = listOf(raw.exchange, validExchange).sort((a, b) => tms(b.at) - tms(a.at));
+  party.replies = listOf(raw.replies, validReply).sort((a, b) => tms(a.at) - tms(b.at)); party.answers = listOf(raw.answers, validAnswer);
+  party.shared = new Set(listOf(raw.myShared, x => x && typeof x.entry_id === 'string' && safeKey(x.entry_id) === x.entry_id ? x.entry_id : null));
   party.raw = raw;
 }
-function saveParty() { lsSet(PARTY_LS, JSON.stringify({ owner: myUid(), status: party.status, raw: party.raw })); }
+// 對方分享的日記、回覆、每日一問的答案只放在記憶體，不存進 localStorage
+function saveParty() { const { exchange, replies, answers, ...keep } = party.raw || {}; lsSet(PARTY_LS, JSON.stringify({ owner: myUid(), status: party.status, raw: keep })); }
 function loadParty() {
   let o = null; try { o = JSON.parse(lsGet(PARTY_LS)); } catch (e) { /* ignore */ }
   if (!o || !myUid() || o.owner !== myUid()) return;
@@ -4190,14 +4487,16 @@ function loadParty() {
 }
 function resetParty() { applyParty(null); clearInterval(partyUI.poll); clearInterval(group.poll); group.poll = null; group.form = false; Object.assign(partyUI, { pick: null, rejectFor: '', chatOpen: false, draft: '' }); party.status = 'off'; party.error = ''; party.pushed = ''; try { localStorage.removeItem(PARTY_LS); } catch (e) { /* ignore */ } }
 // 自己最近 8 天的摘要；保護卡補上的日子 d.any 是 false，隊友不會誤以為有紀錄
-function partyDayRows(S) {
-  const tk = todayKey(), share = state.settings.partyShare === 'xp';
+// v4：資料表有 mood 欄位（party-v4.sql）；moodOn：情侶隊而且設定裡沒關掉，才上傳每天的心情（那天最後一篇有選心情的日記）
+function partyDayRows(S, v4 = false, moodOn = false) {
+  const tk = todayKey(), share = state.settings.partyShare === 'xp', moods = moodOn ? dayMoods() : {};
   return Array.from({ length: PARTY.push }, (_, i) => {
     const k = addDays(tk, -i), d = S.days[k], on = !!d?.any;
     return { day: k, active: on, cats: on ? [...d.cats].filter(c => Object.hasOwn(CATS, c)) : [],
-      xp: share ? clamp(Math.round(d?.xp || 0), 0, 5000) : null, streak: share && i === 0 ? S.streak : null };
+      xp: share ? clamp(Math.round(d?.xp || 0), 0, 5000) : null, streak: share && i === 0 ? S.streak : null, ...(v4 ? { mood: moods[k] || null } : {}) };
   });
 }
+function dayMoods() { const o = {}, t = {}; for (const e of state.events) if (e.type === 'journal' && e.mood && tms(e.ts) >= (t[e.day] || 0)) { o[e.day] = e.mood; t[e.day] = tms(e.ts); } return o; }
 async function syncParty() {
   const me = myUid();
   if (!cloud.session || !me || party.busy) return;
@@ -4207,8 +4506,12 @@ async function syncParty() {
     const tk = todayKey();
     const [ps, ms] = await Promise.all([partyApi.mine(), partyApi.members()]);
     const raw = { party: Array.isArray(ps) ? ps[0] || null : null, members: Array.isArray(ms) ? ms : [], days: [], cheers: [] };
+    // build 23 的欄位：還沒執行 party-v4.sql 時略過，情侶隊功能自動隱藏
+    try { const k = await partyApi.kind(); raw.kind = Array.isArray(k) ? k[0] || null : null; raw.v4 = true; }
+    catch (e) { if (!partyMissing(e) && e.code !== '42703') throw e; raw.v4 = false; }
     if (validPartyInfo(raw.party)) {
-      const rows = partyDayRows(compute()), h = h32([me, rows]), wk = new Date(Date.now() - 7 * 864e5).toISOString();
+      const couple = raw.v4 && validPartyKind(raw.kind)?.kind === 'couple';
+      const rows = partyDayRows(compute(), raw.v4, couple && state.settings.coupleMood !== false), h = h32([me, rows]), wk = new Date(Date.now() - 7 * 864e5).toISOString();
       if (h !== party.pushed) { await partyApi.pushDays(rows); party.pushed = h; }
       // build 20 的資料表：還沒執行 party-v2.sql 時整組略過，原本的隊伍功能照常
       try {
@@ -4220,7 +4523,8 @@ async function syncParty() {
         if (raw.v2) await partyApi.pruneMessages(me, new Date(Date.now() - CHAT.keepDays * 864e5).toISOString());
         lsSet(PARTY_PRUNE, tk);
       }
-      [raw.days, raw.cheers] = await Promise.all([partyApi.pullDays(addDays(tk, -PARTY.pull)), partyApi.pullCheers(wk, raw.v2)]);
+      [raw.days, raw.cheers] = await Promise.all([partyApi.pullDays(addDays(tk, -PARTY.pull), raw.v4), partyApi.pullCheers(wk, raw.v2)]);
+      if (couple) await pullCouple(raw, me, tk);
       await pullRooms(raw);
     }
     applyParty(raw); party.status = party.info ? 'in' : 'none'; party.error = '';
@@ -4234,6 +4538,11 @@ async function syncParty() {
   }
   party.busy = false;
   if (h32([party.status, party.raw, party.error, state.events.length]) !== before) { checkUnlocks(); render(); }
+}
+async function pullCouple(raw, me, tk) {
+  [raw.exchange, raw.myShared, raw.answers] = await Promise.all([partyApi.pullExchange(), partyApi.myShared(me), partyApi.pullAnswers(addDays(tk, -1))]);
+  const ids = (Array.isArray(raw.exchange) ? raw.exchange : []).map(x => x && x.id).filter(uuidOk);
+  raw.replies = ids.length ? await partyApi.pullReplies(ids) : [];
 }
 // 收到的加油變成本機的 cheer 事件；id 固定，換裝置或重複拉取都不會重複入帳
 function ingestCheers(me) {
@@ -4983,6 +5292,12 @@ document.addEventListener('click', e => {
   else if (act === 'jcopy') navigator.clipboard?.writeText(jc.newCode).then(() => toast('複製好了，記得貼到安全的地方。'), () => toast('沒辦法複製，請手動抄下來。'));
   else if (act === 'jcodeok') { jc.newCode = ''; render(); }
   else if (act === 'jlock') jLock();
+  else if (act === 'cpex') { tab = 'journal'; jf.view = 'ex'; lsSet(TAB_KEY, tab); lsSet(ME_KEY, tab); render(); scrollTo({ top: 0 }); }
+  else if (act === 'cpshare') cpShare(id, t);
+  else if (act === 'cpunshare') cpUnshare(id, t);
+  else if (act === 'cpemo') cpReply(id, '', t.dataset.e, t);
+  else if (act === 'cpdelrep') cpDelReply(id);
+  else if (act === 'cpsync') { t.disabled = true; syncParty().then(() => { render(); toast('交換日記更新好了'); }); }
   else if (act === 'pview') { pf.view = t.dataset.v; render(); }
   else if (act === 'pdoing') { const p = state.problems[t.dataset.slug]; if (p) { setProblem(p.slug, { doing: !p.doing }); render(); } }
   else if (act === 'pstar') { const p = state.problems[t.dataset.slug]; if (p) { setProblem(p.slug, { starred: !p.starred }); render(); } }
@@ -5000,11 +5315,11 @@ document.addEventListener('click', e => {
   else if (act === 'chest') openChest(t.dataset.day);
   else if (act === 'recapimg') recapImage().catch(err => toast('圖片做不出來：' + esc(err.message)));
   else if (act === 'cosbuy') {
-    const c = COSMETIC_BY_ID[id], S = compute(); if (!c || c.chest || S.owned.has(id) || S.balance < c.price) return;
+    const c = COSMETIC_BY_ID[id], S = compute(); if (!c || c.chest || c.couple || S.owned.has(id) || S.balance < c.price) return;
     addEvent({ id: uid('cs'), type: 'cosmetic_buy', ts: nowISO(), cosmetic: id, cost: c.price, source: 'manual' });
     state.settings.theme = id; touchMeta(); commit(); chime('quest'); haptic('success'); toast(`買了外觀「${esc(c.name)}」，已經換上`);
   }
-  else if (act === 'cosuse') { if (!COSMETIC_BY_ID[id] || !compute().owned.has(id)) return; state.settings.theme = id; touchMeta(); save(); render(); haptic('tap'); }
+  else if (act === 'cosuse') { if (!COSMETIC_BY_ID[id] || !ownsTheme(compute(), id)) return; state.settings.theme = id; touchMeta(); save(); render(); haptic('tap'); }
   else if (act === 'buyfreeze') {
     const S = compute(); if (S.balance < FREEZE.cost || S.freezesHeld >= FREEZE.max) return;
     addEvent({ id: uid('fz'), type: 'freeze_buy', ts: nowISO(), cost: FREEZE.cost, source: 'manual' });
@@ -5029,7 +5344,7 @@ document.addEventListener('click', e => {
   else if (act === 'preportimg') partyReportImage().catch(err => toast('圖片做不出來：' + esc(err.message)));
   else if (act === 'partycopy') { const code = party.info?.code || ''; (navigator.clipboard ? navigator.clipboard.writeText(code) : Promise.reject()).then(() => toast('已複製邀請碼'), () => toast(`邀請碼：${esc(code)}`)); }
   else if (act === 'partyleave') {
-    if (Date.now() - party.leaveArm >= 4000) { party.leaveArm = Date.now(); render(); toast('退出後會失去本週的共同 Boss 進度。4 秒內再按一次就退出。'); setTimeout(() => { if (tab === 'settings') render(); }, 4100); return; }
+    if (Date.now() - party.leaveArm >= 4000) { party.leaveArm = Date.now(); render(); toast(`退出後會失去本週的共同 Boss 進度${isCouple() ? '，分享給另一半的交換日記和每日一問的答案也會收回' : ''}。4 秒內再按一次就退出。`); setTimeout(() => { if (tab === 'settings') render(); }, 4100); return; }
     party.leaveArm = 0;
     partyAction(async () => { await partyApi.leave(myUid()); applyParty(null); party.status = 'none'; saveParty(); }, '已退出隊伍');
   }
@@ -5085,6 +5400,8 @@ document.addEventListener('submit', e => {
   if (f.id === 'jchange') { jChange(f); return; }
   if (f.id === 'jnewcode') { jNewCode(f); return; }
   if (f.id === 'groupopen') { groupOpen(fd); return; }
+  if (f.id === 'cpanswer') { cpAnswer(f); return; }
+  if (f.classList.contains('xreply')) { cpReply(f.dataset.entry, String(fd.get('body') || ''), null, f.querySelector('button[type="submit"]')); return; }
   if (f.id === 'groupjoin') { groupJoin(fd); return; }
   if (f.classList.contains('wreject')) { sendVerdict(f.dataset.owner, f.dataset.cid, 'reject', String(fd.get('note') || ''), f.querySelector('button[type="submit"]')); return; }
   if (f.id === 'lcform') {
@@ -5109,7 +5426,8 @@ document.addEventListener('submit', e => {
     addBoss({ name: str(name, 60), icon: cleanIcon(fd.get('icon')) || '👹', days: Number(fd.get('days')) || 14, money: !!fd.get('money') });
   } else if (f.id === 'partycreate') {
     const name = cut(fd.get('name'), 30), dn = partyCheckDn(fd.get('dn')); if (!name) { toast('請填隊名'); return; } if (!dn) return;
-    partyAction(() => partyApi.create(name, dn), `建立了「${esc(name)}」。到設定複製邀請碼給朋友。`);
+    const couple = party.v4 && fd.get('kind') === 'couple';
+    partyAction(() => party.v4 ? partyApi.createKind(name, dn, couple ? 'couple' : 'friends') : partyApi.create(name, dn), `建立了「${esc(name)}」。到設定複製邀請碼給${couple ? '另一半' : '朋友'}。`);
   } else if (f.id === 'partyjoin') {
     const code = String(fd.get('code') || '').trim().toUpperCase(), dn = partyCheckDn(fd.get('dn'));
     if (!/^[A-Z0-9]{8}$/.test(code)) { toast('邀請碼是 8 個英文字母或數字'); return; } if (!dn) return;
@@ -5159,6 +5477,10 @@ document.addEventListener('change', e => {
   else if (t.name === 'recapm') { recapOffset = Number(t.value) ? 1 : 0; render(); }
   else if (t.name === 'minutes' && t.closest('#groupopen')) { group.min = Number(t.value) || 25; t.closest('.fmins').querySelectorAll('.chipbtn').forEach(l => l.classList.toggle('on', l.contains(t))); }
   else if (t.name === 'prepw') { partyRep.off = Number(t.value) ? 1 : 0; render(); }
+  else if (t.name === 'jview') { jf.view = t.value === 'ex' ? 'ex' : 'mine'; render(); }
+  else if (t.name === 'pkind') { const k = t.value === 'couple' ? 'couple' : 'friends'; partyAction(() => partyApi.setKind(k), k === 'couple' ? '改成情侶隊了：交換日記、每日一問、紀念日都打開了，商店裡的「玫瑰」外觀也能用了。' : '改回朋友隊了。').then(render); }
+  else if (t.id === 'psince') { const v = t.value; if (v && (!dayOk(v) || v > todayKey())) { toast('日期不能是未來'); t.value = party.since || ''; return; } partyAction(() => partyApi.setSince(v || null), v ? '紀念日存好了' : '清掉紀念日了'); }
+  else if (t.id === 'cpmood') { state.settings.coupleMood = t.checked; touchMeta(); save(); party.pushed = ''; if (!t.checked && party.v4 && party.info) partyApi.clearMood(myUid()).catch(e => console.warn('party', e)); syncParty(); toast(t.checked ? '另一半會看到你每天的心情' : '不再分享心情，已上傳的會清掉'); }
   else if (t.name === 'rvday') { guard.reviewDay = Number(t.value) ? 1 : 0; render(); }
   else if (t.id === 'haptics') { state.settings.haptics = t.checked; touchMeta(); save(); if (state.settings.haptics) haptic('success'); }
   else if (t.dataset.wh !== undefined) { const ids = [...widgetHabitIds()]; while (ids.length < 3) ids.push(DEFAULT_WIDGET_HABITS[ids.length]); ids[Number(t.dataset.wh)] = t.value; state.settings.widgetHabits = ids; touchMeta(); save(); render(); }
@@ -5181,6 +5503,8 @@ document.addEventListener('input', e => {
   if (cf) { updateContractForm(cf, e.target.name === 'goal'); return; }
   if (e.target.id === 'gpq') { guard.pickQ = e.target.value; const box = $('.picker'); if (box) { const pos = e.target.selectionStart; box.outerHTML = appPicker(); const q = $('#gpq'); if (q) { q.focus(); q.setSelectionRange(pos, pos); } } return; }
   if (e.target.id === 'pchatin') { partyUI.draft = e.target.value; return; }
+  if (e.target.id === 'cpans') { cpUI.ans = e.target.value; return; }
+  if (e.target.closest && e.target.closest('.xreply')) { cpUI.drafts[e.target.closest('.xreply').dataset.entry] = e.target.value; return; }
   if (e.target.closest && e.target.closest('#jwform')) { jwInput(); return; }
   if (e.target.id === 'pq') { pf.q = e.target.value; const ul = $('#plist'); if (ul) ul.innerHTML = problemRows(compute()); }
 });
