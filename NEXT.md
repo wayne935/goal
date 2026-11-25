@@ -1,6 +1,6 @@
 # 接下來要實作的事
 
-> 更新：2026-11-25　｜　目前網頁 build 23，原生 NATIVE_VERSION 6（`version.json` 的 minNative 6）
+> 更新：2026-11-25　｜　目前網頁 build 24，原生 NATIVE_VERSION 6（`version.json` 的 minNative 6）
 > 先讀 `CLAUDE.md`（架構、發佈規則、測試方法）。設計理由與研究依據在 `PLAN.md` 第 8 節。
 
 ## 目前狀態
@@ -60,4 +60,10 @@
 - **build 23 情侶隊與交換日記（2026-11-25，PLAN 11.2）**：`sync/party-v4.sql`（`goal_parties.kind` / `since`、`goal_party_days.mood`、`goal_exchange`、`goal_exchange_replies`、`goal_daily_answers`、`goal_create_party_kind()`、`goal_set_party_kind()`、`goal_set_party_since()`、`goal_answered()`、新版 `goal_join_party()`（情侶隊 2 人）、離開隊伍時收回自己分享的東西的 trigger），權限測試 `sync/test/run-party-v4-test.sh`。網頁：`COUPLE`、`COUPLE_ACTS`、`QUESTIONS` / `qOf()`；`partyApi.kind/createKind/setKind/setSince/pullExchange/myShared/share/unshare/pullReplies/reply/delReply/pullAnswers/answer/clearMood`；`party.v4` / `kind` / `since` / `exchange` / `replies` / `answers` / `shared`；`couplePanel()`（「今天」頁 slot 2：在一起第幾天、兩人今天的心情、每日一問）、`coupleNotes()`、`coupleSettingsHTML()`、日記分頁的「我的日記 | 交換日記」（`jf.view`、`viewExchange()`）、寫日記畫面的「分享給對方」開關；新事件 `couple`、5 個徽章、玫瑰外觀（情侶隊限定）。在瀏覽器用假的 Supabase 測過：分享 / 收回 / 編輯後更新 / 刪掉日記會收回、表情與文字回覆、每日一問兩人都答才看得到、紀念日與 100 天提示、心情開關、朋友隊 ↔ 情侶隊、沒執行 SQL、手機版、`<script>` 名字和內容。
   - 🙋 使用者要做：在 Supabase SQL Editor 執行 `sync/party-v4.sql`；兩個人其中一個建立情侶隊（或在設定把現有的隊伍改成情侶隊），另一個用邀請碼加入，設定在一起的日子。
   - 已知取捨：分享出去的那一份是明文（Supabase 後台看得到，跟隊伍聊天一樣），自己原本的日記還是加密的；改日記時要在寫日記畫面保持「分享」打開才會更新對方看到的內容；對方先回答每日一問時看不到「對方已經答了」（RLS 連有沒有答都擋住）；每日一問只顯示今天和昨天；交換日記一次拉最新 60 篇。
-  - **下一步：影劇心得（TMDB）或記帳**（PLAN 11 的第 3 步），等使用者用幾天情侶隊後決定先做哪個。
+  - 2026-11-25 使用者已拉回 build 23、執行 `sync/party-v4.sql`。
+
+- **build 24 影劇心得（2026-11-25，PLAN 11.3）**：「我的 → 影劇」（`viewWatch()`），新事件 `watch`、`WATCH` 常數、5 個徽章（`w_first`、`w_10`、`w_rev30`、`w_100` 傳說、`w_with10`）、「影劇」能力、每月回顧多一行。TMDB 走使用者 Supabase 的 Edge Function `tmdb`（`sync/tmdb-function.ts`，`node sync/test/tmdb-function-test.mjs` 16 項），網頁只拿得到登入後代轉的結果。情侶隊多了「一起看的片」（兩個人都寫完同一部 / 同一季才揭曉）和「想一起看」共用片單：`sync/party-v5.sql`（`goal_watch_together`、`goal_watchlist`、`goal_watched()`、`goal_watch_titles()`、離開隊伍的 trigger），權限測試 `sync/test/run-party-v5-test.sh`（65 項）。在瀏覽器用假的 Supabase 和假的 TMDB 測 80 項（搜尋、半顆星、季數、手動輸入、獎勵上限、編輯、刪除、揭曉、片單、函式沒建 / 沒金鑰 / 沒登入、v5 沒執行、手機 360px）。
+  - 使用者的決定：TMDB 金鑰放在 Supabase 代轉（不放網頁）。設計草案沒有異議：寫心得才給分（滿 30 字 +10 XP / +6 代幣，每部電影、每一季一次，一天最多 3 部），只打分數不給分、不算連續天數；記完可以順便兌換「看一部電影」/「看一集劇」；心得是明文。
+  - 🙋 使用者要做：①到 TMDB 申請 API（https://www.themoviedb.org/settings/api）②Supabase → Edge Functions 建 `tmdb` 函式（貼 `sync/tmdb-function.ts`）、關掉 Verify JWT、Secrets 加 `TMDB_KEY` ③SQL Editor 執行 `sync/party-v5.sql`。沒建函式時搜尋會顯示設定說明，仍然可以手動輸入片名。
+  - 已知取捨：TMDB 的資料（片名、海報）只在搜尋和記錄當下抓一次，存在事件裡，之後 TMDB 改了不會更新；影集只到「季」，同一季每一集分開記也只有第一篇給分；一起看的片一次拉最新 100 筆，片單最多 100 部；只打分數的「一起看」也會揭曉（因為對方可能也只打分數）。
+  - **下一步：記帳**（PLAN 11 的最後一步），或先處理使用者用影劇的回饋。
